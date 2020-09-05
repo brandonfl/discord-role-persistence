@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
+
+  <changeSet id="4" author="root">
+    <createTable tableName="discord_bot_config">
+      <column autoIncrement="true" name="id" type="INT(10) UNSIGNED">
+        <constraints primaryKey="true"/>
+      </column>
+      <column name="token"
+        type="VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
+        <constraints nullable="false"/>
+      </column>
+      <column name="guid"
+        type="VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value"
+        type="VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+</databaseChangeLog>
+

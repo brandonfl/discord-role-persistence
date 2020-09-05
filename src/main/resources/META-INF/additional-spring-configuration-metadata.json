@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "bot.setting.token",
+      "type": "java.lang.String",
+      "description": "Discord bot token"
+    },
+    {
+      "name": "bot.setting.version",
+      "type": "java.lang.String",
+      "description": "Discord bot version"
+    }
+  ]
+}
