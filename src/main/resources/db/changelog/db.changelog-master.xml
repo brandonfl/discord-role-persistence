@@ -20,10 +20,7 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       <column name="server_guid" type="BIGINT(20) UNSIGNED">
         <constraints nullable="false"/>
       </column>
-      <column name="log_channel" type="BIGINT(20) UNSIGNED">
-        <constraints nullable="false"/>
-      </column>
-      <column name="log_channel" type="BIGINT(20) UNSIGNED">
+      <column name="role_guid" type="BIGINT(20) UNSIGNED">
         <constraints nullable="false"/>
       </column>
     </createTable>
