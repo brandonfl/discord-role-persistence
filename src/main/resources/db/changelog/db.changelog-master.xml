@@ -8,11 +8,19 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       <column autoIncrement="true" name="guid" type="BIGINT(20) UNSIGNED">
         <constraints primaryKey="true"/>
       </column>
+      <column name="command_prefix"
+        type="VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+        defaultValue="drp!">
+        <constraints nullable="false"/>
+      </column>
       <column name="log_channel" type="BIGINT(20) UNSIGNED"/>
     </createTable>
 
     <createTable tableName="server_role_blacklist">
       <column name="server_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="log_channel" type="BIGINT(20) UNSIGNED">
         <constraints nullable="false"/>
       </column>
       <column name="log_channel" type="BIGINT(20) UNSIGNED">
