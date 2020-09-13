@@ -1,4 +1,4 @@
-package com.brandonfl.demobot.db.entity;
+package com.brandonfl.discordrolepersistence.db.entity;
 
 import java.io.Serializable;
 import javax.persistence.Column;

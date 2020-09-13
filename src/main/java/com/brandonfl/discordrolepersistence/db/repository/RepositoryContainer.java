@@ -1,4 +1,4 @@
-package com.brandonfl.demobot.db.repository;
+package com.brandonfl.discordrolepersistence.db.repository;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

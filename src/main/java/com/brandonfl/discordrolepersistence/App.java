@@ -1,4 +1,4 @@
-package com.brandonfl.demobot;
+package com.brandonfl.discordrolepersistence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

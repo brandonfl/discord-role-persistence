@@ -1,10 +1,9 @@
-package com.brandonfl.demobot.discordbot;
+package com.brandonfl.discordrolepersistence.discordbot;
 
-import com.brandonfl.demobot.config.BotProperties;
-import com.brandonfl.demobot.db.repository.RepositoryContainer;
-import com.brandonfl.demobot.discordbot.command.Help;
-import com.brandonfl.demobot.discordbot.command.PingPong;
-import com.brandonfl.demobot.discordbot.event.UserCounter;
+import com.brandonfl.discordrolepersistence.config.BotProperties;
+import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
+import com.brandonfl.discordrolepersistence.discordbot.command.Help;
+import com.brandonfl.discordrolepersistence.discordbot.command.PingPong;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.AccountType;
@@ -42,7 +41,6 @@ public class DiscordBot {
 
         // add the listeners
         .addEventListeners(new PingPong())
-        .addEventListeners(new UserCounter(repositoryContainer))
         .addEventListeners(new Help(botProperties))
         .addEventListeners()
         // start it up!

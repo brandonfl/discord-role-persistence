@@ -1,4 +1,4 @@
-package com.brandonfl.demobot.config;
+package com.brandonfl.discordrolepersistence.config;
 
 import lombok.Data;
 import lombok.Getter;
