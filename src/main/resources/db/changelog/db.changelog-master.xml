@@ -3,6 +3,66 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
 logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
+  <changeSet author="BrandonFL" id="1">
+    <createTable tableName="server">
+      <column autoIncrement="true" name="guid" type="BIGINT(20) UNSIGNED">
+        <constraints primaryKey="true"/>
+      </column>
+      <column name="log_channel" type="BIGINT(20) UNSIGNED"/>
+    </createTable>
 
+    <createTable tableName="server_role_blacklist">
+      <column name="server_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="log_channel" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createIndex indexName="FK_server_role_blacklist_server_guid"
+      tableName="server_role_blacklist">
+      <column name="server_guid"/>
+    </createIndex>
+
+    <addForeignKeyConstraint
+      baseColumnNames="server_guid"
+      baseTableName="server_role_blacklist"
+      constraintName="FK_server_role_blacklist_server_guid"
+      deferrable="false"
+      initiallyDeferred="false"
+      onDelete="RESTRICT"
+      onUpdate="RESTRICT"
+      referencedColumnNames="guid"
+      referencedTableName="server"/>
+
+    <createTable tableName="server_user_role">
+      <column name="server_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createIndex indexName="FK_server_user_role_server_guid"
+      tableName="server_user_role">
+      <column name="server_guid"/>
+    </createIndex>
+
+    <addForeignKeyConstraint
+      baseColumnNames="server_guid"
+      baseTableName="server_user_role"
+      constraintName="FK_server_user_role_server_guid"
+      deferrable="false"
+      initiallyDeferred="false"
+      onDelete="RESTRICT"
+      onUpdate="RESTRICT"
+      referencedColumnNames="guid"
+      referencedTableName="server"/>
+  </changeSet>
 </databaseChangeLog>
 
