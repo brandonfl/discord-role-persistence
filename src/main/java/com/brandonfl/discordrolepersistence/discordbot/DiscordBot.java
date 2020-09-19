@@ -5,6 +5,7 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.discordbot.command.Help;
 import com.brandonfl.discordrolepersistence.discordbot.command.PingPong;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
+import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.AccountType;
@@ -20,12 +21,15 @@ public class DiscordBot {
   public static final String PREFIX = "!";
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
+  private final PersistExecutor persistExecutor;
 
   @Autowired
   public DiscordBot(BotProperties botProperties,
-      RepositoryContainer repositoryContainer) {
+      RepositoryContainer repositoryContainer,
+      PersistExecutor persistExecutor) {
     this.botProperties = botProperties;
     this.repositoryContainer = repositoryContainer;
+    this.persistExecutor = persistExecutor;
   }
 
   @PostConstruct
@@ -44,7 +48,7 @@ public class DiscordBot {
         .addEventListeners(new PingPong())
         .addEventListeners(new Help(botProperties))
 
-        .addEventListeners(new ServerEvent(repositoryContainer))
+        .addEventListeners(new ServerEvent(repositoryContainer, persistExecutor))
         // start it up!
         .build();
   }
