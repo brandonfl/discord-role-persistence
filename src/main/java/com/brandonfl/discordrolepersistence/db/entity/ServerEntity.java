@@ -4,8 +4,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -19,12 +17,11 @@ import lombok.Setter;
 public class ServerEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "guid", nullable = false, updatable = false)
   private Long guid;
 
   @Column(name = "command_prefix", nullable = false)
-  private String commandPrefix;
+  private String commandPrefix = "drp!";
 
   @Column(name = "log_channel")
   private Long logChannel;

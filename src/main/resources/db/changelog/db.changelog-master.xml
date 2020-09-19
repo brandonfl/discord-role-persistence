@@ -17,6 +17,9 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
     </createTable>
 
     <createTable tableName="server_role_blacklist">
+      <column autoIncrement="true" name="id" type="BIGINT(20) UNSIGNED">
+        <constraints primaryKey="true"/>
+      </column>
       <column name="server_guid" type="BIGINT(20) UNSIGNED">
         <constraints nullable="false"/>
       </column>
@@ -46,6 +49,9 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       referencedTableName="server"/>
 
     <createTable tableName="server_user_role">
+      <column autoIncrement="true" name="id" type="BIGINT(20) UNSIGNED">
+        <constraints primaryKey="true"/>
+      </column>
       <column name="server_guid" type="BIGINT(20) UNSIGNED">
         <constraints nullable="false"/>
       </column>
