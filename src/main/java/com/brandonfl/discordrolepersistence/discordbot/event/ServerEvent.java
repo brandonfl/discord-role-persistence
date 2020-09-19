@@ -23,7 +23,7 @@ public class ServerEvent extends ListenerAdapter {
   public void onGuildJoin(@Nonnull GuildJoinEvent event) {
     if (!repositoryContainer.getServerRepository()
         .findById(event.getGuild().getIdLong()).isPresent()) {
-      persistExecutor.persistNewServer(event);
+      persistExecutor.persistNewServer(event.getGuild());
     }
   }
 
