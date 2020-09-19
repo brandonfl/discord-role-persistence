@@ -11,5 +11,7 @@ import org.springframework.stereotype.Service;
 public class RepositoryContainer {
 
   private final ServerRepository serverRepository;
+  private final ServerUserRepository serverUserRepository;
+  private final ServerRoleRepository serverRoleRepository;
 
 }
