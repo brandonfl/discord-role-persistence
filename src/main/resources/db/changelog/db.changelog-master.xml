@@ -25,6 +25,10 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       </column>
     </createTable>
 
+    <addUniqueConstraint
+      tableName="server_role_blacklist"
+      columnNames="server_guid, role_guid"/>
+
     <createIndex indexName="FK_server_role_blacklist_server_guid"
       tableName="server_role_blacklist">
       <column name="server_guid"/>
@@ -52,6 +56,10 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
         <constraints nullable="false"/>
       </column>
     </createTable>
+
+    <addUniqueConstraint
+      tableName="server_user_role"
+      columnNames="server_guid, user_guid, role_guid"/>
 
     <createIndex indexName="FK_server_user_role_server_guid"
       tableName="server_user_role">
