@@ -10,6 +10,4 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepositoryContainer {
 
-  private final DiscordBotConfigRepository discordBotConfigRepository;
-
 }
