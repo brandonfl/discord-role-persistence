@@ -8,6 +8,7 @@ import com.brandonfl.discordrolepersistence.discordbot.event.BotEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
+import com.brandonfl.discordrolepersistence.discordbot.event.UserJoinEvent;
 import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
@@ -55,6 +56,7 @@ public class DiscordBot {
         .addEventListeners(new MemberEvent(persistExecutor))
         .addEventListeners(new ServerRoleEvent(persistExecutor))
         .addEventListeners(new BotEvent(persistExecutor))
+        .addEventListeners(new UserJoinEvent(repositoryContainer))
         // start it up!
         .build();
   }

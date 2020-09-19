@@ -35,7 +35,7 @@ public class ServerRoleEntity {
   private Long roleGuid;
 
   @Column(name = "blacklisted", nullable = false)
-  private Boolean blacklisted = false;
+  private boolean blacklisted = false;
 
   @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
   @JoinTable(name = "server_user_has_server_role",
