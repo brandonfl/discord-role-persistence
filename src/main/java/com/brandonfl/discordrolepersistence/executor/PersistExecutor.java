@@ -73,8 +73,6 @@ public class PersistExecutor {
         .getServerUserRepository()
         .findByUserGuidAndServerGuid(member.getIdLong(), guild.getIdLong());
 
-    System.out.println(serverUserEntity.get());
-
     if (!serverUserEntity.isPresent()) {
       Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
       if (!serverEntity.isPresent()) {
