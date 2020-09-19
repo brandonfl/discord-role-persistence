@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -22,11 +23,13 @@ import org.springframework.stereotype.Service;
 public class PersistExecutor {
 
   private final RepositoryContainer repositoryContainer;
+  private final EntityManager entityManager;
 
   @Autowired
   public PersistExecutor(
-      RepositoryContainer repositoryContainer) {
+      RepositoryContainer repositoryContainer, EntityManager entityManager) {
     this.repositoryContainer = repositoryContainer;
+    this.entityManager = entityManager;
   }
 
   @Transactional
@@ -84,7 +87,6 @@ public class PersistExecutor {
         serverUserEntityToCreate.setUserGuid(member.getIdLong());
 
         serverUserEntity = Optional.of(repositoryContainer.getServerUserRepository().save(serverUserEntityToCreate));
-
       }
     }
 
@@ -103,36 +105,113 @@ public class PersistExecutor {
 
   @Transactional
   @Async("asyncPersistExecutor")
-  public void persistRoleUpdate(@Nonnull Guild guild) {
+  public void deleteOldRoles(@Nonnull Guild guild) {
     Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
     if (!serverEntity.isPresent()) {
       persistNewServer(guild);
     } else {
-      Set<Long> roleGuids = guild.getRoles().stream().map(Role::getIdLong).collect(Collectors.toSet());
+      deleteOldRoles(guild, serverEntity.get());
+    }
+  }
 
-      Set<ServerRoleEntity> serverRoles = serverEntity.get().getRoleEntities();
+  @Transactional
+  @Async("asyncPersistExecutor")
+  public void createNewRoles(@Nonnull Guild guild) {
+    Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
+    if (!serverEntity.isPresent()) {
+      persistNewServer(guild);
+    } else {
+      createNewRoles(guild, serverEntity.get());
+    }
+  }
 
-      repositoryContainer.getServerRoleRepository().deleteAll(
-          serverRoles
-              .stream()
-              .filter(serverRoleEntity -> !roleGuids.contains(serverRoleEntity.getRoleGuid()))
-              .collect(Collectors.toSet()));
+  @Transactional
+  @Async("asyncPersistExecutor")
+  public void persistGuildUpdate(@Nonnull Guild guild) {
+    Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
+    if (!serverEntity.isPresent()) {
+      persistNewServer(guild);
+    } else {
+      deleteOldRoles(guild, serverEntity.get());
+      createNewRoles(guild, serverEntity.get());
+      createNewMembers(guild, serverEntity.get());
 
-      Set<Long> alreadyCreatedRoles = serverRoles.stream().map(ServerRoleEntity::getRoleGuid).collect(Collectors.toSet());
-      for (Long roleNotStored : roleGuids.stream().filter(guid -> !alreadyCreatedRoles.contains(guid)).collect(Collectors.toSet())) {
-        ServerRoleEntity serverRoleEntity = new ServerRoleEntity();
-        serverRoleEntity.setRoleGuid(roleNotStored);
-        serverRoleEntity.setServerGuid(serverEntity.get());
+      entityManager.flush();
+      entityManager.clear();
+      updateMemberRoles(guild, repositoryContainer.getServerRepository().getOne(serverEntity.get().getGuid()));
+    }
+  }
 
-        repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
+  private void deleteOldRoles(Guild guild, ServerEntity serverEntity) {
+    Set<Long> roleGuids = guild.getRoles().stream().map(Role::getIdLong).collect(Collectors.toSet());
+    Set<ServerRoleEntity> serverRoles = serverEntity.getRoleEntities();
 
-        List<Member> membersWithRoleToCreate = guild.getMembersWithRoles(guild.getRoleById(roleNotStored));
-        if (!membersWithRoleToCreate.isEmpty()) {
-          for (Member memberToUpdate : membersWithRoleToCreate) {
-            persistRoleUpdateToUser(guild, memberToUpdate);
-          }
-        }
+    repositoryContainer.getServerRoleRepository().deleteAll(
+        serverRoles
+            .stream()
+            .filter(serverRoleEntity -> !roleGuids.contains(serverRoleEntity.getRoleGuid()))
+            .collect(Collectors.toSet()));
+  }
+
+  private void createNewRoles(Guild guild, ServerEntity serverEntity) {
+    Set<Long> roleGuids = guild.getRoles().stream().map(Role::getIdLong).collect(Collectors.toSet());
+    Set<Long> alreadyCreatedRoles = serverEntity.getRoleEntities().stream().map(ServerRoleEntity::getRoleGuid).collect(Collectors.toSet());
+
+    Set<ServerRoleEntity> serverRoleEntitiesToCreate = new HashSet<>();
+    for (Long roleNotStored : roleGuids.stream().filter(guid -> !alreadyCreatedRoles.contains(guid)).collect(Collectors.toSet())) {
+      ServerRoleEntity serverRoleEntity = new ServerRoleEntity();
+      serverRoleEntity.setRoleGuid(roleNotStored);
+      serverRoleEntity.setServerGuid(serverEntity);
+
+      serverRoleEntitiesToCreate.add(serverRoleEntity);
+    }
+
+    repositoryContainer.getServerRoleRepository().saveAll(serverRoleEntitiesToCreate);
+  }
+
+  private void createNewMembers(Guild guild, ServerEntity serverEntity) {
+    Set<Long> memberGuids = guild.getMembers()
+        .stream()
+        .filter(member -> !member.getUser().isBot() && !member.getUser().isFake())
+        .map(Member::getIdLong)
+        .collect(Collectors.toSet());
+
+    Set<Long> alreadyCreatedMembers = serverEntity.getUserEntities()
+        .stream()
+        .map(ServerUserEntity::getUserGuid)
+        .collect(Collectors.toSet());
+
+    Set<ServerUserEntity> serverUserEntitiesToCreate = new HashSet<>();
+    for (Long memberNotCreated : memberGuids.stream().filter(guid -> !alreadyCreatedMembers.contains(guid)).collect(Collectors.toSet())) {
+      ServerUserEntity serverUserEntity = new ServerUserEntity();
+      serverUserEntity.setUserGuid(memberNotCreated);
+      serverUserEntity.setServerGuid(serverEntity);
+    }
+
+    repositoryContainer.getServerUserRepository().saveAll(serverUserEntitiesToCreate);
+  }
+
+  private void updateMemberRoles(Guild guild, ServerEntity serverEntity) {
+    Set<ServerRoleEntity> roleToUpdate = new HashSet<>();
+    for (ServerRoleEntity serverRoleEntity : serverEntity.getRoleEntities()) {
+      Role role = guild.getRoleById(serverRoleEntity.getRoleGuid());
+      if (role != null) {
+        Set<Long> membersOfRoleGuids = guild
+            .getMembersWithRoles(role)
+            .stream()
+            .map(Member::getIdLong)
+            .collect(Collectors.toSet());
+
+        serverRoleEntity
+            .setUserEntities(serverEntity.getUserEntities()
+                .stream()
+                .filter(serverUserEntity -> membersOfRoleGuids.contains(serverUserEntity.getUserGuid()))
+                .collect(Collectors.toSet()));
+
+        roleToUpdate.add(serverRoleEntity);
       }
     }
+
+    repositoryContainer.getServerRoleRepository().saveAll(roleToUpdate);
   }
 }

@@ -23,7 +23,7 @@ public class BotEvent extends ListenerAdapter {
   public void onReady(@Nonnull ReadyEvent event) {
     logger.info("Bot ready !");
     for (Guild guild : event.getJDA().getGuilds()) {
-      persistExecutor.persistRoleUpdate(guild);
+      persistExecutor.persistGuildUpdate(guild);
     }
   }
 
@@ -31,7 +31,7 @@ public class BotEvent extends ListenerAdapter {
   public void onReconnect(@Nonnull ReconnectedEvent event) {
     logger.warn("Bot reconnected !");
     for (Guild guild : event.getJDA().getGuilds()) {
-      persistExecutor.persistRoleUpdate(guild);
+      persistExecutor.persistGuildUpdate(guild);
     }
   }
 }
