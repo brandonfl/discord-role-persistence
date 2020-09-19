@@ -16,39 +16,7 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       <column name="log_channel" type="BIGINT(20) UNSIGNED"/>
     </createTable>
 
-    <createTable tableName="server_role_blacklist">
-      <column autoIncrement="true" name="id" type="BIGINT(20) UNSIGNED">
-        <constraints primaryKey="true"/>
-      </column>
-      <column name="server_guid" type="BIGINT(20) UNSIGNED">
-        <constraints nullable="false"/>
-      </column>
-      <column name="role_guid" type="BIGINT(20) UNSIGNED">
-        <constraints nullable="false"/>
-      </column>
-    </createTable>
-
-    <addUniqueConstraint
-      tableName="server_role_blacklist"
-      columnNames="server_guid, role_guid"/>
-
-    <createIndex indexName="FK_server_role_blacklist_server_guid"
-      tableName="server_role_blacklist">
-      <column name="server_guid"/>
-    </createIndex>
-
-    <addForeignKeyConstraint
-      baseColumnNames="server_guid"
-      baseTableName="server_role_blacklist"
-      constraintName="FK_server_role_blacklist_server_guid"
-      deferrable="false"
-      initiallyDeferred="false"
-      onDelete="RESTRICT"
-      onUpdate="RESTRICT"
-      referencedColumnNames="guid"
-      referencedTableName="server"/>
-
-    <createTable tableName="server_user_role">
+    <createTable tableName="server_user">
       <column autoIncrement="true" name="id" type="BIGINT(20) UNSIGNED">
         <constraints primaryKey="true"/>
       </column>
@@ -58,30 +26,107 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       <column name="user_guid" type="BIGINT(20) UNSIGNED">
         <constraints nullable="false"/>
       </column>
-      <column name="role_guid" type="BIGINT(20) UNSIGNED">
-        <constraints nullable="false"/>
-      </column>
     </createTable>
 
     <addUniqueConstraint
-      tableName="server_user_role"
-      columnNames="server_guid, user_guid, role_guid"/>
+      tableName="server_user"
+      columnNames="server_guid, user_guid"/>
 
-    <createIndex indexName="FK_server_user_role_server_guid"
-      tableName="server_user_role">
+    <createIndex indexName="FK_server_user_server_guid"
+      tableName="server_user">
       <column name="server_guid"/>
     </createIndex>
 
     <addForeignKeyConstraint
       baseColumnNames="server_guid"
-      baseTableName="server_user_role"
-      constraintName="FK_server_user_role_server_guid"
+      baseTableName="server_user"
+      constraintName="FK_server_user_server_guid"
       deferrable="false"
       initiallyDeferred="false"
       onDelete="RESTRICT"
       onUpdate="RESTRICT"
       referencedColumnNames="guid"
       referencedTableName="server"/>
+
+    <createTable tableName="server_role">
+      <column autoIncrement="true" name="id" type="BIGINT(20) UNSIGNED">
+        <constraints primaryKey="true"/>
+      </column>
+      <column name="server_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="blacklisted" type="TINYINT(3) UNSIGNED" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint
+      tableName="server_role"
+      columnNames="server_guid, role_guid"/>
+
+    <createIndex indexName="FK_server_role_server_guid"
+      tableName="server_role">
+      <column name="server_guid"/>
+    </createIndex>
+
+    <addForeignKeyConstraint
+      baseColumnNames="server_guid"
+      baseTableName="server_role"
+      constraintName="FK_server_role_server_guid"
+      deferrable="false"
+      initiallyDeferred="false"
+      onDelete="RESTRICT"
+      onUpdate="RESTRICT"
+      referencedColumnNames="guid"
+      referencedTableName="server"/>
+
+    <createTable tableName="server_user_has_server_role">
+      <column name="server_user_id" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="server_role_id" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint
+      tableName="server_user_has_server_role"
+      columnNames="server_user_id, server_role_id"/>
+
+    <createIndex indexName="FK_server_user_has_server_role_user_id"
+      tableName="server_user_has_server_role">
+      <column name="server_user_id"/>
+    </createIndex>
+
+    <addForeignKeyConstraint
+      baseColumnNames="server_user_id"
+      baseTableName="server_user_has_server_role"
+      constraintName="FK_server_user_has_server_role_user_id"
+      deferrable="false"
+      initiallyDeferred="false"
+      onDelete="RESTRICT"
+      onUpdate="RESTRICT"
+      referencedColumnNames="id"
+      referencedTableName="server_user"/>
+
+    <createIndex indexName="FK_server_user_has_server_role_role_id"
+      tableName="server_user_has_server_role">
+      <column name="server_role_id"/>
+    </createIndex>
+
+    <addForeignKeyConstraint
+      baseColumnNames="server_role_id"
+      baseTableName="server_user_has_server_role"
+      constraintName="FK_server_user_has_server_role_role_id"
+      deferrable="false"
+      initiallyDeferred="false"
+      onDelete="RESTRICT"
+      onUpdate="RESTRICT"
+      referencedColumnNames="id"
+      referencedTableName="server_role"/>
   </changeSet>
 </databaseChangeLog>
 

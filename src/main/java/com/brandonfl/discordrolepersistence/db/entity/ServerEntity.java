@@ -1,7 +1,7 @@
 package com.brandonfl.discordrolepersistence.db.entity;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -27,16 +27,9 @@ public class ServerEntity {
   private Long logChannel;
 
   @OneToMany(mappedBy = "serverGuid")
-  private Set<ServerRoleBlacklistEntity> roleBlacklist;
-
-  public Set<Long> getRoleBlacklistIds() {
-    return roleBlacklist
-        .stream()
-        .map(ServerRoleBlacklistEntity::getRoleGuid)
-        .collect(Collectors.toSet());
-  }
+  private Set<ServerRoleEntity> roleEntities = new HashSet<>();
 
   @OneToMany(mappedBy = "serverGuid")
-  private Set<ServerUserRoleEntity> serverUserRoles;
+  private Set<ServerUserEntity> userEntities;
 
 }
