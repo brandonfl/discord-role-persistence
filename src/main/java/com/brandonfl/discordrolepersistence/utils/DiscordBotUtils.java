@@ -6,7 +6,9 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 public final class DiscordBotUtils {
@@ -37,6 +39,15 @@ public final class DiscordBotUtils {
         .setTimestamp(Instant.from(ZonedDateTime.now()))
         .setFooter("Discord Role Persistence");
     return embedBuilder;
+  }
+
+  public static boolean verifyCommandFormat(Message message, String expectedCommand) {
+    return message.isFromType(ChannelType.TEXT)
+        && message.getContentRaw().matches("^[^\\s]+" + expectedCommand + "(\\s.*)?$");
+  }
+
+  public static boolean verifyCommand(ServerEntity serverEntity, Message message, String expectedCommand) {
+    return message.getContentRaw().startsWith(serverEntity.getCommandPrefix() + expectedCommand);
   }
 
 }
