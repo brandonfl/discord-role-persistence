@@ -31,7 +31,7 @@ public class JoinExecutor {
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
+  @Async("asyncJoinExecutor")
   public void backupRoleOfMember(@Nonnull GuildMemberJoinEvent joinEvent) {
     Optional<ServerUserEntity> serverUserEntity = repositoryContainer
         .getServerUserRepository()
