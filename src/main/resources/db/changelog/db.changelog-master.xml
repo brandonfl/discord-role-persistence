@@ -14,6 +14,7 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
         <constraints nullable="false"/>
       </column>
       <column name="log_channel" type="BIGINT(20) UNSIGNED"/>
+      <column name="welcome_back_channel" type="BIGINT(20) UNSIGNED"/>
     </createTable>
 
     <createTable tableName="server_user">

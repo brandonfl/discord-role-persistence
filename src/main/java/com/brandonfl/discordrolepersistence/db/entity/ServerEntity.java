@@ -26,6 +26,9 @@ public class ServerEntity {
   @Column(name = "log_channel")
   private Long logChannel;
 
+  @Column(name = "welcome_back_channel")
+  private Long welcomeBackChannel;
+
   @OneToMany(mappedBy = "serverGuid")
   private Set<ServerRoleEntity> roleEntities = new HashSet<>();
 
