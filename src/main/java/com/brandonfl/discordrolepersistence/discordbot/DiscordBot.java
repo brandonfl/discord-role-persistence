@@ -5,6 +5,7 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.discordbot.command.Help;
 import com.brandonfl.discordrolepersistence.discordbot.command.Log;
 import com.brandonfl.discordrolepersistence.discordbot.command.PingPong;
+import com.brandonfl.discordrolepersistence.discordbot.command.WelcomeBack;
 import com.brandonfl.discordrolepersistence.discordbot.event.BotEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
@@ -61,6 +62,7 @@ public class DiscordBot {
         .addEventListeners(new PingPong(commandExecutor))
         .addEventListeners(new Help(commandExecutor, botProperties))
         .addEventListeners(new Log(commandExecutor))
+        .addEventListeners(new WelcomeBack(commandExecutor))
 
         .addEventListeners(new ServerEvent(repositoryContainer, persistExecutor))
         .addEventListeners(new MemberEvent(persistExecutor))

@@ -95,4 +95,35 @@ public class CommandExecutor {
     }
   }
 
+  @Async("asyncCommandExecutor")
+  public void changeWelcomeBackChannel(MessageReceivedEvent event) {
+    final String command = "welcome-back";
+    Message msg = event.getMessage();
+    if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
+      Optional<ServerEntity> possibleServerEntity = repositoryContainer.getServerRepository()
+          .findByGuid(event.getGuild().getIdLong());
+      if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command)) {
+        if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+          if (msg.getMentionedChannels().size() == 1) {
+            ServerEntity serverEntityToUpdate = possibleServerEntity.get();
+            serverEntityToUpdate.setWelcomeBackChannel(msg.getMentionedChannels().get(0).getIdLong());
+            repositoryContainer.getServerRepository().save(serverEntityToUpdate);
+
+            event.getTextChannel().sendMessage(":white_check_mark: Welcome back channel has been changed").queue();
+          } else if (DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command + " disable")){
+            ServerEntity serverEntityToUpdate = possibleServerEntity.get();
+            serverEntityToUpdate.setWelcomeBackChannel(null);
+            repositoryContainer.getServerRepository().save(serverEntityToUpdate);
+
+            event.getTextChannel().sendMessage(":white_check_mark: Welcome back channel has been disabled").queue();
+          } else {
+            event.getTextChannel().sendMessage(":x: Please provide one and exactly only one channel ").queue();
+          }
+        } else {
+          event.getTextChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+        }
+      }
+    }
+  }
+
 }
