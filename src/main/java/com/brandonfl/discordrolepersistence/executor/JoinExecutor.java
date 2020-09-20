@@ -47,10 +47,11 @@ public class JoinExecutor {
           .filter(Objects::nonNull)
           .collect(Collectors.toSet());
 
-      StringBuilder stringBuilder = new StringBuilder();
+      StringBuilder logStringBuilder = new StringBuilder();
+      StringBuilder welcomeBackStringBuilder = new StringBuilder();
       for (Role role : rolesToAddToUser) {
         if (role.hasPermission(Permission.ADMINISTRATOR)) {
-          stringBuilder.append(":no_entry: ").append(role.getName()).append(" (admin permissions are not backup)").append("\n");
+          logStringBuilder.append(":no_entry: ").append(role.getName()).append(" (admin permissions are not backup)").append("\n");
         } else {
           boolean success = true;
           try {
@@ -58,24 +59,40 @@ public class JoinExecutor {
           } catch (Exception e) {
             success = false;
           } finally {
-            stringBuilder
+            logStringBuilder
                 .append(success ? ":white_check_mark: " : ":warning: ")
                 .append(role.getName()).append(success ? "" : " (issue or not enough permissions)")
                 .append("\n");
+            if (success) {
+              welcomeBackStringBuilder.append("- ").append(role.getAsMention()).append("\n");
+            }
           }
         }
       }
 
-      EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+      EmbedBuilder logEmbedBuilder = DiscordBotUtils.getGenericEmbed();
       ServerEntity serverEntity = serverUserEntity.get().getServerGuid();
       Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(joinEvent.getGuild(), serverEntity);
       if (logChannel.isPresent()) {
-        embedBuilder
+        logEmbedBuilder
             .setAuthor("Role backup for " + joinEvent.getMember().getEffectiveName(), null, joinEvent.getMember().getUser().getEffectiveAvatarUrl())
-            .appendDescription("User id : " + joinEvent.getMember().getUser().getId() + "\n\n" + stringBuilder.toString());
+            .appendDescription("User id : " + joinEvent.getMember().getUser().getId() + "\n\n" + logStringBuilder.toString());
 
-        logChannel.get().sendMessage(embedBuilder.build()).queue();
+        logChannel.get().sendMessage(logEmbedBuilder.build()).queue();
       }
+
+      EmbedBuilder welcomeBackEmbedBuilder = DiscordBotUtils.getGenericEmbed();
+      Optional<TextChannel> welcomeBackChannel = DiscordBotUtils.getWelcomeBackChannel(joinEvent.getGuild(), serverEntity);
+      if (welcomeBackChannel.isPresent()) {
+        welcomeBackEmbedBuilder
+            .setTitle("Welcome back " + joinEvent.getMember().getEffectiveName())
+            .setThumbnail(joinEvent.getMember().getUser().getEffectiveAvatarUrl())
+            .addField("Here are your old roles that have been given back to you", welcomeBackStringBuilder.toString(), true);
+
+        welcomeBackChannel.get().sendMessage(joinEvent.getMember().getAsMention()).queue();
+        welcomeBackChannel.get().sendMessage(welcomeBackEmbedBuilder.build()).queue();
+      }
+
     }
   }
 

@@ -22,6 +22,14 @@ public final class DiscordBotUtils {
     }
   }
 
+  public static Optional<TextChannel> getWelcomeBackChannel(Guild guild, ServerEntity serverEntity) {
+    if (serverEntity.getWelcomeBackChannel() != null) {
+      return Optional.ofNullable(guild.getTextChannelById(serverEntity.getWelcomeBackChannel()));
+    } else {
+      return Optional.empty();
+    }
+  }
+
   public static EmbedBuilder getGenericEmbed() {
     EmbedBuilder embedBuilder = new EmbedBuilder();
     embedBuilder
