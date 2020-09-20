@@ -9,6 +9,7 @@ import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.UserJoinEvent;
+import com.brandonfl.discordrolepersistence.executor.JoinExecutor;
 import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
@@ -26,14 +27,17 @@ public class DiscordBot {
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
   private final PersistExecutor persistExecutor;
+  private final JoinExecutor joinExecutor;
 
   @Autowired
   public DiscordBot(BotProperties botProperties,
       RepositoryContainer repositoryContainer,
-      PersistExecutor persistExecutor) {
+      PersistExecutor persistExecutor,
+      JoinExecutor joinExecutor) {
     this.botProperties = botProperties;
     this.repositoryContainer = repositoryContainer;
     this.persistExecutor = persistExecutor;
+    this.joinExecutor = joinExecutor;
   }
 
   @PostConstruct
@@ -56,7 +60,7 @@ public class DiscordBot {
         .addEventListeners(new MemberEvent(persistExecutor))
         .addEventListeners(new ServerRoleEvent(persistExecutor))
         .addEventListeners(new BotEvent(persistExecutor))
-        .addEventListeners(new UserJoinEvent(repositoryContainer))
+        .addEventListeners(new UserJoinEvent(joinExecutor))
         // start it up!
         .build();
   }

@@ -11,7 +11,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class PersistExecutorConfig {
 
   @Bean(name = "asyncPersistExecutor")
-  public Executor asyncExecutor() {
+  public Executor asyncPersistExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(3);
+    executor.setMaxPoolSize(3);
+    executor.setQueueCapacity(100);
+    executor.setThreadNamePrefix("AsynchThread-");
+    executor.initialize();
+    return executor;
+  }
+
+  @Bean(name = "asyncJoinExecutor")
+  public Executor asyncJoinExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(3);
     executor.setMaxPoolSize(3);
