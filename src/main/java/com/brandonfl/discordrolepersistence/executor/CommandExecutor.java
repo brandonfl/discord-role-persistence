@@ -6,6 +6,7 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import java.util.Optional;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -59,6 +60,37 @@ public class CommandExecutor {
             .queue(response /* => Message */ -> {
               response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
             });
+      }
+    }
+  }
+
+  @Async("asyncCommandExecutor")
+  public void changeLogChannel(MessageReceivedEvent event) {
+    final String command = "log";
+    Message msg = event.getMessage();
+    if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
+      Optional<ServerEntity> possibleServerEntity = repositoryContainer.getServerRepository()
+          .findByGuid(event.getGuild().getIdLong());
+      if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command)) {
+        if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+          if (msg.getMentionedChannels().size() == 1) {
+            ServerEntity serverEntityToUpdate = possibleServerEntity.get();
+            serverEntityToUpdate.setLogChannel(msg.getMentionedChannels().get(0).getIdLong());
+            repositoryContainer.getServerRepository().save(serverEntityToUpdate);
+
+            event.getTextChannel().sendMessage(":white_check_mark: Log channel has been changed").queue();
+          } else if (DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command + " disable")){
+            ServerEntity serverEntityToUpdate = possibleServerEntity.get();
+            serverEntityToUpdate.setLogChannel(null);
+            repositoryContainer.getServerRepository().save(serverEntityToUpdate);
+
+            event.getTextChannel().sendMessage(":white_check_mark: Log channel has been disabled").queue();
+          } else {
+            event.getTextChannel().sendMessage(":x: Please provide one and exactly only one channel ").queue();
+          }
+        } else {
+          event.getTextChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+        }
       }
     }
   }
