@@ -25,7 +25,7 @@ public final class DiscordBotUtils {
   public static EmbedBuilder getGenericEmbed() {
     EmbedBuilder embedBuilder = new EmbedBuilder();
     embedBuilder
-        .setColor(new Color(52, 152, 219))
+        .setColor(new Color(108, 135, 202))
         .setTimestamp(Instant.from(ZonedDateTime.now()))
         .setFooter("Discord Role Persistence");
     return embedBuilder;
