@@ -8,7 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 @EnableAsync
-public class PersistExecutorConfig {
+public class ExecutorConfig {
 
   @Bean(name = "asyncPersistExecutor")
   public Executor asyncPersistExecutor() {
