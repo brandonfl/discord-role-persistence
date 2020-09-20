@@ -71,12 +71,11 @@ public class JoinExecutor {
       Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(joinEvent.getGuild(), serverEntity);
       if (logChannel.isPresent()) {
         embedBuilder
-            .setAuthor(joinEvent.getMember().getEffectiveName(), null, joinEvent.getMember().getUser().getEffectiveAvatarUrl())
-            .addField("Roles", stringBuilder.toString(), true);
+            .setAuthor("Role backup for " + joinEvent.getMember().getEffectiveName(), null, joinEvent.getMember().getUser().getEffectiveAvatarUrl())
+            .appendDescription("User id : " + joinEvent.getMember().getUser().getId() + "\n\n" + stringBuilder.toString());
 
         logChannel.get().sendMessage(embedBuilder.build()).queue();
       }
-
     }
   }
 
