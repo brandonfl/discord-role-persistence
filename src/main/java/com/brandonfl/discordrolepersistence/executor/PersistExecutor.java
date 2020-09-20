@@ -150,8 +150,9 @@ public class PersistExecutor {
       if (textChannel.isPresent()) {
         EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
         embedBuilder
-            .setDescription("role id : " + event.getRole().getId())
-            .addField(":no_entry: Deleted role", event.getRole().getName(), true);
+            .addField(":no_entry: Created new role",
+                event.getRole().getName() + " (" + event.getRole().getId() + ")",
+                true);
 
         textChannel.get().sendMessage(embedBuilder.build()).queue();
       }
@@ -171,8 +172,9 @@ public class PersistExecutor {
       if (textChannel.isPresent()) {
         EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
         embedBuilder
-            .setDescription("role id : " + event.getRole().getId())
-            .addField(":white_check_mark: Created new role", event.getRole().getName(), true);
+            .addField(":white_check_mark: Created new role",
+                event.getRole().getName() + " (" + event.getRole().getId() + ")",
+                true);
 
         textChannel.get().sendMessage(embedBuilder.build()).queue();
       }
