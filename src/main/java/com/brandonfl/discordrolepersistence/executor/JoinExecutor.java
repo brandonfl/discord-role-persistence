@@ -70,29 +70,32 @@ public class JoinExecutor {
         }
       }
 
-      EmbedBuilder logEmbedBuilder = DiscordBotUtils.getGenericEmbed();
       ServerEntity serverEntity = serverUserEntity.get().getServerGuid();
-      Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(joinEvent.getGuild(), serverEntity);
-      if (logChannel.isPresent()) {
-        logEmbedBuilder
-            .setAuthor("Role backup for " + joinEvent.getMember().getEffectiveName(), null, joinEvent.getMember().getUser().getEffectiveAvatarUrl())
-            .appendDescription("User id : " + joinEvent.getMember().getUser().getId() + "\n\n" + logStringBuilder.toString());
+      if (logStringBuilder.length() != 0) {
+        EmbedBuilder logEmbedBuilder = DiscordBotUtils.getGenericEmbed();
+        Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(joinEvent.getGuild(), serverEntity);
+        if (logChannel.isPresent()) {
+          logEmbedBuilder
+              .setAuthor("Role backup for " + joinEvent.getMember().getEffectiveName(), null, joinEvent.getMember().getUser().getEffectiveAvatarUrl())
+              .appendDescription("User id : " + joinEvent.getMember().getUser().getId() + "\n\n" + logStringBuilder.toString());
 
-        logChannel.get().sendMessage(logEmbedBuilder.build()).queue();
+          logChannel.get().sendMessage(logEmbedBuilder.build()).queue();
+        }
       }
 
-      EmbedBuilder welcomeBackEmbedBuilder = DiscordBotUtils.getGenericEmbed();
-      Optional<TextChannel> welcomeBackChannel = DiscordBotUtils.getWelcomeBackChannel(joinEvent.getGuild(), serverEntity);
-      if (welcomeBackChannel.isPresent()) {
-        welcomeBackEmbedBuilder
-            .setTitle("Welcome back " + joinEvent.getMember().getEffectiveName())
-            .setThumbnail(joinEvent.getMember().getUser().getEffectiveAvatarUrl())
-            .addField("Here are your old roles that have been given back to you", welcomeBackStringBuilder.toString(), true);
+      if (welcomeBackStringBuilder.length() != 0) {
+        EmbedBuilder welcomeBackEmbedBuilder = DiscordBotUtils.getGenericEmbed();
+        Optional<TextChannel> welcomeBackChannel = DiscordBotUtils.getWelcomeBackChannel(joinEvent.getGuild(), serverEntity);
+        if (welcomeBackChannel.isPresent()) {
+          welcomeBackEmbedBuilder
+              .setTitle("Welcome back " + joinEvent.getMember().getEffectiveName())
+              .setThumbnail(joinEvent.getMember().getUser().getEffectiveAvatarUrl())
+              .addField("Here are your old roles that have been given back to you", welcomeBackStringBuilder.toString(), true);
 
-        welcomeBackChannel.get().sendMessage(joinEvent.getMember().getAsMention()).queue();
-        welcomeBackChannel.get().sendMessage(welcomeBackEmbedBuilder.build()).queue();
+          welcomeBackChannel.get().sendMessage(joinEvent.getMember().getAsMention()).queue();
+          welcomeBackChannel.get().sendMessage(welcomeBackEmbedBuilder.build()).queue();
+        }
       }
-
     }
   }
 
