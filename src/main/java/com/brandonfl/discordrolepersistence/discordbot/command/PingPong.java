@@ -1,22 +1,16 @@
 package com.brandonfl.discordrolepersistence.discordbot.command;
 
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import com.brandonfl.discordrolepersistence.executor.CommandExecutor;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import com.brandonfl.discordrolepersistence.discordbot.DiscordBot;
 
+@RequiredArgsConstructor
 public class PingPong extends ListenerAdapter {
+  private final CommandExecutor commandExecutor;
+
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
-    Message msg = event.getMessage();
-    if (msg.getContentRaw().equals(DiscordBot.PREFIX + "ping")) {
-      MessageChannel channel = event.getChannel();
-      long time = System.currentTimeMillis();
-      channel.sendMessage("Pong!") /* => RestAction<Message> */
-          .queue(response /* => Message */ -> {
-            response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
-          });
-    }
+    commandExecutor.getPing(event);
   }
 }

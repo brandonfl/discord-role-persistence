@@ -9,6 +9,7 @@ import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.UserJoinEvent;
+import com.brandonfl.discordrolepersistence.executor.CommandExecutor;
 import com.brandonfl.discordrolepersistence.executor.JoinExecutor;
 import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
 import javax.annotation.PostConstruct;
@@ -28,16 +29,19 @@ public class DiscordBot {
   private final RepositoryContainer repositoryContainer;
   private final PersistExecutor persistExecutor;
   private final JoinExecutor joinExecutor;
+  private final CommandExecutor commandExecutor;
 
   @Autowired
   public DiscordBot(BotProperties botProperties,
       RepositoryContainer repositoryContainer,
       PersistExecutor persistExecutor,
-      JoinExecutor joinExecutor) {
+      JoinExecutor joinExecutor,
+      CommandExecutor commandExecutor) {
     this.botProperties = botProperties;
     this.repositoryContainer = repositoryContainer;
     this.persistExecutor = persistExecutor;
     this.joinExecutor = joinExecutor;
+    this.commandExecutor = commandExecutor;
   }
 
   @PostConstruct
@@ -53,8 +57,8 @@ public class DiscordBot {
         .setAutoReconnect(true)
 
         // add the listeners
-        .addEventListeners(new PingPong())
-        .addEventListeners(new Help(botProperties))
+        .addEventListeners(new PingPong(commandExecutor))
+        .addEventListeners(new Help(commandExecutor, botProperties))
 
         .addEventListeners(new ServerEvent(repositoryContainer, persistExecutor))
         .addEventListeners(new MemberEvent(persistExecutor))

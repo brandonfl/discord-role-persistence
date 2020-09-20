@@ -32,4 +32,15 @@ public class ExecutorConfig {
     return executor;
   }
 
+  @Bean(name = "asyncCommandExecutor")
+  public Executor asyncCommandExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(3);
+    executor.setMaxPoolSize(3);
+    executor.setQueueCapacity(100);
+    executor.setThreadNamePrefix("AsynchThread-");
+    executor.initialize();
+    return executor;
+  }
+
 }
