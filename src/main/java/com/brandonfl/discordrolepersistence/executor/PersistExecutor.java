@@ -150,7 +150,7 @@ public class PersistExecutor {
       if (textChannel.isPresent()) {
         EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
         embedBuilder
-            .addField(":no_entry: Created new role",
+            .addField(":no_entry: Deleted role",
                 event.getRole().getName() + " (" + event.getRole().getId() + ")",
                 true);
 
