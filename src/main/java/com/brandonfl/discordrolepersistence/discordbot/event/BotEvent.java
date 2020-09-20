@@ -1,5 +1,6 @@
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
@@ -9,15 +10,11 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ReconnectedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+@RequiredArgsConstructor
 public class BotEvent extends ListenerAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(BotEvent.class);
-
   private final PersistExecutor persistExecutor;
-
-  public BotEvent(PersistExecutor persistExecutor) {
-    this.persistExecutor = persistExecutor;
-  }
 
   @Override
   public void onReady(@Nonnull ReadyEvent event) {

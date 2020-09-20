@@ -5,11 +5,12 @@ import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import java.util.Optional;
+import javax.transaction.Transactional;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,16 @@ public class CommandExecutor {
     this.repositoryContainer = repositoryContainer;
   }
 
+  @Transactional
   @Async("asyncCommandExecutor")
-  public void getHelp(MessageReceivedEvent event, BotProperties botProperties) {
+  public void executeCommand(GuildMessageReceivedEvent event, BotProperties botProperties) {
+    getHelp(event, botProperties);
+    getPing(event);
+    changeLogChannel(event);
+    changeWelcomeBackChannel(event);
+  }
+
+  private void getHelp(GuildMessageReceivedEvent event, BotProperties botProperties) {
     final String command = "help";
     Message msg = event.getMessage();
     if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
@@ -46,8 +55,7 @@ public class CommandExecutor {
     }
   }
 
-  @Async("asyncCommandExecutor")
-  public void getPing(MessageReceivedEvent event) {
+  private void getPing(GuildMessageReceivedEvent event) {
     final String command = "ping";
     Message msg = event.getMessage();
     if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
@@ -64,8 +72,7 @@ public class CommandExecutor {
     }
   }
 
-  @Async("asyncCommandExecutor")
-  public void changeLogChannel(MessageReceivedEvent event) {
+  private void changeLogChannel(GuildMessageReceivedEvent event) {
     final String command = "log";
     Message msg = event.getMessage();
     if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
@@ -78,25 +85,24 @@ public class CommandExecutor {
             serverEntityToUpdate.setLogChannel(msg.getMentionedChannels().get(0).getIdLong());
             repositoryContainer.getServerRepository().save(serverEntityToUpdate);
 
-            event.getTextChannel().sendMessage(":white_check_mark: Log channel has been changed").queue();
+            event.getChannel().sendMessage(":white_check_mark: Log channel has been changed").queue();
           } else if (DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command + " disable")){
             ServerEntity serverEntityToUpdate = possibleServerEntity.get();
             serverEntityToUpdate.setLogChannel(null);
             repositoryContainer.getServerRepository().save(serverEntityToUpdate);
 
-            event.getTextChannel().sendMessage(":white_check_mark: Log channel has been disabled").queue();
+            event.getChannel().sendMessage(":white_check_mark: Log channel has been disabled").queue();
           } else {
-            event.getTextChannel().sendMessage(":x: Please provide one and exactly only one channel ").queue();
+            event.getChannel().sendMessage(":x: Please provide one and exactly only one channel ").queue();
           }
         } else {
-          event.getTextChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+          event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
         }
       }
     }
   }
 
-  @Async("asyncCommandExecutor")
-  public void changeWelcomeBackChannel(MessageReceivedEvent event) {
+  private void changeWelcomeBackChannel(GuildMessageReceivedEvent event) {
     final String command = "welcome-back";
     Message msg = event.getMessage();
     if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
@@ -109,18 +115,18 @@ public class CommandExecutor {
             serverEntityToUpdate.setWelcomeBackChannel(msg.getMentionedChannels().get(0).getIdLong());
             repositoryContainer.getServerRepository().save(serverEntityToUpdate);
 
-            event.getTextChannel().sendMessage(":white_check_mark: Welcome back channel has been changed").queue();
+            event.getChannel().sendMessage(":white_check_mark: Welcome back channel has been changed").queue();
           } else if (DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command + " disable")){
             ServerEntity serverEntityToUpdate = possibleServerEntity.get();
             serverEntityToUpdate.setWelcomeBackChannel(null);
             repositoryContainer.getServerRepository().save(serverEntityToUpdate);
 
-            event.getTextChannel().sendMessage(":white_check_mark: Welcome back channel has been disabled").queue();
+            event.getChannel().sendMessage(":white_check_mark: Welcome back channel has been disabled").queue();
           } else {
-            event.getTextChannel().sendMessage(":x: Please provide one and exactly only one channel ").queue();
+            event.getChannel().sendMessage(":x: Please provide one and exactly only one channel ").queue();
           }
         } else {
-          event.getTextChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+          event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
         }
       }
     }
