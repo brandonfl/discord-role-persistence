@@ -17,11 +17,11 @@ public class ServerRoleEvent extends ListenerAdapter {
 
   @Override
   public void onRoleCreate(@Nonnull RoleCreateEvent event) {
-    persistExecutor.createNewRoles(event.getGuild());
+    persistExecutor.createNewRoles(event.getGuild(), event);
   }
 
   @Override
   public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
-    persistExecutor.deleteOldRoles(event.getGuild());
+    persistExecutor.deleteOldRoles(event.getGuild(), event);
   }
 }

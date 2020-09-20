@@ -16,11 +16,11 @@ public class MemberEvent extends ListenerAdapter {
 
   @Override
   public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
-    persistExecutor.persistRoleUpdateToUser(event.getGuild(), event.getMember());
+    persistExecutor.persistRoleUpdateToUser(event.getGuild(), event.getMember(), event, null);
   }
 
   @Override
   public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
-    persistExecutor.persistRoleUpdateToUser(event.getGuild(), event.getMember());
+    persistExecutor.persistRoleUpdateToUser(event.getGuild(), event.getMember(), null, event);
   }
 }
