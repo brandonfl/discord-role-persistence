@@ -13,10 +13,7 @@ public class ExecutorConfig {
   @Bean(name = "asyncPersistExecutor")
   public Executor asyncPersistExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(3);
-    executor.setMaxPoolSize(3);
-    executor.setQueueCapacity(100);
-    executor.setThreadNamePrefix("AsynchThread-");
+    executor.setThreadNamePrefix("PersistExecutor-");
     executor.initialize();
     return executor;
   }
@@ -24,10 +21,7 @@ public class ExecutorConfig {
   @Bean(name = "asyncJoinExecutor")
   public Executor asyncJoinExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(3);
-    executor.setMaxPoolSize(3);
-    executor.setQueueCapacity(100);
-    executor.setThreadNamePrefix("AsynchThread-");
+    executor.setThreadNamePrefix("JoinExecutor-");
     executor.initialize();
     return executor;
   }
@@ -35,10 +29,7 @@ public class ExecutorConfig {
   @Bean(name = "asyncCommandExecutor")
   public Executor asyncCommandExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(3);
-    executor.setMaxPoolSize(3);
-    executor.setQueueCapacity(100);
-    executor.setThreadNamePrefix("AsynchThread-");
+    executor.setThreadNamePrefix("CommandExecutor-");
     executor.initialize();
     return executor;
   }
