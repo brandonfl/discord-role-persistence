@@ -32,6 +32,7 @@ public class CommandExecutor {
   @Transactional
   @Async("asyncCommandExecutor")
   public void executeCommand(GuildMessageReceivedEvent event, BotProperties botProperties) {
+    changePrefix(event);
     getHelp(event, botProperties);
     getPing(event);
     changeLogChannel(event);
@@ -89,6 +90,42 @@ public class CommandExecutor {
             .queue(response /* => Message */ -> {
               response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
             });
+      }
+    }
+  }
+
+  private void changePrefix(GuildMessageReceivedEvent event) {
+    final String command = "prefix";
+    Message msg = event.getMessage();
+    if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
+      Optional<ServerEntity> possibleServerEntity = repositoryContainer.getServerRepository()
+          .findByGuid(event.getGuild().getIdLong());
+      if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command)) {
+        if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+          if (msg.getContentRaw().split(" ").length == 2) {
+            final String newPrefix = msg.getContentRaw().split(" ")[1].trim();
+
+            ServerEntity serverEntity = possibleServerEntity.get();
+            serverEntity.setCommandPrefix(newPrefix);
+            repositoryContainer.getServerRepository().save(serverEntity);
+
+            event.getChannel().sendMessage(":white_check_mark: The command prefix is now `" + newPrefix + "`").queue();
+
+            Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), possibleServerEntity.get());
+            if (logChannel.isPresent()) {
+              EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+              embedBuilder
+                  .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
+                  .setTitle(":white_check_mark: Changed command prefix to `" + newPrefix + "`");
+
+              logChannel.get().sendMessage(embedBuilder.build()).queue();
+            }
+          } else {
+            event.getChannel().sendMessage(":x: Please provide one and exactly only one prefix").queue();
+          }
+        } else {
+          event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+        }
       }
     }
   }
