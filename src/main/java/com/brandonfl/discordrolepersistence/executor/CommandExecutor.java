@@ -116,7 +116,7 @@ public class CommandExecutor {
               EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
               embedBuilder
                   .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
-                  .setTitle(":white_check_mark: Changed command prefix to `" + newPrefix + "`");
+                  .setTitle(":round_pushpin: Changed command prefix to `" + newPrefix + "`");
 
               logChannel.get().sendMessage(embedBuilder.build()).queue();
             }
@@ -232,7 +232,7 @@ public class CommandExecutor {
                 EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
                 embedBuilder
                     .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
-                    .addField(":white_check_mark: Locked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
+                    .addField(":lock: Locked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
 
                 logChannel.get().sendMessage(embedBuilder.build()).queue();
               }
@@ -291,7 +291,7 @@ public class CommandExecutor {
                 EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
                 embedBuilder
                     .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
-                    .addField(":white_check_mark: Unlocked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
+                    .addField(":unlock: Unlocked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
 
                 logChannel.get().sendMessage(embedBuilder.build()).queue();
               }
