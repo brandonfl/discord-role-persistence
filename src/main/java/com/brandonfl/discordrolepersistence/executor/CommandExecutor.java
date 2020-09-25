@@ -2,6 +2,7 @@ package com.brandonfl.discordrolepersistence.executor;
 
 import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
+import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import java.util.Optional;
@@ -10,6 +11,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -33,6 +36,8 @@ public class CommandExecutor {
     getPing(event);
     changeLogChannel(event);
     changeWelcomeBackChannel(event);
+    lockRole(event);
+    unlockRole(event);
   }
 
   private void getHelp(GuildMessageReceivedEvent event, BotProperties botProperties) {
@@ -124,6 +129,124 @@ public class CommandExecutor {
             event.getChannel().sendMessage(":white_check_mark: Welcome back channel has been disabled").queue();
           } else {
             event.getChannel().sendMessage(":x: Please provide one and exactly only one channel ").queue();
+          }
+        } else {
+          event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+        }
+      }
+    }
+  }
+
+  private void lockRole(GuildMessageReceivedEvent event) {
+    final String command = "lock";
+    Message msg = event.getMessage();
+    if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
+      Optional<ServerEntity> possibleServerEntity = repositoryContainer.getServerRepository()
+          .findByGuid(event.getGuild().getIdLong());
+      if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command)) {
+        if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+          if (msg.getMentionedRoles().size() == 1 || DiscordBotUtils.verifyCommandFormat( msg, command + "[\\s]+[0-9]+$")) {
+            Role role;
+            if (msg.getMentionedRoles().size() == 1) {
+              role = msg.getMentionedRoles().get(0);
+            } else {
+              role = event.getGuild().getRoleById(event.getMessage().getContentRaw().split(" ")[1]);
+            }
+
+            if (role != null) {
+              Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
+                  .getServerRoleRepository()
+                  .findByRoleGuidAndRoleGuid(role.getIdLong(), event.getGuild().getIdLong());
+              ServerRoleEntity serverRoleEntity;
+              if (possibleServerRoleEntity.isPresent()) {
+                serverRoleEntity = possibleServerRoleEntity.get();
+                if (serverRoleEntity.isBlacklisted()) {
+                  event.getChannel().sendMessage(":x: This role is already locked for future rollbacks").queue();
+                  return;
+                }
+              } else {
+                serverRoleEntity = new ServerRoleEntity();
+                serverRoleEntity.setServerGuid(possibleServerEntity.get());
+                serverRoleEntity.setRoleGuid(role.getIdLong());
+              }
+
+              serverRoleEntity.setBlacklisted(true);
+              repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
+              event.getChannel().sendMessage(":white_check_mark: Role " + role.getName() + " is now locked for future rollbacks").queue();
+
+              Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), possibleServerEntity.get());
+              if (logChannel.isPresent()) {
+                EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+                embedBuilder
+                    .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
+                    .addField(":white_check_mark: Locked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
+
+                logChannel.get().sendMessage(embedBuilder.build()).queue();
+              }
+            } else {
+              event.getChannel().sendMessage(":x: This role id is invalid").queue();
+            }
+          } else {
+            event.getChannel().sendMessage(":x: Please provide one and exactly only one role").queue();
+          }
+        } else {
+          event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+        }
+      }
+    }
+  }
+
+  private void unlockRole(GuildMessageReceivedEvent event) {
+    final String command = "unlock";
+    Message msg = event.getMessage();
+    if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
+      Optional<ServerEntity> possibleServerEntity = repositoryContainer.getServerRepository()
+          .findByGuid(event.getGuild().getIdLong());
+      if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command)) {
+        if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+          if (msg.getMentionedRoles().size() == 1 || DiscordBotUtils.verifyCommandFormat( msg, command + "[\\s]+[0-9]+$")) {
+            Role role;
+            if (msg.getMentionedRoles().size() == 1) {
+              role = msg.getMentionedRoles().get(0);
+            } else {
+              role = event.getGuild().getRoleById(event.getMessage().getContentRaw().split(" ")[1]);
+            }
+
+            if (role != null) {
+              Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
+                  .getServerRoleRepository()
+                  .findByRoleGuidAndRoleGuid(role.getIdLong(), event.getGuild().getIdLong());
+              ServerRoleEntity serverRoleEntity;
+              if (possibleServerRoleEntity.isPresent()) {
+                serverRoleEntity = possibleServerRoleEntity.get();
+                if (!serverRoleEntity.isBlacklisted()) {
+                  event.getChannel().sendMessage(":x: This role is already unlocked for future rollbacks").queue();
+                  return;
+                }
+              } else {
+                serverRoleEntity = new ServerRoleEntity();
+                serverRoleEntity.setServerGuid(possibleServerEntity.get());
+                serverRoleEntity.setRoleGuid(role.getIdLong());
+              }
+
+              serverRoleEntity.setBlacklisted(false);
+              repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
+              event.getChannel().sendMessage(":white_check_mark: Role " + role.getName() + " is now unlocked for future rollbacks").queue();
+
+              Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), possibleServerEntity.get());
+              if (logChannel.isPresent()) {
+                EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+                embedBuilder
+                    .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
+                    .addField(":white_check_mark: Unlocked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
+
+                logChannel.get().sendMessage(embedBuilder.build()).queue();
+              }
+            } else {
+              event.getChannel().sendMessage(":x: This role id is invalid").queue();
+            }
+          } else {
+            event.getChannel().sendMessage(":x: Please provide one and exactly only one role").queue();
           }
         } else {
           event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
