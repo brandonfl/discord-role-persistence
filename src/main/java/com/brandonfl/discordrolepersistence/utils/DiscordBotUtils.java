@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -31,12 +32,12 @@ public final class DiscordBotUtils {
     }
   }
 
-  public static EmbedBuilder getGenericEmbed() {
+  public static EmbedBuilder getGenericEmbed(JDA jda) {
     EmbedBuilder embedBuilder = new EmbedBuilder();
     embedBuilder
         .setColor(new Color(108, 135, 202))
         .setTimestamp(Instant.from(ZonedDateTime.now()))
-        .setFooter("Discord Role Persistence");
+        .setFooter("Discord Role Persistence", jda.getSelfUser().getEffectiveAvatarUrl());
     return embedBuilder;
   }
 

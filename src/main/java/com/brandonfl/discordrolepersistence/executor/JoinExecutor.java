@@ -72,7 +72,7 @@ public class JoinExecutor {
 
       ServerEntity serverEntity = serverUserEntity.get().getServerGuid();
       if (logStringBuilder.length() != 0) {
-        EmbedBuilder logEmbedBuilder = DiscordBotUtils.getGenericEmbed();
+        EmbedBuilder logEmbedBuilder = DiscordBotUtils.getGenericEmbed(joinEvent.getJDA());
         Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(joinEvent.getGuild(), serverEntity);
         if (logChannel.isPresent()) {
           logEmbedBuilder
@@ -84,7 +84,7 @@ public class JoinExecutor {
       }
 
       if (welcomeBackStringBuilder.length() != 0) {
-        EmbedBuilder welcomeBackEmbedBuilder = DiscordBotUtils.getGenericEmbed();
+        EmbedBuilder welcomeBackEmbedBuilder = DiscordBotUtils.getGenericEmbed(joinEvent.getJDA());
         Optional<TextChannel> welcomeBackChannel = DiscordBotUtils.getWelcomeBackChannel(joinEvent.getGuild(), serverEntity);
         if (welcomeBackChannel.isPresent()) {
           welcomeBackEmbedBuilder

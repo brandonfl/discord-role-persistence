@@ -47,7 +47,7 @@ public class CommandExecutor {
     if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
       Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(event.getGuild().getIdLong());
       if (serverEntity.isPresent() && DiscordBotUtils.verifyCommand(serverEntity.get(), msg, command)) {
-        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
         embedBuilder
             .setAuthor("Discord Role Persistence commands")
             .addField("Commands",
@@ -113,7 +113,7 @@ public class CommandExecutor {
 
             Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), possibleServerEntity.get());
             if (logChannel.isPresent()) {
-              EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+              EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
               embedBuilder
                   .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
                   .setTitle(":round_pushpin: Changed command prefix to `" + newPrefix + "`");
@@ -229,7 +229,7 @@ public class CommandExecutor {
 
               Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), possibleServerEntity.get());
               if (logChannel.isPresent()) {
-                EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+                EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
                 embedBuilder
                     .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
                     .addField(":lock: Locked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
@@ -288,7 +288,7 @@ public class CommandExecutor {
 
               Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), possibleServerEntity.get());
               if (logChannel.isPresent()) {
-                EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+                EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
                 embedBuilder
                     .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
                     .addField(":unlock: Unlocked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);

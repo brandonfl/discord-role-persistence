@@ -117,22 +117,28 @@ public class PersistExecutor {
     if (guildMemberRoleAddEvent != null || guildMemberRoleRemoveEvent != null) {
       Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(guild, serverUserEntity.get().getServerGuid());
       if (textChannel.isPresent()) {
-        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+        EmbedBuilder embedBuilder;
         if (guildMemberRoleAddEvent != null) {
+          embedBuilder = DiscordBotUtils.getGenericEmbed(guildMemberRoleAddEvent.getJDA());
+
           embedBuilder
               .setDescription("user id : " + guildMemberRoleAddEvent.getMember().getUser().getId())
               .setAuthor(guildMemberRoleAddEvent.getMember().getEffectiveName(), null, guildMemberRoleAddEvent.getMember().getUser().getEffectiveAvatarUrl())
               .addField(":white_check_mark: Added roles", guildMemberRoleAddEvent.getRoles().stream().map(
                   Role::getName).collect(Collectors.joining("\n")), true);
+
+          textChannel.get().sendMessage(embedBuilder.build()).queue();
         } else if (guildMemberRoleRemoveEvent != null) {
+          embedBuilder = DiscordBotUtils.getGenericEmbed(guildMemberRoleRemoveEvent.getJDA());
+
           embedBuilder
               .setDescription("user id : " + guildMemberRoleRemoveEvent.getMember().getUser().getId())
               .setAuthor(guildMemberRoleRemoveEvent.getMember().getEffectiveName(), null, guildMemberRoleRemoveEvent.getMember().getUser().getEffectiveAvatarUrl())
               .addField(":no_entry: Removed roles", guildMemberRoleRemoveEvent.getRoles().stream().map(
                   Role::getName).collect(Collectors.joining("\n")), true);
-        }
 
-        textChannel.get().sendMessage(embedBuilder.build()).queue();
+          textChannel.get().sendMessage(embedBuilder.build()).queue();
+        }
       }
     }
   }
@@ -148,7 +154,7 @@ public class PersistExecutor {
 
       Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(guild, serverEntity.get());
       if (textChannel.isPresent()) {
-        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
         embedBuilder
             .addField(":no_entry: Deleted role",
                 event.getRole().getName() + " (" + event.getRole().getId() + ")",
@@ -170,7 +176,7 @@ public class PersistExecutor {
 
       Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(guild, serverEntity.get());
       if (textChannel.isPresent()) {
-        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed();
+        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
         embedBuilder
             .addField(":white_check_mark: Created new role",
                 event.getRole().getName() + " (" + event.getRole().getId() + ")",
