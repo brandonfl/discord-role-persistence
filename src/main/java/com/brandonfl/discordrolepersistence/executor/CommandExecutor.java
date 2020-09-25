@@ -52,6 +52,7 @@ public class CommandExecutor {
             .setAuthor("Discord Role Persistence commands")
             .addField("Commands",
                 "ping\n"
+                    + "prefix `prefix`"
                     + "log `#Channel`\n"
                     + "log disable\n"
                     + "welcome-back `#Channel`\n"
@@ -63,6 +64,7 @@ public class CommandExecutor {
                 , true)
             .addField("Description",
                 "Get discord bot ping\n"
+                    + "Change bot prefix\n"
                     + "Change logger channel\n"
                     + "Disable logger channel\n"
                     + "Disable welcome back channel\n"
