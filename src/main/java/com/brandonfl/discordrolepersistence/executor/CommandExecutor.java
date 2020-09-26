@@ -52,7 +52,7 @@ public class CommandExecutor {
             .setAuthor("Discord Role Persistence commands")
             .addField("Commands",
                 "ping\n"
-                    + "prefix `prefix`"
+                    + "prefix `prefix`\n"
                     + "log `#Channel`\n"
                     + "log disable\n"
                     + "welcome-back `#Channel`\n"
