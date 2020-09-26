@@ -51,27 +51,27 @@ public class CommandExecutor {
         embedBuilder
             .setAuthor("Discord Role Persistence commands")
             .addField("Commands",
-                "ping\n"
-                    + "prefix `prefix`\n"
-                    + "log `#Channel`\n"
-                    + "log disable\n"
-                    + "welcome-back `#Channel`\n"
-                    + "welcome-back disable\n"
-                    + "lock `#Role`\n"
-                    + "lock `roleId`\n"
-                    + "unlock `#Role`\n"
-                    + "unlock `roleId`"
+                "`ping`\n"
+                    + "`prefix prefix`\n"
+                    + "`log #Channel`\n"
+                    + "`log disable`\n"
+                    + "`welcome-back #Channel`\n"
+                    + "`welcome-back disable`\n"
+                    + "`lock #Role`\n"
+                    + "`lock roleId`\n"
+                    + "`unlock #Role`\n"
+                    + "`unlock roleId`"
                 , true)
             .addField("Description",
-                "Get discord bot ping\n"
-                    + "Change bot prefix\n"
-                    + "Change logger channel\n"
-                    + "Disable logger channel\n"
-                    + "Disable welcome back channel\n"
-                    + "Preventing the role from being rollback\n"
-                    + "Preventing the role with id from being rollback \n"
-                    + "Allows the role to be rollback\n"
-                    + "Allows the role with id to be rollback\n"
+                "`Get discord bot ping`\n"
+                    + "`Change bot prefix`\n"
+                    + "`Change logger channel`\n"
+                    + "`Disable logger channel`\n"
+                    + "`Disable welcome back channel`\n"
+                    + "`Preventing the role from being rollback`\n"
+                    + "`Preventing the role with id from being rollback`\n"
+                    + "`Allows the role to be rollback`\n"
+                    + "`Allows the role with id to be rollback`\n"
                 , true)
             .addField("Version", botProperties.getSetting().getVersion(), false);
         event.getChannel().sendMessage(embedBuilder.build()).queue();
