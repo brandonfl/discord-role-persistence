@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class DiscordBot {
 
-  public static final String PREFIX = "!";
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
   private final PersistExecutor persistExecutor;
@@ -52,7 +51,7 @@ public class DiscordBot {
 
         // set the game for when the bot is loading
         .setStatus(OnlineStatus.ONLINE)
-        .setActivity(Activity.playing(PREFIX + "help"))
+        .setActivity(Activity.playing("discord-role-persistence.com default prefix : drp!"))
         .setAutoReconnect(true)
 
         // add the listeners
