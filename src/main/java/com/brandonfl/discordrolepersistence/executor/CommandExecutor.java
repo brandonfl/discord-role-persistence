@@ -326,7 +326,7 @@ public class CommandExecutor {
           for (Role role : event.getGuild().getRoles()) {
             if (role.isPublicRole()) {
               continue;
-            } else if (!role.isHoisted()) {
+            } else if (role.isManaged()) {
               stringBuilder.append(":robot: ").append(role.getAsMention())
                   .append(" (Cannot be assigned manually)");
             } else if (role.hasPermission(Permission.ADMINISTRATOR)) {
