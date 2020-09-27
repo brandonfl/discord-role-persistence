@@ -39,6 +39,7 @@ public class CommandExecutor {
     changeWelcomeBackChannel(event);
     lockRole(event);
     unlockRole(event);
+    getRoles(event);
   }
 
   private void getHelp(GuildMessageReceivedEvent event, BotProperties botProperties) {
@@ -57,6 +58,7 @@ public class CommandExecutor {
                     + "`log disable`\n"
                     + "`welcome-back #Channel`\n"
                     + "`welcome-back disable`\n"
+                    + "`roles`\n"
                     + "`lock #Role`\n"
                     + "`lock roleId`\n"
                     + "`unlock #Role`\n"
@@ -69,6 +71,7 @@ public class CommandExecutor {
                     + "`Disable logger channel`\n"
                     + "`Change welcome back channel`\n"
                     + "`Disable welcome back channel`\n"
+                    + "`Get roles status of the current server`\n"
                     + "`Preventing the role from being rollback`\n"
                     + "`Preventing the role with id from being rollback`\n"
                     + "`Allows the role to be rollback`\n"
@@ -304,6 +307,50 @@ public class CommandExecutor {
           } else {
             event.getChannel().sendMessage(":x: Please provide one and exactly only one role").queue();
           }
+        } else {
+          event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+        }
+      }
+    }
+  }
+
+  private void getRoles(GuildMessageReceivedEvent event) {
+    final String command = "roles";
+    Message msg = event.getMessage();
+    if (DiscordBotUtils.verifyCommandFormat(msg, command)) {
+      Optional<ServerEntity> possibleServerEntity = repositoryContainer.getServerRepository()
+          .findByGuid(event.getGuild().getIdLong());
+      if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command)) {
+        if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+          StringBuilder stringBuilder = new StringBuilder();
+          for (Role role : event.getGuild().getRoles()) {
+            if (role.isPublicRole()) {
+              continue;
+            } else if (!role.isHoisted()) {
+              stringBuilder.append(":robot: ").append(role.getAsMention())
+                  .append(" (Cannot be assigned manually)");
+            } else if (role.hasPermission(Permission.ADMINISTRATOR)) {
+              stringBuilder.append(":no_entry: ").append(role.getAsMention()).append(" (Administrator role)");
+            } else if (possibleServerEntity.get()
+                .getRoleEntities()
+                .stream()
+                .filter(serverRoleEntity -> serverRoleEntity.getRoleGuid().equals(role.getIdLong()))
+                .findFirst().orElse(new ServerRoleEntity())
+                .isBlacklisted()) {
+              stringBuilder.append(":lock:  ").append(role.getAsMention()).append(" (Locked role)");
+            } else {
+              stringBuilder.append(":white_check_mark:  ").append(role.getAsMention());
+            }
+
+            stringBuilder.append("\n");
+          }
+
+          EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
+          embedBuilder
+              .setAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null)
+              .addField("Roles", stringBuilder.toString(), true);
+
+          event.getChannel().sendMessage(embedBuilder.build()).queue();
         } else {
           event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
         }
