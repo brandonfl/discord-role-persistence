@@ -67,6 +67,7 @@ public class CommandExecutor {
                     + "`Change bot prefix`\n"
                     + "`Change logger channel`\n"
                     + "`Disable logger channel`\n"
+                    + "`Change welcome back channel`\n"
                     + "`Disable welcome back channel`\n"
                     + "`Preventing the role from being rollback`\n"
                     + "`Preventing the role with id from being rollback`\n"
