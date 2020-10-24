@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -29,7 +30,7 @@ public class ServerEntity {
   @Column(name = "welcome_back_channel")
   private Long welcomeBackChannel;
 
-  @OneToMany(mappedBy = "serverGuid")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "serverGuid")
   private Set<ServerRoleEntity> roleEntities = new HashSet<>();
 
   @OneToMany(mappedBy = "serverGuid")
