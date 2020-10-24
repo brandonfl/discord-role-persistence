@@ -6,7 +6,14 @@ import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.jagrosh.jdautilities.menu.Paginator;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -15,11 +22,13 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.springframework.scheduling.annotation.Async;
 
 
 public class CommandExecutor {
 
+  private final Paginator.Builder paginatorBuilder;
   private final RepositoryContainer repositoryContainer;
   private final EventWaiter eventWaiter;
 
@@ -28,6 +37,22 @@ public class CommandExecutor {
       EventWaiter eventWaiter) {
     this.repositoryContainer = repositoryContainer;
     this.eventWaiter = eventWaiter;
+
+    paginatorBuilder = new Paginator.Builder()
+        .setColumns(1)
+        .setItemsPerPage(10)
+        .showPageNumbers(true)
+        .waitOnSinglePage(false)
+        .useNumberedItems(false)
+        .setFinalAction(m -> {
+          try {
+            m.clearReactions().queue();
+          } catch(PermissionException ex) {
+            m.delete().queue();
+          }
+        })
+        .setEventWaiter(eventWaiter)
+        .setTimeout(1, TimeUnit.MINUTES);
   }
 
   @Transactional
@@ -323,35 +348,40 @@ public class CommandExecutor {
           .findByGuid(event.getGuild().getIdLong());
       if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command)) {
         if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-          StringBuilder stringBuilder = new StringBuilder();
+          final Set<Long> serverRoleBlacklistedIds = possibleServerEntity.get()
+              .getRoleEntities()
+              .parallelStream()
+              .filter(ServerRoleEntity::isBlacklisted)
+              .map(ServerRoleEntity::getRoleGuid)
+              .collect(Collectors.toSet());
+          List<String> rolesString = new ArrayList<>();
           for (Role role : event.getGuild().getRoles()) {
             if (role.isPublicRole()) {
               continue;
             } else if (role.isManaged()) {
-              stringBuilder.append(":robot: ").append(role.getAsMention())
-                  .append(" (Cannot be assigned manually)");
+              rolesString.add(":robot: " + role.getAsMention() + " (Cannot be assigned manually)");
             } else if (role.hasPermission(Permission.ADMINISTRATOR)) {
-              stringBuilder.append(":no_entry: ").append(role.getAsMention()).append(" (Administrator role)");
-            } else if (possibleServerEntity.get()
-                .getRoleEntities()
-                .stream()
-                .filter(serverRoleEntity -> serverRoleEntity.getRoleGuid().equals(role.getIdLong()))
-                .findFirst().orElse(new ServerRoleEntity())
-                .isBlacklisted()) {
-              stringBuilder.append(":lock:  ").append(role.getAsMention()).append(" (Locked role)");
+              rolesString.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
+            } else if (!serverRoleBlacklistedIds.isEmpty()
+                && serverRoleBlacklistedIds.stream().anyMatch(roleId -> roleId.equals(role.getIdLong()))) {
+              rolesString.add(":lock:  " + role.getAsMention() + " (Locked role)");
             } else {
-              stringBuilder.append(":white_check_mark:  ").append(role.getAsMention());
+              rolesString.add(":white_check_mark:  " + role.getAsMention());
             }
-
-            stringBuilder.append("\n");
           }
 
-          EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
-          embedBuilder
-              .setAuthor(event.getGuild().getName(), event.getGuild().getIconUrl(), null)
-              .addField("Roles", stringBuilder.toString(), true);
+          for (int i = 0; i < 10; i++) {
+            rolesString.add(String.valueOf(i));
+          }
 
-          event.getChannel().sendMessage(embedBuilder.build()).queue();
+          paginatorBuilder.clearItems();
+          rolesString.forEach(paginatorBuilder::addItems);
+          Paginator paginator = paginatorBuilder
+              .setColor(new Color(108, 135, 202))
+              .setText("Server roles")
+              .build();
+          paginator.paginate(event.getChannel(), 1);
+
         } else {
           event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
         }
