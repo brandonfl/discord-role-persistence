@@ -5,6 +5,7 @@ import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -14,19 +15,19 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 
-@Service
+
 public class CommandExecutor {
 
   private final RepositoryContainer repositoryContainer;
+  private final EventWaiter eventWaiter;
 
-  @Autowired
   public CommandExecutor(
-      RepositoryContainer repositoryContainer) {
+      RepositoryContainer repositoryContainer,
+      EventWaiter eventWaiter) {
     this.repositoryContainer = repositoryContainer;
+    this.eventWaiter = eventWaiter;
   }
 
   @Transactional
