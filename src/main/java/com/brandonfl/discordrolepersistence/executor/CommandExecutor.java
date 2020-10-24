@@ -1,5 +1,7 @@
 package com.brandonfl.discordrolepersistence.executor;
 
+import static com.brandonfl.discordrolepersistence.utils.DiscordBotUtils.getGenericPaginatorBuilder;
+
 import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
@@ -7,12 +9,10 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.Paginator;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -22,13 +22,11 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.springframework.scheduling.annotation.Async;
 
 
 public class CommandExecutor {
 
-  private final Paginator.Builder paginatorBuilder;
   private final RepositoryContainer repositoryContainer;
   private final EventWaiter eventWaiter;
 
@@ -37,22 +35,6 @@ public class CommandExecutor {
       EventWaiter eventWaiter) {
     this.repositoryContainer = repositoryContainer;
     this.eventWaiter = eventWaiter;
-
-    paginatorBuilder = new Paginator.Builder()
-        .setColumns(1)
-        .setItemsPerPage(10)
-        .showPageNumbers(true)
-        .waitOnSinglePage(false)
-        .useNumberedItems(false)
-        .setFinalAction(m -> {
-          try {
-            m.clearReactions().queue();
-          } catch(PermissionException ex) {
-            m.delete().queue();
-          }
-        })
-        .setEventWaiter(eventWaiter)
-        .setTimeout(1, TimeUnit.MINUTES);
   }
 
   @Transactional
@@ -370,18 +352,13 @@ public class CommandExecutor {
             }
           }
 
-          for (int i = 0; i < 10; i++) {
-            rolesString.add(String.valueOf(i));
-          }
-
+          Paginator.Builder paginatorBuilder = getGenericPaginatorBuilder(eventWaiter);
           paginatorBuilder.clearItems();
           rolesString.forEach(paginatorBuilder::addItems);
-          Paginator paginator = paginatorBuilder
-              .setColor(new Color(108, 135, 202))
+          paginatorBuilder
               .setText("Server roles")
-              .build();
-          paginator.paginate(event.getChannel(), 1);
-
+              .build()
+              .paginate(event.getChannel(), 1);
         } else {
           event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
         }
