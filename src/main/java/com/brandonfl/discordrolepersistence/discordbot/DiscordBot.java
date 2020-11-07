@@ -14,7 +14,6 @@ import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -44,15 +43,13 @@ public class DiscordBot {
   public void startBot() throws LoginException {
     EventWaiter eventWaiter = new EventWaiter();
     // start getting a bot account set up
-    new JDABuilder(AccountType.BOT)
-        // set the token
-        .setToken(botProperties.getSetting().getToken())
+    JDABuilder
+        .createDefault(botProperties.getSetting().getToken())
 
         // set the game for when the bot is loading
         .setStatus(OnlineStatus.ONLINE)
         .setActivity(Activity.playing("discord-role-persistence.com default prefix : drp!"))
         .setAutoReconnect(true)
-
         // add the listeners
         .addEventListeners(eventWaiter)
         .addEventListeners(new CommandEvent(new CommandExecutor(repositoryContainer, eventWaiter), botProperties))
