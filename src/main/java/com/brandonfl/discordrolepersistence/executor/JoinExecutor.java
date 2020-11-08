@@ -61,7 +61,7 @@ public class JoinExecutor {
           } finally {
             logStringBuilder
                 .append(success ? ":white_check_mark: " : ":warning: ")
-                .append(role.getName()).append(success ? "" : " (issue or not enough permissions)")
+                .append(role.getName()).append(success ? "" : " (not enough permissions, please put the bot upper into the role hierarchy)")
                 .append("\n");
             if (success) {
               welcomeBackStringBuilder.append("- ").append(role.getAsMention()).append("\n");
