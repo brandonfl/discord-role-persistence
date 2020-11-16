@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.springframework.scheduling.annotation.Async;
 
 
 public class CommandExecutor {
@@ -38,7 +37,6 @@ public class CommandExecutor {
   }
 
   @Transactional
-  @Async("asyncCommandExecutor")
   public void executeCommand(GuildMessageReceivedEvent event, BotProperties botProperties) {
     changePrefix(event);
     getHelp(event, botProperties);

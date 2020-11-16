@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,7 +30,6 @@ public class JoinExecutor {
   }
 
   @Transactional
-  @Async("asyncJoinExecutor")
   public void backupRoleOfMember(@Nonnull GuildMemberJoinEvent joinEvent) {
     Optional<ServerUserEntity> serverUserEntity = repositoryContainer
         .getServerUserRepository()

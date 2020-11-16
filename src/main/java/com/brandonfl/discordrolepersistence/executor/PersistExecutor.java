@@ -41,7 +41,6 @@ public class PersistExecutor {
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
   public void persistNewServer(@Nonnull Guild guild) {
     ServerEntity serverEntity = new ServerEntity();
     serverEntity.setGuid(guild.getIdLong());
@@ -78,7 +77,6 @@ public class PersistExecutor {
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
   public void persistRoleUpdateToUser(
       @Nonnull Guild guild,
       @Nonnull Member member,
@@ -144,7 +142,6 @@ public class PersistExecutor {
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
   public void deleteOldRoles(@Nonnull Guild guild, RoleDeleteEvent event) {
     Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
     if (!serverEntity.isPresent()) {
@@ -166,7 +163,6 @@ public class PersistExecutor {
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
   public void createNewRoles(@Nonnull Guild guild, RoleCreateEvent event) {
     Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
     if (!serverEntity.isPresent()) {
@@ -188,7 +184,6 @@ public class PersistExecutor {
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
   public void persistGuildUpdate(@Nonnull Guild guild) {
     Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
     if (!serverEntity.isPresent()) {
