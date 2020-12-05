@@ -11,13 +11,13 @@ import com.brandonfl.discordrolepersistence.discordbot.event.UserJoinEvent;
 import com.brandonfl.discordrolepersistence.executor.CommandExecutor;
 import com.brandonfl.discordrolepersistence.executor.JoinExecutor;
 import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
+import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,13 +44,9 @@ public class DiscordBot {
   public void startBot() throws LoginException {
     EventWaiter eventWaiter = new EventWaiter();
     // start getting a bot account set up
-    new JDABuilder(AccountType.BOT)
+    JDA jda = new JDABuilder(AccountType.BOT)
         // set the token
         .setToken(botProperties.getSetting().getToken())
-
-        // set the game for when the bot is loading
-        .setStatus(OnlineStatus.ONLINE)
-        .setActivity(Activity.playing("discord-role-persistence.com default prefix : drp!"))
         .setAutoReconnect(true)
 
         // add the listeners
@@ -64,5 +60,7 @@ public class DiscordBot {
 
         // start it up!
         .build();
+
+    DiscordBotUtils.updateJDAStatus(jda, false);
   }
 }
