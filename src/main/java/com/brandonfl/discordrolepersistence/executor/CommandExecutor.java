@@ -153,11 +153,15 @@ public class CommandExecutor {
       if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command)) {
         if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
           if (msg.getMentionedChannels().size() == 1) {
-            ServerEntity serverEntityToUpdate = possibleServerEntity.get();
-            serverEntityToUpdate.setLogChannel(msg.getMentionedChannels().get(0).getIdLong());
-            repositoryContainer.getServerRepository().save(serverEntityToUpdate);
+            if (msg.getMentionedChannels().get(0).canTalk()) {
+              ServerEntity serverEntityToUpdate = possibleServerEntity.get();
+              serverEntityToUpdate.setLogChannel(msg.getMentionedChannels().get(0).getIdLong());
+              repositoryContainer.getServerRepository().save(serverEntityToUpdate);
 
-            event.getChannel().sendMessage(":white_check_mark: Log channel has been changed").queue();
+              event.getChannel().sendMessage(":white_check_mark: Log channel has been changed").queue();
+            } else {
+              event.getChannel().sendMessage(":x: It seems that the bot dont have talk access to this channel").queue();
+            }
           } else if (DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, command + " disable")){
             ServerEntity serverEntityToUpdate = possibleServerEntity.get();
             serverEntityToUpdate.setLogChannel(null);
