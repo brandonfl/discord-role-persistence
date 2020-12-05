@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
@@ -344,6 +345,7 @@ public class CommandExecutor {
               .filter(ServerRoleEntity::isBlacklisted)
               .map(ServerRoleEntity::getRoleGuid)
               .collect(Collectors.toSet());
+          final Member currentBotMember = event.getGuild().getSelfMember();
           List<String> rolesString = new ArrayList<>();
           for (Role role : event.getGuild().getRoles()) {
             if (role.isPublicRole()) {
@@ -354,12 +356,14 @@ public class CommandExecutor {
               rolesString.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
             } else if (!serverRoleBlacklistedIds.isEmpty()
                 && serverRoleBlacklistedIds.stream().anyMatch(roleId -> roleId.equals(role.getIdLong()))) {
-              rolesString.add(":lock:  " + role.getAsMention() + " (Locked role)");
+              rolesString.add(":lock: " + role.getAsMention() + " (Locked role)");
+            } else if (DiscordBotUtils.getUpperRole(currentBotMember.getRoles()) < role.getPosition()) {
+              rolesString.add(":warning: " + role.getAsMention() + " (bot too low in the hierarchy to give this role)");
             } else {
               rolesString.add(":white_check_mark:  " + role.getAsMention());
             }
           }
-
+          
           Paginator.Builder paginatorBuilder = getGenericPaginatorBuilder(eventWaiter);
           paginatorBuilder.clearItems();
           rolesString.forEach(paginatorBuilder::addItems);

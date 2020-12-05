@@ -6,12 +6,14 @@ import com.jagrosh.jdautilities.menu.Paginator;
 import java.awt.Color;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
@@ -72,6 +74,10 @@ public final class DiscordBotUtils {
 
   public static boolean verifyCommand(ServerEntity serverEntity, Message message, String expectedCommand) {
     return message.getContentRaw().startsWith(serverEntity.getCommandPrefix() + expectedCommand);
+  }
+
+  public static int getUpperRole(List<Role> roles) {
+    return roles.stream().mapToInt(Role::getPosition).max().orElse(-1);
   }
 
 }
