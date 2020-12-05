@@ -27,7 +27,7 @@ jobs:
       with:
         tag_with_ref: true
         registry: docker.pkg.github.com
-        repository: fontanylegall-brandon/discord-role-persistence/discord-role-persistence
+        repository: brandonfl/discord-role-persistence/discord-role-persistence
         dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
