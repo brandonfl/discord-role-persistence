@@ -61,6 +61,6 @@ public class DiscordBot {
         // start it up!
         .build();
 
-    DiscordBotUtils.updateJDAStatus(jda, false);
+    DiscordBotUtils.updateJDAStatus(jda, true);
   }
 }
