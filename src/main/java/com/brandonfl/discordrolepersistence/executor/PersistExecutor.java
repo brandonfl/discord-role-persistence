@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -189,19 +190,23 @@ public class PersistExecutor {
 
   @Transactional
   @Async("asyncPersistExecutor")
-  public void persistGuildUpdate(@Nonnull Guild guild) {
-    Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
-    if (!serverEntity.isPresent()) {
-      persistNewServer(guild);
-    } else {
-      deleteOldRoles(guild, serverEntity.get());
-      createNewRoles(guild, serverEntity.get());
-      createNewMembers(guild, serverEntity.get());
+  public void persistGuilds(@Nonnull JDA jda) {
+    DiscordBotUtils.updateJDAStatus(jda, true);
+    for (Guild guild : jda.getGuilds()) {
+      Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
+      if (!serverEntity.isPresent()) {
+        persistNewServer(guild);
+      } else {
+        deleteOldRoles(guild, serverEntity.get());
+        createNewRoles(guild, serverEntity.get());
+        createNewMembers(guild, serverEntity.get());
 
-      entityManager.flush();
-      entityManager.clear();
-      updateMemberRoles(guild, repositoryContainer.getServerRepository().getOne(serverEntity.get().getGuid()));
+        entityManager.flush();
+        entityManager.clear();
+        updateMemberRoles(guild, repositoryContainer.getServerRepository().getOne(serverEntity.get().getGuid()));
+      }
     }
+    DiscordBotUtils.updateJDAStatus(jda, false);
   }
 
   private void deleteOldRoles(Guild guild, ServerEntity serverEntity) {

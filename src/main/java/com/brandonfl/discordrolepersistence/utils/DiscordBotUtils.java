@@ -11,11 +11,14 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.managers.Presence;
 
 public final class DiscordBotUtils {
 
@@ -78,6 +81,17 @@ public final class DiscordBotUtils {
 
   public static int getUpperRole(List<Role> roles) {
     return roles.stream().mapToInt(Role::getPosition).max().orElse(-1);
+  }
+
+  public static void updateJDAStatus(JDA jda, boolean reloading) {
+    Presence presence = jda.getPresence();
+    if (reloading) {
+      presence.setStatus(OnlineStatus.DO_NOT_DISTURB);
+      presence.setActivity(Activity.playing("reloading..."));
+    } else {
+      presence.setStatus(OnlineStatus.ONLINE);
+      presence.setActivity(Activity.playing("discord-role-persistence.com default prefix : drp!"));
+    }
   }
 
 }
