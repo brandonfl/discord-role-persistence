@@ -21,7 +21,7 @@ public class HeartbeatStatusCron {
 
   private final BotProperties botProperties;
 
-  @Scheduled(fixedDelay = 1000)
+  @Scheduled(fixedDelay = 600000)
   public void sendHeartbeatStatus() {
     try {
       System.out.println("hello ?");
