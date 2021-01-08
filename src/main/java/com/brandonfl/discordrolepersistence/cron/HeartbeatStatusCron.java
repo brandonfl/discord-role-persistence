@@ -24,13 +24,11 @@ public class HeartbeatStatusCron {
   @Scheduled(fixedDelay = 600000)
   public void sendHeartbeatStatus() {
     try {
-      System.out.println("hello ?");
       URL url = new URL(botProperties.getSetting().getHeartbeatStatusUrl());
       HttpURLConnection con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
 
       int statusCode = con.getResponseCode();
-      System.out.println(statusCode);
       if (statusCode > 299) {
         throw new Exception(String.valueOf(statusCode));
       }
