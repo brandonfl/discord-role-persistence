@@ -20,6 +20,7 @@ public class BotProperties {
   public static class Setting {
     private String version;
     private String token;
+    private String heartbeatStatusUrl;
   }
 
 }

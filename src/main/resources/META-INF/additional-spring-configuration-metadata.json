@@ -9,6 +9,11 @@
       "name": "bot.setting.version",
       "type": "java.lang.String",
       "description": "Discord bot version"
+    },
+    {
+      "name": "bot.setting.heartbeatStatusUrl",
+      "type": "java.lang.String",
+      "description": "Heartbeat status Url"
     }
   ]
 }
