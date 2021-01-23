@@ -14,6 +14,11 @@
       "name": "bot.setting.heartbeatStatusUrl",
       "type": "java.lang.String",
       "description": "Heartbeat status Url"
+    },
+    {
+      "name": "bot.setting.ownerId",
+      "type": "java.lang.String",
+      "description": "Id of the discord bot owner"
     }
   ]
 }

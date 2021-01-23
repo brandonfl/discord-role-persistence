@@ -41,14 +41,14 @@ public class CommandExecutor {
   @Transactional
   @Async("asyncCommandExecutor")
   public void executeCommand(GuildMessageReceivedEvent event, BotProperties botProperties) {
-    changePrefix(event);
-    getHelp(event, botProperties);
-    getPing(event);
-    changeLogChannel(event);
-    changeWelcomeBackChannel(event);
-    lockRole(event);
-    unlockRole(event);
-    getRoles(event);
+    //changePrefix(event);
+    //getHelp(event, botProperties);
+    //getPing(event);
+    //changeLogChannel(event);
+    //changeWelcomeBackChannel(event);
+    //lockRole(event);
+    //unlockRole(event);
+    //getRoles(event);
   }
 
   private void getHelp(GuildMessageReceivedEvent event, BotProperties botProperties) {

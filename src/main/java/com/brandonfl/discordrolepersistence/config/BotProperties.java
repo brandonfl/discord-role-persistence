@@ -21,6 +21,7 @@ public class BotProperties {
     private String version;
     private String token;
     private String heartbeatStatusUrl;
+    private String ownerId;
   }
 
 }
