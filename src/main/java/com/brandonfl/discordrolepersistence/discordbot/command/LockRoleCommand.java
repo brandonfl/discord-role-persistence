@@ -56,8 +56,7 @@ public class LockRoleCommand extends Command {
             if (possibleServerRoleEntity.isPresent()) {
               serverRoleEntity = possibleServerRoleEntity.get();
               if (serverRoleEntity.isBlacklisted()) {
-                event.getChannel()
-                    .sendMessage(":x: This role is already locked for future rollbacks").queue();
+                event.replyError("This role is already locked for future rollbacks");
                 return;
               }
             } else {
@@ -68,9 +67,7 @@ public class LockRoleCommand extends Command {
 
             serverRoleEntity.setBlacklisted(true);
             repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
-            event.getChannel().sendMessage(
-                ":white_check_mark: Role " + role.getName() + " is now locked for future rollbacks")
-                .queue();
+            event.replySuccess("Role " + role.getName() + " is now locked for future rollbacks");
 
             Optional<TextChannel> logChannel = DiscordBotUtils
                 .getLogChannel(event.getGuild(), serverEntity);
@@ -88,10 +85,10 @@ public class LockRoleCommand extends Command {
             event.replyWarning("Current server not found");
           }
         } else {
-          event.getChannel().sendMessage(":x: This role id is invalid").queue();
+          event.replyError("This role id is invalid");
         }
       } else {
-        event.getChannel().sendMessage(":x: Please provide one and exactly only one role").queue();
+        event.replyError("Please provide one and exactly only one role");
       }
     } else {
       event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action")

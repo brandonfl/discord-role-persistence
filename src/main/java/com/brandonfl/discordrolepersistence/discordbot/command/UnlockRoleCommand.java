@@ -57,7 +57,7 @@ public class UnlockRoleCommand extends Command {
             if (possibleServerRoleEntity.isPresent()) {
               serverRoleEntity = possibleServerRoleEntity.get();
               if (!serverRoleEntity.isBlacklisted()) {
-                event.getChannel().sendMessage(":x: This role is already unlocked for future rollbacks").queue();
+                event.replyError("This role is already unlocked for future rollbacks");
                 return;
               }
             } else {
