@@ -67,7 +67,7 @@ public class UnlockRoleCommand extends Command {
             }
             serverRoleEntity.setBlacklisted(false);
             repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
-            event.replySuccess("Role " + role.getName() + " is now unlocked for future rollbacks\"");
+            event.replySuccess("Role " + role.getName() + " is now unlocked for future rollbacks");
 
             Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), serverEntity);
             if (logChannel.isPresent()) {
