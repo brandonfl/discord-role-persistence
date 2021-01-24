@@ -3,10 +3,8 @@ package com.brandonfl.discordrolepersistence.discordbot;
 import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.discordbot.command.ChangeLogChannelCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.ChangePrefixCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.ChangeWelcomeBackChannelCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.GetRolesCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.HelpCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.LockRoleCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.PingCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.UnlockRoleCommand;
@@ -58,10 +56,8 @@ public class DiscordBot {
         .setEmojis("\u2705", "\u26A0\uFE0F", "\u274C")
         .addCommands(
             new ChangeLogChannelCommand(repositoryContainer),
-            new ChangePrefixCommand(repositoryContainer),
             new ChangeWelcomeBackChannelCommand(repositoryContainer),
             new GetRolesCommand(repositoryContainer, eventWaiter),
-            new HelpCommand(repositoryContainer, botProperties),
             new LockRoleCommand(repositoryContainer),
             new PingCommand(),
             new UnlockRoleCommand(repositoryContainer)
