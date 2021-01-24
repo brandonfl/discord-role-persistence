@@ -63,7 +63,7 @@ public class DiscordBot {
             new GetRolesCommand(repositoryContainer, eventWaiter),
             new HelpCommand(repositoryContainer, botProperties),
             new LockRoleCommand(repositoryContainer),
-            new PingCommand(repositoryContainer),
+            new PingCommand(),
             new UnlockRoleCommand(repositoryContainer)
     );
 
