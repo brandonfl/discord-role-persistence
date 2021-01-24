@@ -1,6 +1,7 @@
 package com.brandonfl.discordrolepersistence.utils;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.Paginator;
 import java.awt.Color;
@@ -14,7 +15,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -71,14 +71,6 @@ public final class DiscordBotUtils {
         .setTimeout(1, TimeUnit.MINUTES);
   }
 
-  public static boolean verifyCommandFormat(Message message, String expectedCommand) {
-    return message.getContentRaw().matches("^[^\\s]+" + expectedCommand + "(\\s.*)?$");
-  }
-
-  public static boolean verifyCommand(ServerEntity serverEntity, Message message, String expectedCommand) {
-    return message.getContentRaw().startsWith(serverEntity.getCommandPrefix() + expectedCommand);
-  }
-
   public static int getUpperRole(List<Role> roles) {
     return roles.stream().mapToInt(Role::getPosition).max().orElse(-1);
   }
@@ -90,8 +82,11 @@ public final class DiscordBotUtils {
       presence.setActivity(Activity.playing("reloading..."));
     } else {
       presence.setStatus(OnlineStatus.ONLINE);
-      presence.setActivity(Activity.playing("discord-role-persistence.com default prefix : drp!"));
+      presence.setActivity(Activity.playing("discord-role-persistence.com @mention help"));
     }
   }
 
+  public static boolean isArgAnId(CommandEvent commandEvent) {
+    return commandEvent.getArgs().matches("^[0-9]+$");
+  }
 }

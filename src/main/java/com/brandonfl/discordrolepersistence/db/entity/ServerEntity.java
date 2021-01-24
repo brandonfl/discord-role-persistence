@@ -21,9 +21,6 @@ public class ServerEntity {
   @Column(name = "guid", nullable = false, updatable = false)
   private Long guid;
 
-  @Column(name = "command_prefix", nullable = false)
-  private String commandPrefix = "drp!";
-
   @Column(name = "log_channel")
   private Long logChannel;
 

@@ -129,5 +129,8 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       referencedColumnNames="id"
       referencedTableName="server_role"/>
   </changeSet>
+  <changeSet id="2" author="BrandonFL">
+    <dropColumn tableName="server" columnName="command_prefix"/>
+  </changeSet>
 </databaseChangeLog>
 
