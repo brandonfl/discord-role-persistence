@@ -9,30 +9,29 @@ import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jdautilities.doc.standard.CommandInfo;
 import com.jagrosh.jdautilities.menu.Paginator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
-@CommandInfo(
-    name = "roles",
-    description = "Get roles status of the current server."
-)
-@AllArgsConstructor
 public class GetRolesCommand extends Command {
 
   private final RepositoryContainer repositoryContainer;
   private final EventWaiter eventWaiter;
 
-  @Getter
-  private final String name = "roles";
+  public GetRolesCommand(
+      RepositoryContainer repositoryContainer,
+      EventWaiter eventWaiter) {
+    this.repositoryContainer = repositoryContainer;
+    this.eventWaiter = eventWaiter;
+
+    this.name = "roles";
+    this.help = "Get roles status of the current server.";
+  }
 
   @Override
   protected void execute(CommandEvent event) {

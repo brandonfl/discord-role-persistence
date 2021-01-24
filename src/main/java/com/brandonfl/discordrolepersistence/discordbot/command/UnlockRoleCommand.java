@@ -6,27 +6,25 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.doc.standard.CommandInfo;
 import java.util.Optional;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-@CommandInfo(
-    name = "unlock",
-    description = "Allows the role to be rollback. By default, all the roles are unlock except admin roles."
-)
-@AllArgsConstructor
 public class UnlockRoleCommand extends Command {
 
   private final RepositoryContainer repositoryContainer;
 
-  @Getter
-  private final String name = "unlock";
+  public UnlockRoleCommand(
+      RepositoryContainer repositoryContainer) {
+    this.repositoryContainer = repositoryContainer;
+
+    this.name = "unlock";
+    this.help = "Allows the role to be rollback. By default, all the roles are unlock except admin roles.";
+    this.arguments = "<@role OR roleId>";
+  }
 
   @Override
   protected void execute(CommandEvent event) {

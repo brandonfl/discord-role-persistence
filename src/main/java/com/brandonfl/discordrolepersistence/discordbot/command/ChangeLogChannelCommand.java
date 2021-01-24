@@ -4,23 +4,21 @@ import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.doc.standard.CommandInfo;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 
-@CommandInfo(
-    name = "log",
-    description = "Change or disable logger channel."
-)
-@AllArgsConstructor
 public class ChangeLogChannelCommand extends Command {
 
   private final RepositoryContainer repositoryContainer;
 
-  @Getter
-  private final String name = "log";
+  public ChangeLogChannelCommand(
+      RepositoryContainer repositoryContainer) {
+    this.repositoryContainer = repositoryContainer;
+
+    this.name = "log";
+    this.help = "Change or disable logger channel.";
+    this.arguments = "<#channel OR disable>";
+  }
 
   @Override
   protected void execute(CommandEvent event) {

@@ -6,27 +6,25 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.doc.standard.CommandInfo;
 import java.util.Optional;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-@CommandInfo(
-    name = "lock",
-    description = "Prevent the role from being rollback."
-)
-@AllArgsConstructor
 public class LockRoleCommand extends Command {
 
   private final RepositoryContainer repositoryContainer;
 
-  @Getter
-  private final String name = "lock";
+  public LockRoleCommand(
+      RepositoryContainer repositoryContainer) {
+    this.repositoryContainer = repositoryContainer;
+
+    this.name = "lock";
+    this.help = "Prevent the role from being rollback.";
+    this.arguments = "<@role OR roleId>";
+  }
 
   @Override
   protected void execute(CommandEvent event) {

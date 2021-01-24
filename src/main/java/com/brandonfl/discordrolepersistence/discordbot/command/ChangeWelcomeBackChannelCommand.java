@@ -4,23 +4,21 @@ import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.doc.standard.CommandInfo;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 
-@CommandInfo(
-    name = "welcome-back",
-    description = "Change or disable welcome-back channel."
-)
-@AllArgsConstructor
 public class ChangeWelcomeBackChannelCommand extends Command {
 
   private final RepositoryContainer repositoryContainer;
 
-  @Getter
-  private final String name = "welcome-back";
+  public ChangeWelcomeBackChannelCommand(
+      RepositoryContainer repositoryContainer) {
+    this.repositoryContainer = repositoryContainer;
+
+    this.name = "welcome-back";
+    this.help = "Change or disable welcome-back channel.";
+    this.arguments = "<#channel OR disable>";
+  }
 
   @Override
   protected void execute(CommandEvent event) {
