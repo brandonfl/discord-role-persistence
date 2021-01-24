@@ -1,6 +1,7 @@
 package com.brandonfl.discordrolepersistence.utils;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.Paginator;
 import java.awt.Color;
@@ -92,6 +93,10 @@ public final class DiscordBotUtils {
       presence.setStatus(OnlineStatus.ONLINE);
       presence.setActivity(Activity.playing("discord-role-persistence.com default prefix : drp!"));
     }
+  }
+
+  public static boolean isArgAnId(CommandEvent commandEvent) {
+    return commandEvent.getArgs().matches("^[0-9]+$");
   }
 
 }

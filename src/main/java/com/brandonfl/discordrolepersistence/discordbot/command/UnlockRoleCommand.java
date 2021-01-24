@@ -31,59 +31,64 @@ public class UnlockRoleCommand extends Command {
   @Override
   protected void execute(CommandEvent event) {
     Message msg = event.getMessage();
-    if (DiscordBotUtils.verifyCommandFormat(msg, getName())) {
-      Optional<ServerEntity> possibleServerEntity = repositoryContainer.getServerRepository()
-          .findByGuid(event.getGuild().getIdLong());
-      if (possibleServerEntity.isPresent() && DiscordBotUtils.verifyCommand(possibleServerEntity.get(), msg, getName())) {
-        if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-          if (msg.getMentionedRoles().size() == 1 || DiscordBotUtils.verifyCommandFormat( msg, getName() + "[\\s]+[0-9]+$")) {
-            Role role;
-            if (msg.getMentionedRoles().size() == 1) {
-              role = msg.getMentionedRoles().get(0);
+    if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+      if (msg.getMentionedRoles().size() == 1 || DiscordBotUtils.isArgAnId(event)) {
+        Role role;
+        if (msg.getMentionedRoles().size() == 1) {
+          role = msg.getMentionedRoles().get(0);
+        } else {
+          try {
+            role = event.getGuild().getRoleById(event.getArgs());
+          } catch (Exception exception) {
+            event.replyError("Invalid role id");
+            return;
+          }
+        }
+
+        if (role != null) {
+          ServerEntity serverEntity = repositoryContainer.getServerRepository()
+              .findByGuid(event.getGuild().getIdLong()).orElse(null);
+
+          if (serverEntity != null) {
+            Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
+                .getServerRoleRepository()
+                .findByRoleGuidAndRoleGuid(role.getIdLong(), event.getGuild().getIdLong());
+            ServerRoleEntity serverRoleEntity = null;
+            if (possibleServerRoleEntity.isPresent()) {
+              serverRoleEntity = possibleServerRoleEntity.get();
+              if (!serverRoleEntity.isBlacklisted()) {
+                event.getChannel().sendMessage(":x: This role is already unlocked for future rollbacks").queue();
+                return;
+              }
             } else {
-              role = event.getGuild().getRoleById(event.getMessage().getContentRaw().split(" ")[1]);
+              serverRoleEntity = new ServerRoleEntity();
+              serverRoleEntity.setServerGuid(serverEntity);
+              serverRoleEntity.setRoleGuid(role.getIdLong());
             }
+            serverRoleEntity.setBlacklisted(false);
+            repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
+            event.replySuccess("Role " + role.getName() + " is now unlocked for future rollbacks\"");
 
-            if (role != null) {
-              Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
-                  .getServerRoleRepository()
-                  .findByRoleGuidAndRoleGuid(role.getIdLong(), event.getGuild().getIdLong());
-              ServerRoleEntity serverRoleEntity;
-              if (possibleServerRoleEntity.isPresent()) {
-                serverRoleEntity = possibleServerRoleEntity.get();
-                if (!serverRoleEntity.isBlacklisted()) {
-                  event.getChannel().sendMessage(":x: This role is already unlocked for future rollbacks").queue();
-                  return;
-                }
-              } else {
-                serverRoleEntity = new ServerRoleEntity();
-                serverRoleEntity.setServerGuid(possibleServerEntity.get());
-                serverRoleEntity.setRoleGuid(role.getIdLong());
-              }
+            Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), serverEntity);
+            if (logChannel.isPresent()) {
+              EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
+              embedBuilder
+                  .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
+                  .addField(":unlock: Unlocked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
 
-              serverRoleEntity.setBlacklisted(false);
-              repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
-              event.getChannel().sendMessage(":white_check_mark: Role " + role.getName() + " is now unlocked for future rollbacks").queue();
-
-              Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), possibleServerEntity.get());
-              if (logChannel.isPresent()) {
-                EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
-                embedBuilder
-                    .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
-                    .addField(":unlock: Unlocked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
-
-                logChannel.get().sendMessage(embedBuilder.build()).queue();
-              }
-            } else {
-              event.getChannel().sendMessage(":x: This role id is invalid").queue();
+              logChannel.get().sendMessage(embedBuilder.build()).queue();
             }
           } else {
-            event.getChannel().sendMessage(":x: Please provide one and exactly only one role").queue();
+            event.replyWarning("Current server not found");
           }
         } else {
-          event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action").queue();
+          event.replyError("This role id is invalid");
         }
+      } else {
+        event.replyError("Please provide one and exactly only one role");
       }
+    } else {
+      event.replyError("Only administrators can perform this action");
     }
   }
 }
