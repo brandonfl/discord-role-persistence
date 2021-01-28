@@ -82,7 +82,7 @@ public final class DiscordBotUtils {
       presence.setActivity(Activity.playing("reloading..."));
     } else {
       presence.setStatus(OnlineStatus.ONLINE);
-      presence.setActivity(Activity.playing("discord-role-persistence.com @mention help"));
+      presence.setActivity(Activity.playing("@mention help | discord-role-persistence.com "));
     }
   }
 
