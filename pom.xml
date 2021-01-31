@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.brandonfl.discordrolepersistence</groupId>
-    <artifactId>discord-bot</artifactId>
+    <groupId>xyz.brandonfl.discordrolepersistence</groupId>
+    <artifactId>drp-bot</artifactId>
     <packaging>war</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -19,7 +19,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <sonar.projectKey>FontanyLegall-Brandon_discord-java-docker-bot</sonar.projectKey>
+        <sonar.projectKey>brandonfl_discord-role-persistence</sonar.projectKey>
         <sonar.organization>fontanylegall-brandon</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
@@ -105,12 +105,6 @@
             <artifactId>liquibase-core</artifactId>
             <version>3.6.3</version>
         </dependency>
-
-        <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry-spring</artifactId>
-            <version>1.7.30</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -157,5 +151,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

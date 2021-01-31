@@ -1,28 +1,33 @@
 
 <h1 align="center">
+  <a href="https://discord-role-persistence.com"><img src="https://discord-role-persistence.com/wp-content/uploads/2020/09/cropped-discord-role-persistence-v2-1024.png" width="100"/></a>
   <br>
-Discord Java Docker Bot
+  <a href="https://discord-role-persistence.com">Discord Role Persistence</a>
   <br>
 </h1>
-<h4 align="center"> Template project to create Discord bots with Docker and Java
+<h4 align="center"> Discord Role Persistence is a verified Discord bot with the objective to save the roles of users even after a leave/join server
 
 <p align="center">
-  <a href="https://github.com/FontanyLegall-Brandon/discord-java-docker-bot/releases"><img src="https://img.shields.io/github/v/release/FontanyLegall-Brandon/discord-java-docker-bot" alt="release"></a>
-  <a href="https://github.com/FontanyLegall-Brandon/discord-java-docker-bot/actions?query=workflow%3Abuild-docker-and-publish"><img src="https://github.com/FontanyLegall-Brandon/discord-java-docker-bot/workflows/build-docker-and-publish/badge.svg" alt="github-docker"></a>
-  <a href="https://github.com/FontanyLegall-Brandon/discord-java-docker-bot/actions?query=workflow%3Asonar-gate"><img src="https://github.com/FontanyLegall-Brandon/discord-java-docker-bot/workflows/sonar-gate/badge.svg" alt="github-sonar"></a>
-  <a href="https://sonarcloud.io/dashboard?id=FontanyLegall-Brandon_discord-java-docker-bot"><img src="https://sonarcloud.io/api/project_badges/measure?project=FontanyLegall-Brandon_discord-java-docker-bot&metric=alert_status" alt="sonar-gate"></a>
-  <a href="https://github.com/FontanyLegall-Brandon/discord-java-docker-bot/blob/master/LICENSE"><img src="https://img.shields.io/github/license/FontanyLegall-Brandon/discord-java-docker-bot" alt="licence"></a>
+  <a href="https://github.com/brandonfl/discord-role-persistence/releases"><img src="https://img.shields.io/github/v/release/brandonfl/discord-role-persistence" alt="release"></a>
+  <a href="https://github.com/brandonfl/discord-role-persistence/actions?query=workflow%3Abuild-docker-and-publish"><img src="https://github.com/brandonfl/discord-role-persistence/workflows/build-docker-and-publish/badge.svg" alt="github-docker"></a>
+  <a href="https://github.com/brandonfl/discord-role-persistence/actions?query=workflow%3Asonar-gate"><img src="https://github.com/brandonfl/discord-role-persistence/workflows/sonar-gate/badge.svg" alt="github-sonar"></a>
+  <a href="https://sonarcloud.io/dashboard?id=brandonfl_discord-role-persistence"><img src="https://sonarcloud.io/api/project_badges/measure?project=brandonfl_discord-role-persistence&metric=alert_status" alt="sonar-gate"></a>
+  <a href="https://github.com/brandonfl/discord-role-persistence/blob/master/LICENSE"><img src="https://img.shields.io/github/license/brandonfl/discord-role-persistence" alt="licence"></a>
 </p>
 
 <p align="center">
+  <a href="#invite">Invite</a> •
   <a href="#how-to-use">How to use</a> •
   <a href="#variables">Variables</a> •
   <a href="#licence">Licence</a> 
 </p>
 
+## Invite
+The invitation link for the bot is present into the website : [https://discord-role-persistence.com](https://discord-role-persistence.com)
+
 ## How to use
 #### Use with docker-compose
-1. Change <a href="#variables">variables</a> in [application.properties](https://github.com/FontanyLegall-Brandon/discord-java-docker-bot/blob/master/src/main/resources/application.properties) file
+1. Change <a href="#variables">variables</a> in [application.properties](https://github.com/brandonfl/discord-role-persistence/blob/master/src/main/resources/application.properties) file
 
 2. Use command `docker-compose up`
 
@@ -56,4 +61,4 @@ with `-e` the <a href="#variables">variables</a>
 
 ## Licence
 
-Project under [MIT](https://github.com/FontanyLegall-Brandon/discord-java-docker-bot/blob/master/LICENSE) licence
+Project under [MIT](https://github.com/brandonfl/discord-role-persistence/blob/master/LICENSE) licence
