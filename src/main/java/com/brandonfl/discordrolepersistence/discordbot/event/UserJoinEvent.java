@@ -25,18 +25,29 @@
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
 import com.brandonfl.discordrolepersistence.executor.JoinExecutor;
+import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class UserJoinEvent extends ListenerAdapter {
 
   private final JoinExecutor joinExecutor;
+  private final PersistExecutor persistExecutor;
 
   @Override
   public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
     joinExecutor.backupRoleOfMember(event);
+  }
+
+  @Override
+  public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
+    if (event.getMember() != null) {
+      persistExecutor.persistUser(event.getGuild(), event.getMember());
+    }
   }
 }

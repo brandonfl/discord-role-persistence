@@ -170,6 +170,70 @@ public class PersistExecutor {
 
   @Transactional
   @Async("asyncPersistExecutor")
+  public void persistUser(
+      @Nonnull Guild guild,
+      @Nonnull Member member) {
+    Optional<ServerUserEntity> serverUserEntity = repositoryContainer
+        .getServerUserRepository()
+        .findByUserGuidAndServerGuid(member.getIdLong(), guild.getIdLong());
+
+    if (!serverUserEntity.isPresent()) {
+      Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
+      if (!serverEntity.isPresent()) {
+        persistNewServer(guild);
+        return;
+      } else {
+        ServerUserEntity serverUserEntityToCreate = new ServerUserEntity();
+        serverUserEntityToCreate.setServerGuid(serverEntity.get());
+        serverUserEntityToCreate.setUserGuid(member.getIdLong());
+
+        serverUserEntity = Optional.of(repositoryContainer.getServerUserRepository().save(serverUserEntityToCreate));
+      }
+    }
+
+    List<Long> memberRoleIds = member.getRoles().stream().map(Role::getIdLong).collect(Collectors.toList());
+
+    ServerUserEntity userEntity = serverUserEntity.get();
+    userEntity.setRoleEntities(userEntity
+        .getServerGuid()
+        .getRoleEntities()
+        .stream()
+        .filter(serverRoleEntity -> memberRoleIds.contains(serverRoleEntity.getRoleGuid()))
+        .collect(Collectors.toSet()));
+
+    repositoryContainer.getServerUserRepository().save(userEntity);
+
+    /*if (guildMemberRoleAddEvent != null || guildMemberRoleRemoveEvent != null) {
+      Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(guild, serverUserEntity.get().getServerGuid());
+      if (textChannel.isPresent()) {
+        EmbedBuilder embedBuilder;
+        if (guildMemberRoleAddEvent != null) {
+          embedBuilder = DiscordBotUtils.getGenericEmbed(guildMemberRoleAddEvent.getJDA());
+
+          embedBuilder
+              .setDescription("user id : " + guildMemberRoleAddEvent.getMember().getUser().getId())
+              .setAuthor(guildMemberRoleAddEvent.getMember().getEffectiveName(), null, guildMemberRoleAddEvent.getMember().getUser().getEffectiveAvatarUrl())
+              .addField(":white_check_mark: Added roles", guildMemberRoleAddEvent.getRoles().stream().map(
+                  Role::getName).collect(Collectors.joining("\n")), true);
+
+          textChannel.get().sendMessage(embedBuilder.build()).queue();
+        } else if (guildMemberRoleRemoveEvent != null) {
+          embedBuilder = DiscordBotUtils.getGenericEmbed(guildMemberRoleRemoveEvent.getJDA());
+
+          embedBuilder
+              .setDescription("user id : " + guildMemberRoleRemoveEvent.getMember().getUser().getId())
+              .setAuthor(guildMemberRoleRemoveEvent.getMember().getEffectiveName(), null, guildMemberRoleRemoveEvent.getMember().getUser().getEffectiveAvatarUrl())
+              .addField(":no_entry: Removed roles", guildMemberRoleRemoveEvent.getRoles().stream().map(
+                  Role::getName).collect(Collectors.joining("\n")), true);
+
+          textChannel.get().sendMessage(embedBuilder.build()).queue();
+        }
+      }
+    }*/
+  }
+
+  @Transactional
+  @Async("asyncPersistExecutor")
   public void deleteOldRoles(@Nonnull Guild guild, RoleDeleteEvent event) {
     Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
     if (!serverEntity.isPresent()) {

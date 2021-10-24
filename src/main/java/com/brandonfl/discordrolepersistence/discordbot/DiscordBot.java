@@ -100,7 +100,7 @@ public class DiscordBot {
             new MemberEvent(persistExecutor),
             new ServerRoleEvent(persistExecutor),
             new BotEvent(persistExecutor),
-            new UserJoinEvent(joinExecutor))
+            new UserJoinEvent(joinExecutor, persistExecutor))
         // start it up!
         .build();
 
