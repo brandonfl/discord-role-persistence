@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.executor;
+package com.brandonfl.discordrolepersistence.service;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -50,17 +51,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PersistExecutor {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class PersistenceService {
 
   private final RepositoryContainer repositoryContainer;
   private final EntityManager entityManager;
-
-  @Autowired
-  public PersistExecutor(
-      RepositoryContainer repositoryContainer, EntityManager entityManager) {
-    this.repositoryContainer = repositoryContainer;
-    this.entityManager = entityManager;
-  }
 
   @Transactional
   public void persistNewServer(@Nonnull Guild guild) {

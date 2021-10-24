@@ -36,13 +36,14 @@ import com.brandonfl.discordrolepersistence.discordbot.event.BotEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
-import com.brandonfl.discordrolepersistence.discordbot.event.UserJoinEvent;
-import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
+import com.brandonfl.discordrolepersistence.discordbot.event.UserPersistenceEvent;
+import com.brandonfl.discordrolepersistence.service.PersistenceService;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -50,20 +51,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DiscordBot {
 
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
-  private final PersistExecutor persistExecutor;
-
-  @Autowired
-  public DiscordBot(BotProperties botProperties,
-      RepositoryContainer repositoryContainer,
-      PersistExecutor persistExecutor) {
-    this.botProperties = botProperties;
-    this.repositoryContainer = repositoryContainer;
-    this.persistExecutor = persistExecutor;
-  }
+  private final PersistenceService persistenceService;
 
   @PostConstruct
   public void startBot() throws LoginException {
@@ -92,11 +85,11 @@ public class DiscordBot {
         .addEventListeners(
             eventWaiter,
             commandClientBuilder.build(),
-            new ServerEvent(repositoryContainer, persistExecutor),
-            new MemberEvent(botProperties, persistExecutor),
-            new ServerRoleEvent(persistExecutor),
-            new BotEvent(persistExecutor),
-            new UserJoinEvent(repositoryContainer, persistExecutor))
+            new ServerEvent(repositoryContainer, persistenceService),
+            new MemberEvent(botProperties, persistenceService),
+            new ServerRoleEvent(persistenceService),
+            new BotEvent(persistenceService),
+            new UserPersistenceEvent(repositoryContainer, persistenceService))
         // start it up!
         .build();
 

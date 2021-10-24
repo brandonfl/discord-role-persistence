@@ -27,7 +27,7 @@ package com.brandonfl.discordrolepersistence.discordbot.event;
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerUserEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
-import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
+import com.brandonfl.discordrolepersistence.service.PersistenceService;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,15 +45,15 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
-public class UserJoinEvent extends ListenerAdapter {
+public class UserPersistenceEvent extends ListenerAdapter {
 
   private final RepositoryContainer repositoryContainer;
-  private final PersistExecutor persistExecutor;
+  private final PersistenceService persistenceService;
 
   @Override
   public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
     if (event.getMember() != null) {
-      persistExecutor.persistUser(event.getGuild(), event.getMember());
+      persistenceService.persistUser(event.getGuild(), event.getMember());
     }
   }
 
