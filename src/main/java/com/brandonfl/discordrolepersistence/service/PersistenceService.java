@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.executor;
+package com.brandonfl.discordrolepersistence.service;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
@@ -35,38 +35,29 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PersistExecutor {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class PersistenceService {
 
   private final RepositoryContainer repositoryContainer;
   private final EntityManager entityManager;
 
-  @Autowired
-  public PersistExecutor(
-      RepositoryContainer repositoryContainer, EntityManager entityManager) {
-    this.repositoryContainer = repositoryContainer;
-    this.entityManager = entityManager;
-  }
-
   @Transactional
-  @Async("asyncPersistExecutor")
   public void persistNewServer(@Nonnull Guild guild) {
     ServerEntity serverEntity = new ServerEntity();
     serverEntity.setGuid(guild.getIdLong());
@@ -102,13 +93,33 @@ public class PersistExecutor {
     repositoryContainer.getServerUserRepository().saveAll(users);
   }
 
-  @Transactional
-  @Async("asyncPersistExecutor")
-  public void persistRoleUpdateToUser(
-      @Nonnull Guild guild,
+  public void logRoleUpdate(
+      @Nonnull GenericGuildEvent event,
       @Nonnull Member member,
-      @Nullable GuildMemberRoleAddEvent guildMemberRoleAddEvent,
-      @Nullable GuildMemberRoleRemoveEvent guildMemberRoleRemoveEvent) {
+      @Nonnull List<Role> roles,
+      @Nonnull final String fieldName) {
+    Optional<ServerUserEntity> serverUserEntity = repositoryContainer
+        .getServerUserRepository()
+        .findByUserGuidAndServerGuid(member.getIdLong(), event.getGuild().getIdLong());
+
+    if (serverUserEntity.isPresent()) {
+      Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(event.getGuild(), serverUserEntity.get().getServerGuid());
+      if (textChannel.isPresent()) {
+        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
+
+        embedBuilder
+            .setDescription("user id : " + member.getUser().getId())
+            .setAuthor(member.getEffectiveName(), null, member.getUser().getEffectiveAvatarUrl())
+            .addField(fieldName, roles.stream().map(
+                Role::getName).collect(Collectors.joining("\n")), true);
+
+        textChannel.get().sendMessage(embedBuilder.build()).queue();
+      }
+    }
+  }
+
+  @Transactional
+  public void persistUser(@Nonnull Guild guild, @Nonnull Member member) {
     Optional<ServerUserEntity> serverUserEntity = repositoryContainer
         .getServerUserRepository()
         .findByUserGuidAndServerGuid(member.getIdLong(), guild.getIdLong());
@@ -138,38 +149,9 @@ public class PersistExecutor {
         .collect(Collectors.toSet()));
 
     repositoryContainer.getServerUserRepository().save(userEntity);
-
-    if (guildMemberRoleAddEvent != null || guildMemberRoleRemoveEvent != null) {
-      Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(guild, serverUserEntity.get().getServerGuid());
-      if (textChannel.isPresent()) {
-        EmbedBuilder embedBuilder;
-        if (guildMemberRoleAddEvent != null) {
-          embedBuilder = DiscordBotUtils.getGenericEmbed(guildMemberRoleAddEvent.getJDA());
-
-          embedBuilder
-              .setDescription("user id : " + guildMemberRoleAddEvent.getMember().getUser().getId())
-              .setAuthor(guildMemberRoleAddEvent.getMember().getEffectiveName(), null, guildMemberRoleAddEvent.getMember().getUser().getEffectiveAvatarUrl())
-              .addField(":white_check_mark: Added roles", guildMemberRoleAddEvent.getRoles().stream().map(
-                  Role::getName).collect(Collectors.joining("\n")), true);
-
-          textChannel.get().sendMessage(embedBuilder.build()).queue();
-        } else if (guildMemberRoleRemoveEvent != null) {
-          embedBuilder = DiscordBotUtils.getGenericEmbed(guildMemberRoleRemoveEvent.getJDA());
-
-          embedBuilder
-              .setDescription("user id : " + guildMemberRoleRemoveEvent.getMember().getUser().getId())
-              .setAuthor(guildMemberRoleRemoveEvent.getMember().getEffectiveName(), null, guildMemberRoleRemoveEvent.getMember().getUser().getEffectiveAvatarUrl())
-              .addField(":no_entry: Removed roles", guildMemberRoleRemoveEvent.getRoles().stream().map(
-                  Role::getName).collect(Collectors.joining("\n")), true);
-
-          textChannel.get().sendMessage(embedBuilder.build()).queue();
-        }
-      }
-    }
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
   public void deleteOldRoles(@Nonnull Guild guild, RoleDeleteEvent event) {
     Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
     if (!serverEntity.isPresent()) {
@@ -191,7 +173,6 @@ public class PersistExecutor {
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
   public void createNewRoles(@Nonnull Guild guild, RoleCreateEvent event) {
     Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
     if (!serverEntity.isPresent()) {
@@ -213,7 +194,6 @@ public class PersistExecutor {
   }
 
   @Transactional
-  @Async("asyncPersistExecutor")
   public void persistGuilds(@Nonnull JDA jda) {
     DiscordBotUtils.updateJDAStatus(jda, true);
     for (Guild guild : jda.getGuilds()) {

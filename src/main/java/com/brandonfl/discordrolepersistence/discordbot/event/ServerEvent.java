@@ -25,7 +25,7 @@
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
-import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
+import com.brandonfl.discordrolepersistence.service.PersistenceService;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -36,13 +36,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class ServerEvent extends ListenerAdapter {
 
   private final RepositoryContainer repositoryContainer;
-  private final PersistExecutor persistExecutor;
+  private final PersistenceService persistenceService;
 
   @Override
   public void onGuildJoin(@Nonnull GuildJoinEvent event) {
     if (!repositoryContainer.getServerRepository()
         .findById(event.getGuild().getIdLong()).isPresent()) {
-      persistExecutor.persistNewServer(event.getGuild());
+      persistenceService.persistNewServer(event.getGuild());
     }
   }
 

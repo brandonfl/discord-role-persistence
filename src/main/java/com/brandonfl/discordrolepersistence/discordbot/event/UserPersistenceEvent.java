@@ -22,41 +22,43 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.executor;
+package com.brandonfl.discordrolepersistence.discordbot.event;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerUserEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
+import com.brandonfl.discordrolepersistence.service.PersistenceService;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
-@Service
-public class JoinExecutor {
+@RequiredArgsConstructor
+public class UserPersistenceEvent extends ListenerAdapter {
 
   private final RepositoryContainer repositoryContainer;
+  private final PersistenceService persistenceService;
 
-  @Autowired
-  public JoinExecutor(
-      RepositoryContainer repositoryContainer) {
-    this.repositoryContainer = repositoryContainer;
+  @Override
+  public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
+    if (event.getMember() != null) {
+      persistenceService.persistUser(event.getGuild(), event.getMember());
+    }
   }
 
-  @Transactional
-  @Async("asyncJoinExecutor")
-  public void backupRoleOfMember(@Nonnull GuildMemberJoinEvent joinEvent) {
+  @Override
+  public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent joinEvent) {
     Optional<ServerUserEntity> serverUserEntity = repositoryContainer
         .getServerUserRepository()
         .findByUserGuidAndServerGuid(joinEvent.getMember().getIdLong(), joinEvent.getGuild().getIdLong());
@@ -122,5 +124,4 @@ public class JoinExecutor {
       }
     }
   }
-
 }

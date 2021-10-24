@@ -11,7 +11,7 @@
       "description": "Discord bot version"
     },
     {
-      "name": "bot.setting.heartbeatStatusUrl",
+      "name": "bot.setting.heartbeat-status-url",
       "type": "java.lang.String",
       "description": "Heartbeat status Url"
     },
@@ -19,6 +19,12 @@
       "name": "bot.setting.ownerId",
       "type": "java.lang.String",
       "description": "Id of the discord bot owner"
+    },
+    {
+      "name": "bot.setting.persistence.persist-at-role-change",
+      "type": "java.lang.Boolean",
+      "description": "If the member role as to be persisted at role change or if we persist it at member leave.",
+      "defaultValue": false
     }
   ]
 }

@@ -269,3 +269,4 @@ fabric.properties
 # --------------------------
 
 mysql-data/
+log/
