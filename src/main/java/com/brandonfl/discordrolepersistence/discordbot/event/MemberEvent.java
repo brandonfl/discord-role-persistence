@@ -24,6 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
+import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.executor.PersistExecutor;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
@@ -34,17 +35,24 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 @RequiredArgsConstructor
 public class MemberEvent extends ListenerAdapter {
 
+  private final BotProperties botProperties;
   private final PersistExecutor persistExecutor;
 
   @Override
   public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
     persistExecutor.logRoleUpdate(event, event.getMember(), event.getRoles(), ":white_check_mark: Added roles");
-    //persistExecutor.persistRoleUpdateToUser(event.getGuild(), event.getMember(), event, null);
+
+    if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
+      persistExecutor.persistUser(event.getGuild(), event.getMember());
+    }
   }
 
   @Override
   public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
     persistExecutor.logRoleUpdate(event, event.getMember(), event.getRoles(), ":no_entry: Removed roles");
-    //persistExecutor.persistRoleUpdateToUser(event.getGuild(), event.getMember(), null, event);
+
+    if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
+      persistExecutor.persistUser(event.getGuild(), event.getMember());
+    }
   }
 }

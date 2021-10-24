@@ -93,7 +93,7 @@ public class DiscordBot {
             eventWaiter,
             commandClientBuilder.build(),
             new ServerEvent(repositoryContainer, persistExecutor),
-            new MemberEvent(persistExecutor),
+            new MemberEvent(botProperties, persistExecutor),
             new ServerRoleEvent(persistExecutor),
             new BotEvent(persistExecutor),
             new UserJoinEvent(repositoryContainer, persistExecutor))

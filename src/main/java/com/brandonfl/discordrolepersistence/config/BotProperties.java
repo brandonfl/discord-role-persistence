@@ -24,6 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.config;
 
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -46,6 +47,17 @@ public class BotProperties {
     private String token;
     private String heartbeatStatusUrl;
     private String ownerId;
+    private Persistence persistence = new Persistence();
+
+    @Data
+    public static class Persistence {
+      @Getter(AccessLevel.PRIVATE)
+      private Boolean persistAtRoleChange;
+
+      public boolean needToPersistAtRoleChange() {
+        return Boolean.TRUE.equals(getPersistAtRoleChange());
+      }
+    }
   }
 
 }
