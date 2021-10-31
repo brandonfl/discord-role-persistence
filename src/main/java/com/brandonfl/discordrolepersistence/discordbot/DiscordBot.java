@@ -33,11 +33,11 @@ import com.brandonfl.discordrolepersistence.discordbot.command.LockRoleCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.PingCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.UnlockRoleCommand;
 import com.brandonfl.discordrolepersistence.discordbot.event.BotEvent;
+import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.RoleEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
-import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
-import com.brandonfl.discordrolepersistence.service.LoggerService;
+import com.brandonfl.discordrolepersistence.service.BackupRoleService;
 import com.brandonfl.discordrolepersistence.service.PersistenceService;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
@@ -57,8 +57,8 @@ public class DiscordBot {
 
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
+  private final BackupRoleService backupRoleService;
   private final PersistenceService persistenceService;
-  private final LoggerService loggerService;
 
   @PostConstruct
   public void startBot() throws LoginException {
@@ -91,7 +91,7 @@ public class DiscordBot {
             new RoleEvent(botProperties, persistenceService),
             new ServerRoleEvent(persistenceService),
             new BotEvent(persistenceService),
-            new MemberEvent(repositoryContainer, persistenceService, loggerService))
+            new MemberEvent(backupRoleService, persistenceService))
         // start it up!
         .build();
 

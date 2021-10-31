@@ -21,6 +21,12 @@
       "description": "Id of the discord bot owner"
     },
     {
+      "name": "bot.setting.backup.thread-number",
+      "type": "java.lang.Integer",
+      "description": "Set the number of thread to use to backup role membres. A good setting avoid bot getting spam when discord servers are getting raid for example.",
+      "defaultValue": 1
+    },
+    {
       "name": "bot.setting.persistence.persist-at-role-change",
       "type": "java.lang.Boolean",
       "description": "If the member role as to be persisted at role change or if we persist it at member leave.",
