@@ -24,30 +24,35 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
-import com.brandonfl.discordrolepersistence.service.BackupRoleService;
+import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.service.PersistenceService;
 import javax.annotation.Nonnull;
-import lombok.AllArgsConstructor;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 
-@AllArgsConstructor
-public class MemberEvent extends ListenerAdapter {
+@RequiredArgsConstructor
+public class RoleEvent extends ListenerAdapter {
 
-  private final BackupRoleService backupRoleService;
+  private final BotProperties botProperties;
   private final PersistenceService persistenceService;
 
   @Override
-  public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
-    if (event.getMember() != null) {
+  public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
+    persistenceService.logRoleUpdate(event, event.getMember(), event.getRoles(), ":white_check_mark: Added roles");
+
+    if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
       persistenceService.persistUser(event.getGuild(), event.getMember());
     }
   }
 
   @Override
-  public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent joinEvent) {
-    backupRoleService.execute(joinEvent);
+  public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
+    persistenceService.logRoleUpdate(event, event.getMember(), event.getRoles(), ":no_entry: Removed roles");
+
+    if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
+      persistenceService.persistUser(event.getGuild(), event.getMember());
+    }
   }
 }
