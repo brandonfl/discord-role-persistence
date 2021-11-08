@@ -44,7 +44,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class PersistenceService {
+public class ServerService {
 
   private final RepositoryContainer repositoryContainer;
   private final EntityManager entityManager;
@@ -91,64 +90,6 @@ public class PersistenceService {
       }
     }
     repositoryContainer.getServerUserRepository().saveAll(users);
-  }
-
-  public void logRoleUpdate(
-      @Nonnull GenericGuildEvent event,
-      @Nonnull Member member,
-      @Nonnull List<Role> roles,
-      @Nonnull final String fieldName) {
-    Optional<ServerUserEntity> serverUserEntity = repositoryContainer
-        .getServerUserRepository()
-        .findByUserGuidAndServerGuid(member.getIdLong(), event.getGuild().getIdLong());
-
-    if (serverUserEntity.isPresent()) {
-      Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(event.getGuild(), serverUserEntity.get().getServerGuid());
-      if (textChannel.isPresent()) {
-        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
-
-        embedBuilder
-            .setDescription("user id : " + member.getUser().getId())
-            .setAuthor(member.getEffectiveName(), null, member.getUser().getEffectiveAvatarUrl())
-            .addField(fieldName, roles.stream().map(
-                Role::getName).collect(Collectors.joining("\n")), true);
-
-        textChannel.get().sendMessage(embedBuilder.build()).queue();
-      }
-    }
-  }
-
-  @Transactional
-  public void persistUser(@Nonnull Guild guild, @Nonnull Member member) {
-    Optional<ServerUserEntity> serverUserEntity = repositoryContainer
-        .getServerUserRepository()
-        .findByUserGuidAndServerGuid(member.getIdLong(), guild.getIdLong());
-
-    if (!serverUserEntity.isPresent()) {
-      Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
-      if (!serverEntity.isPresent()) {
-        persistNewServer(guild);
-        return;
-      } else {
-        ServerUserEntity serverUserEntityToCreate = new ServerUserEntity();
-        serverUserEntityToCreate.setServerGuid(serverEntity.get());
-        serverUserEntityToCreate.setUserGuid(member.getIdLong());
-
-        serverUserEntity = Optional.of(repositoryContainer.getServerUserRepository().save(serverUserEntityToCreate));
-      }
-    }
-
-    List<Long> memberRoleIds = member.getRoles().stream().map(Role::getIdLong).collect(Collectors.toList());
-
-    ServerUserEntity userEntity = serverUserEntity.get();
-    userEntity.setRoleEntities(userEntity
-        .getServerGuid()
-        .getRoleEntities()
-        .stream()
-        .filter(serverRoleEntity -> memberRoleIds.contains(serverRoleEntity.getRoleGuid()))
-        .collect(Collectors.toSet()));
-
-    repositoryContainer.getServerUserRepository().save(userEntity);
   }
 
   @Transactional

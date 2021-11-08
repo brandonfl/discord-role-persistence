@@ -22,27 +22,26 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.discordbot.event;
+package com.brandonfl.discordrolepersistence.config;
 
-import com.brandonfl.discordrolepersistence.service.ServerService;
-import javax.annotation.Nonnull;
-import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.events.role.RoleCreateEvent;
-import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import java.util.concurrent.Executor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-@RequiredArgsConstructor
-public class ServerRoleEvent extends ListenerAdapter {
+@Configuration
+public class AsyncExecutorConfiguration {
 
-  private final ServerService serverService;
+  @Bean(name = "userPersistenceExecutor")
+  @Autowired
+  public Executor userPersistenceExecutor(BotProperties botProperties) {
+    System.out.println("threads : " + botProperties.getSetting().getPersistence().getThreadNumber());
 
-  @Override
-  public void onRoleCreate(@Nonnull RoleCreateEvent event) {
-    serverService.createNewRoles(event.getGuild(), event);
-  }
-
-  @Override
-  public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
-    serverService.deleteOldRoles(event.getGuild(), event);
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(botProperties.getSetting().getPersistence().getThreadNumber());
+    executor.setThreadNamePrefix("UserPersistenceThread-");
+    executor.initialize();
+    return executor;
   }
 }

@@ -24,8 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
-import com.brandonfl.discordrolepersistence.service.BackupRoleService;
-import com.brandonfl.discordrolepersistence.service.PersistenceService;
+import com.brandonfl.discordrolepersistence.service.UserService;
 import javax.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -36,18 +35,17 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public class MemberEvent extends ListenerAdapter {
 
-  private final BackupRoleService backupRoleService;
-  private final PersistenceService persistenceService;
+  private final UserService userService;
 
   @Override
   public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
     if (event.getMember() != null) {
-      persistenceService.persistUser(event.getGuild(), event.getMember());
+      userService.persistUser(event.getGuild(), event.getMember());
     }
   }
 
   @Override
   public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent joinEvent) {
-    backupRoleService.execute(joinEvent);
+    userService.backupRoles(joinEvent);
   }
 }

@@ -47,18 +47,13 @@ public class BotProperties {
     private String token;
     private String heartbeatStatusUrl;
     private String ownerId;
-    private Backup backup = new Backup();
     private Persistence persistence = new Persistence();
-
-    @Data
-    public static class Backup {
-      private int threadNumber;
-    }
 
     @Data
     public static class Persistence {
       @Getter(AccessLevel.PRIVATE)
       private Boolean persistAtRoleChange;
+      private int threadNumber;
 
       public boolean needToPersistAtRoleChange() {
         return Boolean.TRUE.equals(getPersistAtRoleChange());
