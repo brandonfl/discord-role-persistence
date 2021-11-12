@@ -22,17 +22,11 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.db.repository;
+package com.brandonfl.discordrolepersistence.config.shared;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import lombok.Data;
 
-public interface ServerRoleRepository extends JpaRepository<ServerRoleEntity, Long> {
-
-  @Query("SELECT serverRoleEntity FROM ServerRoleEntity serverRoleEntity WHERE serverRoleEntity.roleGuid = :roleGuid AND serverRoleEntity.serverGuid.guid = :serverGuid")
-  Optional<ServerRoleEntity> findByRoleGuidAndServerGuid(@Param("roleGuid") Long roleGuid, @Param("serverGuid") Long serverGuid);
-
+@Data
+public class ThreadConfig {
+  private int threadNumber;
 }

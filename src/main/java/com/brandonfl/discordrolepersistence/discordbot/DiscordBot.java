@@ -37,6 +37,7 @@ import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.RoleEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
+import com.brandonfl.discordrolepersistence.service.BotService;
 import com.brandonfl.discordrolepersistence.service.LoggerService;
 import com.brandonfl.discordrolepersistence.service.ServerService;
 import com.brandonfl.discordrolepersistence.service.UserService;
@@ -59,6 +60,7 @@ public class DiscordBot {
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
   private final UserService userService;
+  private final BotService botService;
   private final ServerService serverService;
   private final LoggerService loggerService;
 
@@ -92,7 +94,7 @@ public class DiscordBot {
             new ServerEvent(repositoryContainer, serverService),
             new RoleEvent(botProperties, userService, loggerService),
             new ServerRoleEvent(serverService),
-            new BotEvent(serverService),
+            new BotEvent(botService),
             new MemberEvent(userService))
         // start it up!
         .build();

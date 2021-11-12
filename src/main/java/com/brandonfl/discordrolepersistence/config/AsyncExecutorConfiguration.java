@@ -36,11 +36,29 @@ public class AsyncExecutorConfiguration {
   @Bean(name = "userPersistenceExecutor")
   @Autowired
   public Executor userPersistenceExecutor(BotProperties botProperties) {
-    System.out.println("threads : " + botProperties.getSetting().getPersistence().getThreadNumber());
-
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(botProperties.getSetting().getPersistence().getThreadNumber());
+    executor.setCorePoolSize(botProperties.getSetting().getPersistence().getUser().getThreadNumber());
     executor.setThreadNamePrefix("UserPersistenceThread-");
+    executor.initialize();
+    return executor;
+  }
+
+  @Bean(name = "rolePersistenceExecutor")
+  @Autowired
+  public Executor rolePersistenceExecutor(BotProperties botProperties) {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(botProperties.getSetting().getPersistence().getRole().getThreadNumber());
+    executor.setThreadNamePrefix("RolePersistenceThread-");
+    executor.initialize();
+    return executor;
+  }
+
+  @Bean(name = "serverPersistenceExecutor")
+  @Autowired
+  public Executor serverPersistenceExecutor(BotProperties botProperties) {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(botProperties.getSetting().getPersistence().getServer().getThreadNumber());
+    executor.setThreadNamePrefix("ServerPersistenceThread-");
     executor.initialize();
     return executor;
   }

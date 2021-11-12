@@ -24,6 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.config;
 
+import com.brandonfl.discordrolepersistence.config.shared.ThreadConfig;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -53,7 +54,10 @@ public class BotProperties {
     public static class Persistence {
       @Getter(AccessLevel.PRIVATE)
       private Boolean persistAtRoleChange;
-      private int threadNumber;
+
+      private ThreadConfig user = new ThreadConfig();
+      private ThreadConfig server = new ThreadConfig();
+      private ThreadConfig role = new ThreadConfig();
 
       public boolean needToPersistAtRoleChange() {
         return Boolean.TRUE.equals(getPersistAtRoleChange());

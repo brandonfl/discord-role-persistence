@@ -42,7 +42,7 @@ public class RoleEvent extends ListenerAdapter {
 
   @Override
   public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
-    loggerService.logRoleUpdate(event, event.getMember(), event.getRoles(), ":white_check_mark: Added roles");
+    loggerService.logUserRoleUpdate(event, event.getMember(), event.getRoles(), ":white_check_mark: Added roles");
 
     if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
       userService.persistUser(event.getGuild(), event.getMember());
@@ -51,7 +51,7 @@ public class RoleEvent extends ListenerAdapter {
 
   @Override
   public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
-    loggerService.logRoleUpdate(event, event.getMember(), event.getRoles(), ":no_entry: Removed roles");
+    loggerService.logUserRoleUpdate(event, event.getMember(), event.getRoles(), ":no_entry: Removed roles");
 
     if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
       userService.persistUser(event.getGuild(), event.getMember());

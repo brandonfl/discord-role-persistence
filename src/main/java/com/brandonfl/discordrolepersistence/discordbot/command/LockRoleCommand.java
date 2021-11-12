@@ -73,7 +73,7 @@ public class LockRoleCommand extends Command {
           if (serverEntity != null) {
             Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
                 .getServerRoleRepository()
-                .findByRoleGuidAndRoleGuid(role.getIdLong(), event.getGuild().getIdLong());
+                .findByRoleGuidAndServerGuid(role.getIdLong(), event.getGuild().getIdLong());
             ServerRoleEntity serverRoleEntity;
             if (possibleServerRoleEntity.isPresent()) {
               serverRoleEntity = possibleServerRoleEntity.get();

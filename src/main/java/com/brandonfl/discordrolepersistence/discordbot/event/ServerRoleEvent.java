@@ -38,11 +38,11 @@ public class ServerRoleEvent extends ListenerAdapter {
 
   @Override
   public void onRoleCreate(@Nonnull RoleCreateEvent event) {
-    serverService.createNewRoles(event.getGuild(), event);
+    serverService.createNewRoles(event);
   }
 
   @Override
   public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
-    serverService.deleteOldRoles(event.getGuild(), event);
+    serverService.deleteOldRoles(event);
   }
 }

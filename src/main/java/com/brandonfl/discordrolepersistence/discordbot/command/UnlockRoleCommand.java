@@ -74,7 +74,7 @@ public class UnlockRoleCommand extends Command {
           if (serverEntity != null) {
             Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
                 .getServerRoleRepository()
-                .findByRoleGuidAndRoleGuid(role.getIdLong(), event.getGuild().getIdLong());
+                .findByRoleGuidAndServerGuid(role.getIdLong(), event.getGuild().getIdLong());
             ServerRoleEntity serverRoleEntity = null;
             if (possibleServerRoleEntity.isPresent()) {
               serverRoleEntity = possibleServerRoleEntity.get();
