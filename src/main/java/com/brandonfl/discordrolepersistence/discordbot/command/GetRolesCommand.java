@@ -26,7 +26,6 @@ package com.brandonfl.discordrolepersistence.discordbot.command;
 
 import static com.brandonfl.discordrolepersistence.utils.DiscordBotUtils.getGenericPaginatorBuilder;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import org.springframework.transaction.annotation.Transactional;
 
 public class GetRolesCommand extends Command {
 
@@ -58,49 +58,46 @@ public class GetRolesCommand extends Command {
   }
 
   @Override
-  protected void execute(CommandEvent event) {
+  @Transactional(readOnly = true)
+  public void execute(CommandEvent event) {
     if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-      ServerEntity serverEntity = repositoryContainer.getServerRepository()
-          .findByGuid(event.getGuild().getIdLong()).orElse(null);
-      if (serverEntity != null) {
-        final Set<Long> serverRoleBlacklistedIds = serverEntity
-            .getRoleEntities()
-            .parallelStream()
-            .filter(ServerRoleEntity::isBlacklisted)
-            .map(ServerRoleEntity::getRoleGuid)
-            .collect(Collectors.toSet());
-        final Member currentBotMember = event.getGuild().getSelfMember();
-        List<String> rolesString = new ArrayList<>();
-        for (Role role : event.getGuild().getRoles()) {
-          if (role.isPublicRole()) {
-            continue;
-          } else if (role.isManaged()) {
-            rolesString.add(":robot: " + role.getAsMention() + " (Cannot be assigned manually)");
-          } else if (role.hasPermission(Permission.ADMINISTRATOR)) {
-            rolesString.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
-          } else if (!serverRoleBlacklistedIds.isEmpty()
-              && serverRoleBlacklistedIds.stream()
-              .anyMatch(roleId -> roleId.equals(role.getIdLong()))) {
-            rolesString.add(":lock: " + role.getAsMention() + " (Locked role)");
-          } else if (DiscordBotUtils.getUpperRole(currentBotMember.getRoles()) < role
-              .getPosition()) {
-            rolesString.add(":warning: " + role.getAsMention()
-                + " (bot too low in the hierarchy to give this role)");
-          } else {
-            rolesString.add(":white_check_mark:  " + role.getAsMention());
-          }
-        }
 
-        Paginator.Builder paginatorBuilder = getGenericPaginatorBuilder(eventWaiter);
-        paginatorBuilder.clearItems();
-        rolesString.forEach(paginatorBuilder::addItems);
-        paginatorBuilder
-            .setText("Server roles")
-            .build()
-            .paginate(event.getChannel(), 1);
-      } else {
-        event.replyWarning("Current server not found");
+      final Set<Long> serverRoleBlacklistedIds = repositoryContainer.getServerRoleRepository()
+          .findAllByServerGuidId(event.getGuild().getIdLong())
+          .parallelStream()
+          .filter(ServerRoleEntity::isBlacklisted)
+          .map(ServerRoleEntity::getRoleGuid)
+          .collect(Collectors.toSet());
+
+      final Member currentBotMember = event.getGuild().getSelfMember();
+      List<String> rolesString = new ArrayList<>();
+      for (Role role : event.getGuild().getRoles()) {
+        if (role.isPublicRole()) {
+          continue;
+        } else if (role.isManaged()) {
+          rolesString.add(":robot: " + role.getAsMention() + " (Cannot be assigned manually)");
+        } else if (role.hasPermission(Permission.ADMINISTRATOR)) {
+          rolesString.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
+        } else if (!serverRoleBlacklistedIds.isEmpty()
+            && serverRoleBlacklistedIds.stream()
+            .anyMatch(roleId -> roleId.equals(role.getIdLong()))) {
+          rolesString.add(":lock: " + role.getAsMention() + " (Locked role)");
+        } else if (DiscordBotUtils.getUpperRole(currentBotMember.getRoles()) < role
+            .getPosition()) {
+          rolesString.add(":warning: " + role.getAsMention()
+              + " (bot too low in the hierarchy to give this role)");
+        } else {
+          rolesString.add(":white_check_mark:  " + role.getAsMention());
+        }
       }
+
+      Paginator.Builder paginatorBuilder = getGenericPaginatorBuilder(eventWaiter);
+      paginatorBuilder.clearItems();
+      rolesString.forEach(paginatorBuilder::addItems);
+      paginatorBuilder
+          .setText("Server roles")
+          .build()
+          .paginate(event.getChannel(), 1);
     } else {
       event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action")
           .queue();

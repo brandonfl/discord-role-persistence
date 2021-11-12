@@ -25,7 +25,8 @@
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
 import com.brandonfl.discordrolepersistence.config.BotProperties;
-import com.brandonfl.discordrolepersistence.service.PersistenceService;
+import com.brandonfl.discordrolepersistence.service.LoggerService;
+import com.brandonfl.discordrolepersistence.service.UserService;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
@@ -36,23 +37,24 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class RoleEvent extends ListenerAdapter {
 
   private final BotProperties botProperties;
-  private final PersistenceService persistenceService;
+  private final UserService userService;
+  private final LoggerService loggerService;
 
   @Override
   public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
-    persistenceService.logRoleUpdate(event, event.getMember(), event.getRoles(), ":white_check_mark: Added roles");
+    loggerService.logUserRoleUpdate(event, event.getMember(), event.getRoles(), ":white_check_mark: Added roles");
 
     if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
-      persistenceService.persistUser(event.getGuild(), event.getMember());
+      userService.persistUser(event.getGuild(), event.getMember());
     }
   }
 
   @Override
   public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
-    persistenceService.logRoleUpdate(event, event.getMember(), event.getRoles(), ":no_entry: Removed roles");
+    loggerService.logUserRoleUpdate(event, event.getMember(), event.getRoles(), ":no_entry: Removed roles");
 
     if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
-      persistenceService.persistUser(event.getGuild(), event.getMember());
+      userService.persistUser(event.getGuild(), event.getMember());
     }
   }
 }

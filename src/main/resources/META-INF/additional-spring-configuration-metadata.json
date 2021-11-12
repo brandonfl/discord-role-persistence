@@ -21,9 +21,21 @@
       "description": "Id of the discord bot owner"
     },
     {
-      "name": "bot.setting.backup.thread-number",
+      "name": "bot.setting.persistence.user.thread-number",
       "type": "java.lang.Integer",
-      "description": "Set the number of thread to use to backup role membres. A good setting avoid bot getting spam when discord servers are getting raid for example.",
+      "description": "Set the number of thread to use to persist users. A good setting avoid bot getting spam when discord servers are getting raid for example.",
+      "defaultValue": 1
+    },
+    {
+      "name": "bot.setting.persistence.role.thread-number",
+      "type": "java.lang.Integer",
+      "description": "Set the number of thread to use to persist roles.",
+      "defaultValue": 1
+    },
+    {
+      "name": "bot.setting.persistence.server.thread-number",
+      "type": "java.lang.Integer",
+      "description": "Set the number of thread to use to persist servers.",
       "defaultValue": 1
     },
     {

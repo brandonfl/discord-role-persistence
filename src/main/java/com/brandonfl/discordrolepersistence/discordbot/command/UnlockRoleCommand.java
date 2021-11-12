@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.springframework.transaction.annotation.Transactional;
 
 public class UnlockRoleCommand extends Command {
 
@@ -51,6 +52,7 @@ public class UnlockRoleCommand extends Command {
   }
 
   @Override
+  @Transactional
   protected void execute(CommandEvent event) {
     Message msg = event.getMessage();
     if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
@@ -74,7 +76,7 @@ public class UnlockRoleCommand extends Command {
           if (serverEntity != null) {
             Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
                 .getServerRoleRepository()
-                .findByRoleGuidAndRoleGuid(role.getIdLong(), event.getGuild().getIdLong());
+                .findByRoleGuidAndServerGuid(role.getIdLong(), event.getGuild().getIdLong());
             ServerRoleEntity serverRoleEntity = null;
             if (possibleServerRoleEntity.isPresent()) {
               serverRoleEntity = possibleServerRoleEntity.get();

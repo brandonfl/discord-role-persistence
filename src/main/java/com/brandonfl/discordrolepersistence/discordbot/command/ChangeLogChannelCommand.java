@@ -30,6 +30,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import org.springframework.transaction.annotation.Transactional;
 
 public class ChangeLogChannelCommand extends Command {
 
@@ -45,6 +46,7 @@ public class ChangeLogChannelCommand extends Command {
   }
 
   @Override
+  @Transactional
   protected void execute(CommandEvent event) {
     Message msg = event.getMessage();
     if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {

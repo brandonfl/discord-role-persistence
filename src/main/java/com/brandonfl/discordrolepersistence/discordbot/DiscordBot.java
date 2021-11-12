@@ -37,8 +37,10 @@ import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.RoleEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
-import com.brandonfl.discordrolepersistence.service.BackupRoleService;
-import com.brandonfl.discordrolepersistence.service.PersistenceService;
+import com.brandonfl.discordrolepersistence.service.BotService;
+import com.brandonfl.discordrolepersistence.service.LoggerService;
+import com.brandonfl.discordrolepersistence.service.ServerService;
+import com.brandonfl.discordrolepersistence.service.UserService;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -57,8 +59,10 @@ public class DiscordBot {
 
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
-  private final BackupRoleService backupRoleService;
-  private final PersistenceService persistenceService;
+  private final UserService userService;
+  private final BotService botService;
+  private final ServerService serverService;
+  private final LoggerService loggerService;
 
   @PostConstruct
   public void startBot() throws LoginException {
@@ -87,11 +91,11 @@ public class DiscordBot {
         .addEventListeners(
             eventWaiter,
             commandClientBuilder.build(),
-            new ServerEvent(repositoryContainer, persistenceService),
-            new RoleEvent(botProperties, persistenceService),
-            new ServerRoleEvent(persistenceService),
-            new BotEvent(persistenceService),
-            new MemberEvent(backupRoleService, persistenceService))
+            new ServerEvent(repositoryContainer, serverService),
+            new RoleEvent(botProperties, userService, loggerService),
+            new ServerRoleEvent(serverService),
+            new BotEvent(botService),
+            new MemberEvent(userService))
         // start it up!
         .build();
 

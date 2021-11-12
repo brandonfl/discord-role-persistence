@@ -1,0 +1,40 @@
+{
+  "properties": [
+    {
+      "name": "bot-datasource.host",
+      "type": "java.lang.String",
+      "description": "Define where the mysql server is. If not set, in-memory storage will be used."
+    },
+    {
+      "name": "bot-datasource.name",
+      "type": "java.lang.String",
+      "description": "Define the database name",
+      "defaultValue": "bot"
+    },
+
+    {
+      "name": "bot-datasource.username",
+      "type": "java.lang.String",
+      "description": "Define the username used to connect to the datasource",
+      "defaultValue": "bot"
+    },
+    {
+      "name": "bot-datasource.password",
+      "type": "java.lang.String",
+      "description": "Define the password used to connect to the datasource",
+      "defaultValue": "bot"
+    },
+    {
+      "name": "bot-datasource.timezone",
+      "type": "java.lang.String",
+      "description": "Define the timezone used to store date into the datasource",
+      "defaultValue": "UTC"
+    },
+    {
+      "name": "bot-datasource.path",
+      "type": "java.lang.String",
+      "description": "Define the path of the in-memory storage. If not set, data will be lost at bot reboot.",
+      "defaultValue": "./data/drp"
+    }
+  ]
+}

@@ -10,6 +10,8 @@ services:
     volumes:
       - ./:/var/opt/bot
       - "${HOME}/.m2:/root/.m2"
+    environment:
+      - DB_HOST=bot-mysql
   mysql:
     container_name: "bot-mysql"
     build: ./docker/mysql

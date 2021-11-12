@@ -22,34 +22,11 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.discordbot.event;
+package com.brandonfl.discordrolepersistence.config.shared;
 
-import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
-import com.brandonfl.discordrolepersistence.service.ServerService;
-import javax.annotation.Nonnull;
-import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import lombok.Data;
 
-@RequiredArgsConstructor
-public class ServerEvent extends ListenerAdapter {
-
-  private final RepositoryContainer repositoryContainer;
-  private final ServerService serverService;
-
-  @Override
-  public void onGuildJoin(@Nonnull GuildJoinEvent event) {
-    if (!repositoryContainer.getServerRepository()
-        .findById(event.getGuild().getIdLong()).isPresent()) {
-      serverService.persistNewServer(event.getGuild());
-    }
-  }
-
-  @Override
-  public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
-    repositoryContainer.getServerRepository()
-        .findById(event.getGuild().getIdLong())
-        .ifPresent(entity -> repositoryContainer.getServerRepository().delete(entity));
-  }
+@Data
+public class ThreadConfig {
+  private int threadNumber;
 }

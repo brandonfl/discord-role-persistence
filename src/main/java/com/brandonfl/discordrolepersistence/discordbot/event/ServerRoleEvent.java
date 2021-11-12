@@ -24,7 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
-import com.brandonfl.discordrolepersistence.service.PersistenceService;
+import com.brandonfl.discordrolepersistence.service.ServerService;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
@@ -34,15 +34,15 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 @RequiredArgsConstructor
 public class ServerRoleEvent extends ListenerAdapter {
 
-  private final PersistenceService persistenceService;
+  private final ServerService serverService;
 
   @Override
   public void onRoleCreate(@Nonnull RoleCreateEvent event) {
-    persistenceService.createNewRoles(event.getGuild(), event);
+    serverService.createNewRoles(event);
   }
 
   @Override
   public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
-    persistenceService.deleteOldRoles(event.getGuild(), event);
+    serverService.deleteOldRoles(event);
   }
 }

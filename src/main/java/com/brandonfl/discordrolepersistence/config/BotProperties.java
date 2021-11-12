@@ -24,6 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.config;
 
+import com.brandonfl.discordrolepersistence.config.shared.ThreadConfig;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -47,18 +48,16 @@ public class BotProperties {
     private String token;
     private String heartbeatStatusUrl;
     private String ownerId;
-    private Backup backup = new Backup();
     private Persistence persistence = new Persistence();
-
-    @Data
-    public static class Backup {
-      private int threadNumber;
-    }
 
     @Data
     public static class Persistence {
       @Getter(AccessLevel.PRIVATE)
       private Boolean persistAtRoleChange;
+
+      private ThreadConfig user = new ThreadConfig();
+      private ThreadConfig server = new ThreadConfig();
+      private ThreadConfig role = new ThreadConfig();
 
       public boolean needToPersistAtRoleChange() {
         return Boolean.TRUE.equals(getPersistAtRoleChange());
