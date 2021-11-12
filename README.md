@@ -52,12 +52,12 @@ with `-e` the <a href="#variables">variables</a>
 |--|--|--|
 | LOG_FILE | Location of log file | ./log/bot.log |
 | BOT_TOKEN | Token of the Discord bot | None - **required** |
-| DB_USERNAME | The username used for your database | bot - **required** |
-| DB_PASSWORD | The password used for your database | bot - **required** |
-| DB_HOST | Where your database is hosted | bot-mysql - **required** |
-| DB_PORT | The port of your database | 3306 |
-| DB_NAME | The name of the table | bot - **required** |
-| DB_TIMEZONE | The timezone used | UTC |
+| DB_HOST | Define where the mysql server is. If not set, in-memory storage will be used. | None |
+| DB_NAME | Define the database name | bot|
+| DB_USERNAME | Define the username used to connect to the datasource | bot |
+| DB_PASSWORD | Define the password used to connect to the datasource | bot |
+| DB_TIMEZONE | Define the timezone used to store date into the datasource | UTC |
+| DB_PATH | Define the path of the in-memory storage. If not set, data will be lost at bot reboot. | ./data/drp |
 
 ## Licence
 

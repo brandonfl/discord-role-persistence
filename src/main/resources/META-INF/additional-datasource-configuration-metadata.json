@@ -8,7 +8,7 @@
     {
       "name": "bot-datasource.name",
       "type": "java.lang.String",
-      "description": "Define the datasource name",
+      "description": "Define the database name",
       "defaultValue": "bot"
     },
 
