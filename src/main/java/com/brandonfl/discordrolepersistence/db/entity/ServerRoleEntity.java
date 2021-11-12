@@ -51,6 +51,9 @@ public class ServerRoleEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
+  @Column(name = "server_guid", nullable = false, insertable = false, updatable = false)
+  private Long serverGuidId;
+
   @ManyToOne
   @JoinColumn(name = "server_guid", nullable = false, updatable = false)
   private ServerEntity serverGuid;

@@ -104,7 +104,7 @@ public class ServerService {
       if (serverRoleEntity == null) {
         serverRoleEntity = new ServerRoleEntity();
         serverRoleEntity.setServerGuid(serverEntity.get());
-        serverRoleEntity.setRoleGuid(event.getGuild().getIdLong());
+        serverRoleEntity.setRoleGuid(event.getRole().getIdLong());
 
         repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
       }
