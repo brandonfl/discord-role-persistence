@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import org.springframework.transaction.annotation.Transactional;
 
 public class GetRolesCommand extends Command {
 
@@ -58,7 +59,8 @@ public class GetRolesCommand extends Command {
   }
 
   @Override
-  protected void execute(CommandEvent event) {
+  @Transactional(readOnly = true)
+  public void execute(CommandEvent event) {
     if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
       ServerEntity serverEntity = repositoryContainer.getServerRepository()
           .findByGuid(event.getGuild().getIdLong()).orElse(null);

@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.springframework.transaction.annotation.Transactional;
 
 public class LockRoleCommand extends Command {
 
@@ -51,6 +52,7 @@ public class LockRoleCommand extends Command {
   }
 
   @Override
+  @Transactional
   protected void execute(CommandEvent event) {
     Message msg = event.getMessage();
     if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
