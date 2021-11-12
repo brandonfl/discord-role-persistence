@@ -3,15 +3,13 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
 logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
-  <changeSet author="BrandonFL" id="1">
+  <changeSet author="BrandonFL" id="3">
+    <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+      <sqlCheck expectedResult="0">SELECT COUNT(1) FROM DATABASECHANGELOG WHERE ID = '2';</sqlCheck>
+    </preConditions>
     <createTable tableName="server">
       <column autoIncrement="true" name="guid" type="BIGINT(20) UNSIGNED">
         <constraints primaryKey="true"/>
-      </column>
-      <column name="command_prefix"
-        type="VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-        defaultValue="drp!">
-        <constraints nullable="false"/>
       </column>
       <column name="log_channel" type="BIGINT(20) UNSIGNED"/>
       <column name="welcome_back_channel" type="BIGINT(20) UNSIGNED"/>
@@ -128,9 +126,6 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       onUpdate="RESTRICT"
       referencedColumnNames="id"
       referencedTableName="server_role"/>
-  </changeSet>
-  <changeSet id="2" author="BrandonFL">
-    <dropColumn tableName="server" columnName="command_prefix"/>
   </changeSet>
 </databaseChangeLog>
 

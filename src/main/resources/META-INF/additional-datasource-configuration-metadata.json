@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "bot-datasource.name",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "bot-datasource.host",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "bot-datasource.username",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "bot-datasource.password",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "bot-datasource.timezone",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "bot-datasource.path",
+      "type": "java.lang.String"
+    }
+  ]
+}

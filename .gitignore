@@ -268,5 +268,6 @@ fabric.properties
 # DOCKER
 # --------------------------
 
+data/
 mysql-data/
 log/
