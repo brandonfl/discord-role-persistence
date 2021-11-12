@@ -47,7 +47,7 @@ public class ChangeLogChannelCommand extends Command {
 
   @Override
   @Transactional
-  protected void execute(CommandEvent event) {
+  public void execute(CommandEvent event) {
     Message msg = event.getMessage();
     if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
       ServerEntity serverEntity = repositoryContainer.getServerRepository()

@@ -53,7 +53,7 @@ public class LockRoleCommand extends Command {
 
   @Override
   @Transactional
-  protected void execute(CommandEvent event) {
+  public void execute(CommandEvent event) {
     Message msg = event.getMessage();
     if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
       if (msg.getMentionedRoles().size() == 1 || DiscordBotUtils.isArgAnId(event)) {
