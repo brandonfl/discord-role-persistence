@@ -1,4 +1,4 @@
-FROM maven:alpine AS build
+FROM maven:openjdk AS build
 COPY src /usr/src/bot/src
 COPY pom.xml /usr/src/bot
 RUN mvn -f /usr/src/bot/pom.xml clean package

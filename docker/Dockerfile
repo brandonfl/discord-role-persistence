@@ -1,5 +1,5 @@
 FROM openjdk:11-slim
-FROM maven:alpine
+FROM maven:openjdk
 WORKDIR /var/opt/bot
 ADD utils/wait-for-it.sh /var/opt/wait-for-it.sh
 RUN chmod +x ../wait-for-it.sh
