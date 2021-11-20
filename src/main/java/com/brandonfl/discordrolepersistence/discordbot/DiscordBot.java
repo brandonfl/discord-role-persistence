@@ -44,12 +44,15 @@ import com.brandonfl.discordrolepersistence.service.UserService;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,18 +76,19 @@ public class DiscordBot {
     commandClientBuilder
         .setOwnerId(botProperties.getSetting().getOwnerId())
         .setEmojis("\u2705", "\u26A0\uFE0F", "\u274C")
+        .addSlashCommands(
+            new PingCommand()
+        )
+        .forceGuildOnly(756822748537552936L)
         .addCommands(
             new ChangeLogChannelCommand(repositoryContainer),
             new ChangeWelcomeBackChannelCommand(repositoryContainer),
             new GetRolesCommand(repositoryContainer, eventWaiter),
             new LockRoleCommand(repositoryContainer),
-            new PingCommand(),
             new UnlockRoleCommand(repositoryContainer)
     );
 
-    JDA jda = new JDABuilder(AccountType.BOT)
-        // set the token
-        .setToken(botProperties.getSetting().getToken())
+    JDA jda = JDABuilder.createDefault(botProperties.getSetting().getToken())
         .setAutoReconnect(true)
 
         // add the listeners
