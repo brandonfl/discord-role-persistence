@@ -89,7 +89,7 @@ public class LockRoleCommand extends SlashCommand {
           if (serverRoleEntity.isBlacklisted()) {
             event
                 .getHook()
-                .editOriginalFormat("%s This role is already locked for future rollbacks", ERROR_EMOJI)
+                .editOriginalFormat("%s This role is already locked for future rollbacks", WARNING_EMOJI)
                 .queue();
             return;
           }
@@ -121,7 +121,7 @@ public class LockRoleCommand extends SlashCommand {
       } else {
         event
             .getHook()
-            .editOriginalFormat("%s Current server not found", WARNING_EMOJI)
+            .editOriginalFormat("%s Current server not found", ERROR_EMOJI)
             .queue();
       }
     } else {

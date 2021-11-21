@@ -114,7 +114,7 @@ public class ChangeLogChannelCommand extends SlashCommand {
       } else {
         event
             .getHook()
-            .editOriginalFormat("%s \"Current server not found", WARNING_EMOJI)
+            .editOriginalFormat("%s Current server not found", ERROR_EMOJI)
             .queue();
       }
     }
