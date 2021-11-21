@@ -24,6 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.command;
 
+import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.ERROR_EMOJI;
 import static com.brandonfl.discordrolepersistence.utils.DiscordBotUtils.getGenericPaginatorBuilder;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
@@ -66,6 +67,14 @@ public class GetRolesCommand extends SlashCommand {
   @Transactional(readOnly = true)
   public void execute(SlashCommandEvent event) {
     event.deferReply().setContent("Retrieving roles...").queue();
+
+    if (event.getGuild() == null) {
+      event
+          .getHook()
+          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
+          .queue();
+      return;
+    }
 
     final Set<Long> serverRoleBlacklistedIds = repositoryContainer.getServerRoleRepository()
         .findAllByServerGuidId(event.getGuild().getIdLong())
