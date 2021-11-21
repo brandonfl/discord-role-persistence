@@ -41,8 +41,6 @@ public class PingCommand extends SlashCommand {
   @Override
   protected void execute(SlashCommandEvent event) {
     long time = System.currentTimeMillis();
-    //event.deferReply().setContent("Pong!").queue();
-    //event.deferReply().setContent("Pong!");
 
     event.deferReply().setContent("Pong!")
         .queue(response -> {
