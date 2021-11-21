@@ -102,7 +102,7 @@ public class BotService {
   private void createNewMembers(Guild guild, ServerEntity serverEntity) {
     Set<Long> memberGuids = guild.getMembers()
         .stream()
-        .filter(member -> !member.getUser().isBot() && !member.getUser().isFake())
+        .filter(member -> !member.getUser().isBot() && !member.getUser().isSystem())
         .map(Member::getIdLong)
         .collect(Collectors.toSet());
 

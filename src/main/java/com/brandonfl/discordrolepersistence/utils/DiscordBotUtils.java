@@ -102,11 +102,13 @@ public final class DiscordBotUtils {
   public static void updateJDAStatus(JDA jda, boolean reloading) {
     Presence presence = jda.getPresence();
     if (reloading) {
-      presence.setStatus(OnlineStatus.DO_NOT_DISTURB);
-      presence.setActivity(Activity.playing("reloading..."));
+      presence.setPresence(
+          OnlineStatus.DO_NOT_DISTURB,
+          Activity.playing("reloading..."));
     } else {
-      presence.setStatus(OnlineStatus.ONLINE);
-      presence.setActivity(Activity.playing("@mention help | discord-role-persistence.com "));
+      presence.setPresence(
+          OnlineStatus.ONLINE,
+          Activity.playing("use / | discord-role-persistence.com "));
     }
   }
 

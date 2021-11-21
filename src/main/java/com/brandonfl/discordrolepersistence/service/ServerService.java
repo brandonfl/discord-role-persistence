@@ -72,7 +72,7 @@ public class ServerService {
 
     Set<ServerUserEntity> users = new HashSet<>();
     for (Member member : guild.getMembers()) {
-      if (!member.isFake() && !member.getUser().isBot()) {
+      if (!member.getUser().isBot()) {
         Set<Long> memberRoleIds = member.getRoles().stream().map(Role::getIdLong).collect(
             Collectors.toSet());
 

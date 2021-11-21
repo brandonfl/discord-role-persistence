@@ -21,6 +21,11 @@
       "description": "Id of the discord bot owner"
     },
     {
+      "name": "bot.setting.guid-development-id",
+      "type": "java.lang.Long",
+      "description": "For development only: Upserting commands to a specific server will update the commands cache instantly, instead of taking up to an hour on global commands."
+    },
+    {
       "name": "bot.setting.persistence.user.thread-number",
       "type": "java.lang.Integer",
       "description": "Set the number of thread to use to persist users. A good setting avoid bot getting spam when discord servers are getting raid for example.",
