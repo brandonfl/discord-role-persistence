@@ -48,6 +48,7 @@ public class BotProperties {
     private String token;
     private String heartbeatStatusUrl;
     private String ownerId;
+    private Long guidDevelopmentId;
     private Persistence persistence = new Persistence();
 
     @Data

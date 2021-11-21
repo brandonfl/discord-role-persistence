@@ -49,6 +49,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -56,6 +57,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DiscordBot {
@@ -75,7 +77,6 @@ public class DiscordBot {
   @PostConstruct
   public void startBot() throws LoginException {
     EventWaiter eventWaiter = new EventWaiter();
-    // start getting a bot account set up
 
     CommandClientBuilder commandClientBuilder = new CommandClientBuilder();
     commandClientBuilder
@@ -88,13 +89,15 @@ public class DiscordBot {
             new UnlockRoleCommand(repositoryContainer),
             new ChangeLogChannelCommand(repositoryContainer),
             new ChangeWelcomeBackChannelCommand(repositoryContainer)
-        )
-        .forceGuildOnly(756822748537552936L);
+        );
+
+    if (botProperties.getSetting().getGuidDevelopmentId() != null) {
+      log.warn("Force guild active. This setting is for development only.");
+      commandClientBuilder.forceGuildOnly(botProperties.getSetting().getGuidDevelopmentId());
+    }
 
     JDA jda = JDABuilder.createDefault(botProperties.getSetting().getToken())
         .setAutoReconnect(true)
-
-        // add the listeners
         .addEventListeners(
             eventWaiter,
             commandClientBuilder.build(),
@@ -103,7 +106,6 @@ public class DiscordBot {
             new ServerRoleEvent(serverService),
             new BotEvent(botService),
             new MemberEvent(userService))
-        // start it up!
         .build();
 
     DiscordBotUtils.updateJDAStatus(jda, true);
