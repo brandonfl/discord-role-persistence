@@ -84,13 +84,13 @@ public class DiscordBot {
         .addSlashCommands(
             new PingCommand(),
             new GetRolesCommand(repositoryContainer, eventWaiter),
-            new LockRoleCommand(repositoryContainer)
+            new LockRoleCommand(repositoryContainer),
+            new UnlockRoleCommand(repositoryContainer)
         )
         .forceGuildOnly(756822748537552936L)
         .addCommands(
             new ChangeLogChannelCommand(repositoryContainer),
-            new ChangeWelcomeBackChannelCommand(repositoryContainer),
-            new UnlockRoleCommand(repositoryContainer)
+            new ChangeWelcomeBackChannelCommand(repositoryContainer)
     );
 
     JDA jda = JDABuilder.createDefault(botProperties.getSetting().getToken())
