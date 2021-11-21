@@ -108,7 +108,7 @@ public final class DiscordBotUtils {
     } else {
       presence.setPresence(
           OnlineStatus.ONLINE,
-          Activity.playing("@mention help | discord-role-persistence.com "));
+          Activity.playing("use / | discord-role-persistence.com "));
     }
   }
 
