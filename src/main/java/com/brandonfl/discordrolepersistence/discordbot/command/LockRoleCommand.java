@@ -49,9 +49,8 @@ import xyz.brandonfl.throwableoptional.ThrowableOptional;
 
 public class LockRoleCommand extends SlashCommand {
 
+  private static final String ROLE_ARGUMENT_NAME = "role";
   private final RepositoryContainer repositoryContainer;
-
-  private final String ROLE_ARGUMENT_NAME = "role";
 
   public LockRoleCommand(
       RepositoryContainer repositoryContainer) {

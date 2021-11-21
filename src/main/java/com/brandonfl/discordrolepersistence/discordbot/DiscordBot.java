@@ -85,11 +85,12 @@ public class DiscordBot {
             new PingCommand(),
             new GetRolesCommand(repositoryContainer, eventWaiter),
             new LockRoleCommand(repositoryContainer),
-            new UnlockRoleCommand(repositoryContainer)
+            new UnlockRoleCommand(repositoryContainer),
+            new ChangeLogChannelCommand(repositoryContainer)
         )
         .forceGuildOnly(756822748537552936L)
         .addCommands(
-            new ChangeLogChannelCommand(repositoryContainer),
+
             new ChangeWelcomeBackChannelCommand(repositoryContainer)
     );
 
