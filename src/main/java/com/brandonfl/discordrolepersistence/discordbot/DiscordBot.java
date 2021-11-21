@@ -67,6 +67,11 @@ public class DiscordBot {
   private final ServerService serverService;
   private final LoggerService loggerService;
 
+  public static final String SUCCESS_EMOJI = "\u2705";
+  public static final String WARNING_EMOJI = "\u26A0\uFE0F";
+  public static final String ERROR_EMOJI = "\u274C";
+  public static final String FORBIDDEN_EMOJI = ":octagonal_sign:";
+
   @PostConstruct
   public void startBot() throws LoginException {
     EventWaiter eventWaiter = new EventWaiter();
@@ -75,16 +80,16 @@ public class DiscordBot {
     CommandClientBuilder commandClientBuilder = new CommandClientBuilder();
     commandClientBuilder
         .setOwnerId(botProperties.getSetting().getOwnerId())
-        .setEmojis("\u2705", "\u26A0\uFE0F", "\u274C")
+        .setEmojis(SUCCESS_EMOJI, WARNING_EMOJI, ERROR_EMOJI)
         .addSlashCommands(
-            new PingCommand()
+            new PingCommand(),
+            new GetRolesCommand(repositoryContainer, eventWaiter),
+            new LockRoleCommand(repositoryContainer)
         )
         .forceGuildOnly(756822748537552936L)
         .addCommands(
             new ChangeLogChannelCommand(repositoryContainer),
             new ChangeWelcomeBackChannelCommand(repositoryContainer),
-            new GetRolesCommand(repositoryContainer, eventWaiter),
-            new LockRoleCommand(repositoryContainer),
             new UnlockRoleCommand(repositoryContainer)
     );
 
