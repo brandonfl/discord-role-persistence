@@ -76,18 +76,17 @@ public class ChangeLogChannelCommand extends SlashCommand {
     if (event.getGuild() == null) {
       event
           .getHook()
-          .editOriginalFormat("%s Current server not existing", WARNING_EMOJI)
+          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
           .queue();
     } else {
       ServerEntity serverEntity = repositoryContainer.getServerRepository()
           .findByGuid(event.getGuild().getIdLong()).orElse(null);
       if (serverEntity != null) {
         if (channelArgument != null) {
-
-          if (ChannelType.TEXT.equals(channelArgument.getType())) {
+          if (!ChannelType.TEXT.equals(channelArgument.getType())) {
             event
                 .getHook()
-                .editOriginalFormat("%s Log channel need to be a text channel", SUCCESS_EMOJI)
+                .editOriginalFormat("%s Log channel need to be a text channel", ERROR_EMOJI)
                 .queue();
           } else if (!event.getGuild().getSelfMember().hasPermission(channelArgument, Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE)) {
             event

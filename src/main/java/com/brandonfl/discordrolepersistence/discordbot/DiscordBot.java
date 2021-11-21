@@ -86,13 +86,10 @@ public class DiscordBot {
             new GetRolesCommand(repositoryContainer, eventWaiter),
             new LockRoleCommand(repositoryContainer),
             new UnlockRoleCommand(repositoryContainer),
-            new ChangeLogChannelCommand(repositoryContainer)
-        )
-        .forceGuildOnly(756822748537552936L)
-        .addCommands(
-
+            new ChangeLogChannelCommand(repositoryContainer),
             new ChangeWelcomeBackChannelCommand(repositoryContainer)
-    );
+        )
+        .forceGuildOnly(756822748537552936L);
 
     JDA jda = JDABuilder.createDefault(botProperties.getSetting().getToken())
         .setAutoReconnect(true)

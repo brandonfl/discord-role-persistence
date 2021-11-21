@@ -74,7 +74,7 @@ public class LockRoleCommand extends SlashCommand {
     if (event.getGuild() == null) {
       event
           .getHook()
-          .editOriginalFormat("%s Current server not existing", WARNING_EMOJI)
+          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
           .queue();
     } else if (roleArgument != null) {
       ServerEntity serverEntity = repositoryContainer.getServerRepository()
