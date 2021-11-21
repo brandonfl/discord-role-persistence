@@ -31,7 +31,9 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.jagrosh.jdautilities.menu.EmbedPaginator;
 import com.jagrosh.jdautilities.menu.Paginator;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +41,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.springframework.transaction.annotation.Transactional;
 
-public class GetRolesCommand extends Command {
+public class GetRolesCommand extends SlashCommand {
 
   private final RepositoryContainer repositoryContainer;
   private final EventWaiter eventWaiter;
@@ -59,7 +63,8 @@ public class GetRolesCommand extends Command {
 
   @Override
   @Transactional(readOnly = true)
-  public void execute(CommandEvent event) {
+  public void execute(SlashCommandEvent event) {
+    event.deferReply().setContent("Retrieving roles...").queue();
     if (event.getMember() != null && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 
       final Set<Long> serverRoleBlacklistedIds = repositoryContainer.getServerRoleRepository()
@@ -97,7 +102,7 @@ public class GetRolesCommand extends Command {
       paginatorBuilder
           .setText("Server roles")
           .build()
-          .paginate(event.getChannel(), 1);
+          .paginate(event.getHook().retrieveOriginal().complete(), 1);
     } else {
       event.getChannel().sendMessage(":octagonal_sign: Only administrators can perform this action")
           .queue();
