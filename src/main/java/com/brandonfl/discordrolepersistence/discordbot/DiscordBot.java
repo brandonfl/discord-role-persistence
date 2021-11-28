@@ -108,6 +108,6 @@ public class DiscordBot {
             new MemberEvent(userService))
         .build();
 
-    DiscordBotUtils.updateJDAStatus(jda, true);
+    DiscordBotUtils.updateJDAStatus(jda, false);
   }
 }
