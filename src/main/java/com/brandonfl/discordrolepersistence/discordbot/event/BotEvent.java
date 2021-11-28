@@ -47,6 +47,8 @@ public class BotEvent extends ListenerAdapter {
 
     if (botProperties.getSetting().getPersistence().needToReloadPersistenceAtBotReload()) {
       botService.persistGuilds(event.getJDA());
+    } else {
+      logger.warn("Reload is currently disabled. Role changes during bot downtime can be lost.");
     }
   }
 
@@ -56,6 +58,8 @@ public class BotEvent extends ListenerAdapter {
 
     if (botProperties.getSetting().getPersistence().needToReloadPersistenceAtBotReload()) {
       botService.persistGuilds(event.getJDA());
+    } else {
+      logger.warn("Reload is currently disabled. Role changes during bot downtime can be lost.");
     }
   }
 }
