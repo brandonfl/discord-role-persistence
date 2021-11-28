@@ -94,7 +94,7 @@ public class DiscordBot {
             new ServerEvent(repositoryContainer, serverService),
             new RoleEvent(botProperties, userService, loggerService),
             new ServerRoleEvent(serverService),
-            new BotEvent(botService),
+            new BotEvent(botProperties, botService),
             new MemberEvent(userService))
         // start it up!
         .build();

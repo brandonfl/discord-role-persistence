@@ -24,6 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
+import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.service.BotService;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
@@ -37,17 +38,24 @@ import org.slf4j.LoggerFactory;
 public class BotEvent extends ListenerAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(BotEvent.class);
+  private final BotProperties botProperties;
   private final BotService botService;
 
   @Override
   public void onReady(@Nonnull ReadyEvent event) {
     logger.info("Bot ready !");
-    botService.persistGuilds(event.getJDA());
+
+    if (botProperties.getSetting().getPersistence().needToReloadPersistenceAtBotReload()) {
+      botService.persistGuilds(event.getJDA());
+    }
   }
 
   @Override
   public void onReconnect(@Nonnull ReconnectedEvent event) {
     logger.warn("Bot reconnected !");
-    botService.persistGuilds(event.getJDA());
+
+    if (botProperties.getSetting().getPersistence().needToReloadPersistenceAtBotReload()) {
+      botService.persistGuilds(event.getJDA());
+    }
   }
 }
