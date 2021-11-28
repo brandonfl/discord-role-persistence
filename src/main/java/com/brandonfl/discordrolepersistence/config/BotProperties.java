@@ -54,11 +54,18 @@ public class BotProperties {
     @Data
     public static class Persistence {
       @Getter(AccessLevel.PRIVATE)
+      private Boolean reloadAtBotReload;
+
+      @Getter(AccessLevel.PRIVATE)
       private Boolean persistAtRoleChange;
 
       private ThreadConfig user = new ThreadConfig();
       private ThreadConfig server = new ThreadConfig();
       private ThreadConfig role = new ThreadConfig();
+
+      public boolean needToReloadPersistenceAtBotReload() {
+        return Boolean.TRUE.equals(getReloadAtBotReload());
+      }
 
       public boolean needToPersistAtRoleChange() {
         return Boolean.TRUE.equals(getPersistAtRoleChange());

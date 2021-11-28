@@ -48,6 +48,12 @@
       "type": "java.lang.Boolean",
       "description": "If the member role as to be persisted at role change or if we persist it at member leave.",
       "defaultValue": false
+    },
+    {
+      "name": "bot.setting.persistence.reload-at-bot-reload",
+      "type": "java.lang.Boolean",
+      "description": "Set if we need to re-persist / reload all servers at bot reload. Useful to get data missed during downtime.",
+      "defaultValue": true
     }
   ]
 }
