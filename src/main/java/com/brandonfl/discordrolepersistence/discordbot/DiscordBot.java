@@ -82,6 +82,7 @@ public class DiscordBot {
     commandClientBuilder
         .setOwnerId(botProperties.getSetting().getOwnerId())
         .setEmojis(SUCCESS_EMOJI, WARNING_EMOJI, ERROR_EMOJI)
+        .useHelpBuilder(false)
         .addSlashCommands(
             new PingCommand(),
             new GetRolesCommand(repositoryContainer, eventWaiter),
