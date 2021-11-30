@@ -100,7 +100,7 @@ public class DiscordBot {
       commandClientBuilder.forceGuildOnly(botProperties.getSetting().getGuidDevelopmentId());
     }
 
-    JDA jda = JDABuilder.createDefault(botProperties.getSetting().getToken())
+    JDABuilder.createDefault(botProperties.getSetting().getToken())
         .setAutoReconnect(true)
         .addEventListeners(
             eventWaiter,
@@ -112,7 +112,5 @@ public class DiscordBot {
             new MemberEvent(userService))
         .setActivity(DEFAULT_ACTIVITY)
         .build();
-
-    DiscordBotUtils.updateJDAStatus(jda, false);
   }
 }

@@ -26,6 +26,7 @@ package com.brandonfl.discordrolepersistence.discordbot.event;
 
 import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.service.BotService;
+import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -49,6 +50,7 @@ public class BotEvent extends ListenerAdapter {
       botService.persistGuilds(event.getJDA());
     } else {
       logger.warn("Reload is currently disabled. Role changes during bot downtime can be lost.");
+      DiscordBotUtils.updateJDAStatus(event.getJDA(), false);
     }
   }
 
@@ -60,6 +62,7 @@ public class BotEvent extends ListenerAdapter {
       botService.persistGuilds(event.getJDA());
     } else {
       logger.warn("Reload is currently disabled. Role changes during bot downtime can be lost.");
+      DiscordBotUtils.updateJDAStatus(event.getJDA(), false);
     }
   }
 }
