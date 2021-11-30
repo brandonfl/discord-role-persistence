@@ -53,6 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,8 @@ public class DiscordBot {
   public static final String WARNING_EMOJI = "\u26A0\uFE0F";
   public static final String ERROR_EMOJI = "\u274C";
   public static final String FORBIDDEN_EMOJI = ":octagonal_sign:";
+
+  public static final Activity DEFAULT_ACTIVITY = Activity.playing("use / | discord-role-persistence.com");
 
   @PostConstruct
   public void startBot() throws LoginException {
@@ -107,6 +110,7 @@ public class DiscordBot {
             new ServerRoleEvent(serverService),
             new BotEvent(botProperties, botService),
             new MemberEvent(userService))
+        .setActivity(DEFAULT_ACTIVITY)
         .build();
 
     DiscordBotUtils.updateJDAStatus(jda, false);

@@ -25,6 +25,7 @@
 package com.brandonfl.discordrolepersistence.utils;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
+import com.brandonfl.discordrolepersistence.discordbot.DiscordBot;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.Paginator;
@@ -108,7 +109,7 @@ public final class DiscordBotUtils {
     } else {
       presence.setPresence(
           OnlineStatus.ONLINE,
-          Activity.playing("use / | discord-role-persistence.com "));
+          DiscordBot.DEFAULT_ACTIVITY);
     }
   }
 
