@@ -22,23 +22,25 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.discordbot.command;
+package com.brandonfl.discordrolepersistence.discordbot.command.slash;
 
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.ERROR_EMOJI;
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.SUCCESS_EMOJI;
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.WARNING_EMOJI;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
-import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
-import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Invite.Channel;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -47,19 +49,19 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.brandonfl.throwableoptional.ThrowableOptional;
 
-public class LockRoleCommand extends SlashCommand {
+public class ChangeLogChannelCommand extends SlashCommand {
 
-  private static final String ROLE_ARGUMENT_NAME = "role";
+  private static final String CHANNEL_ARGUMENT_NAME = "channel";
   private final RepositoryContainer repositoryContainer;
 
-  public LockRoleCommand(
+  public ChangeLogChannelCommand(
       RepositoryContainer repositoryContainer) {
     this.repositoryContainer = repositoryContainer;
 
-    this.name = "lock";
-    this.help = "Prevent the role from being rollback.";
+    this.name = "log";
+    this.help = "Change or disable logger channel.";
     this.options = List
-        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME,"The role to lock for future rollback - required").setRequired(true));
+        .of(new OptionData(OptionType.CHANNEL, CHANNEL_ARGUMENT_NAME, "The channel to use to send logs"));
     this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
   }
 
@@ -67,8 +69,8 @@ public class LockRoleCommand extends SlashCommand {
   @Transactional
   public void execute(SlashCommandEvent event) {
     event.deferReply().queue();
-    Role roleArgument = ThrowableOptional
-        .of(() -> Objects.requireNonNull(event.getOption(ROLE_ARGUMENT_NAME)).getAsRole())
+    GuildChannel channelArgument = ThrowableOptional
+        .of(() -> Objects.requireNonNull(event.getOption(CHANNEL_ARGUMENT_NAME)).getAsGuildChannel())
         .orElse(null);
 
     if (event.getGuild() == null) {
@@ -76,47 +78,38 @@ public class LockRoleCommand extends SlashCommand {
           .getHook()
           .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
           .queue();
-    } else if (roleArgument != null) {
+    } else {
       ServerEntity serverEntity = repositoryContainer.getServerRepository()
           .findByGuid(event.getGuild().getIdLong()).orElse(null);
       if (serverEntity != null) {
-        Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
-            .getServerRoleRepository()
-            .findByRoleGuidAndServerGuid(roleArgument.getIdLong(), event.getGuild().getIdLong());
-        ServerRoleEntity serverRoleEntity;
-        if (possibleServerRoleEntity.isPresent()) {
-          serverRoleEntity = possibleServerRoleEntity.get();
-          if (serverRoleEntity.isBlacklisted()) {
+        if (channelArgument != null) {
+          if (!ChannelType.TEXT.equals(channelArgument.getType())) {
             event
                 .getHook()
-                .editOriginalFormat("%s This role is already locked for future rollbacks", WARNING_EMOJI)
+                .editOriginalFormat("%s Log channel need to be a text channel", ERROR_EMOJI)
                 .queue();
-            return;
+          } else if (!event.getGuild().getSelfMember().hasPermission(channelArgument, Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE)) {
+            event
+                .getHook()
+                .editOriginalFormat("%s It seems that the bot dont have talk access to this channel", ERROR_EMOJI)
+                .queue();
+          } else {
+            serverEntity.setLogChannel(channelArgument.getIdLong());
+            repositoryContainer.getServerRepository().save(serverEntity);
+
+            event
+                .getHook()
+                .editOriginalFormat("%s Log channel has been changed", SUCCESS_EMOJI)
+                .queue();
           }
         } else {
-          serverRoleEntity = new ServerRoleEntity();
-          serverRoleEntity.setServerGuid(serverEntity);
-          serverRoleEntity.setRoleGuid(roleArgument.getIdLong());
-        }
+          serverEntity.setLogChannel(null);
+          repositoryContainer.getServerRepository().save(serverEntity);
 
-        serverRoleEntity.setBlacklisted(true);
-        repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
-
-        event
-            .getHook()
-            .editOriginalFormat("%s Role %s is now locked for future rollbacks", SUCCESS_EMOJI, roleArgument.getName())
-            .queue();
-
-        Optional<TextChannel> logChannel = DiscordBotUtils
-            .getLogChannel(event.getGuild(), serverEntity);
-        if (logChannel.isPresent()) {
-          EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
-          embedBuilder
-              .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
-              .addField(":lock: Locked rollbacks for role",
-                  roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
-
-          logChannel.get().sendMessage(embedBuilder.build()).queue();
+          event
+              .getHook()
+              .editOriginalFormat("%s Log channel has been disabled", SUCCESS_EMOJI)
+              .queue();
         }
       } else {
         event
@@ -124,11 +117,6 @@ public class LockRoleCommand extends SlashCommand {
             .editOriginalFormat("%s Current server not found", ERROR_EMOJI)
             .queue();
       }
-    } else {
-      event
-          .getHook()
-          .editOriginalFormat("%s Please provide one and exactly only one role", ERROR_EMOJI)
-          .queue();
     }
   }
 }

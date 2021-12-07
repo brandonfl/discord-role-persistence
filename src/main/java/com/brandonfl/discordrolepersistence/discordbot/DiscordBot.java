@@ -26,12 +26,6 @@ package com.brandonfl.discordrolepersistence.discordbot;
 
 import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
-import com.brandonfl.discordrolepersistence.discordbot.command.ChangeLogChannelCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.ChangeWelcomeBackChannelCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.GetRolesCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.LockRoleCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.PingCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.UnlockRoleCommand;
 import com.brandonfl.discordrolepersistence.discordbot.event.BotEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.RoleEvent;
@@ -41,20 +35,14 @@ import com.brandonfl.discordrolepersistence.service.BotService;
 import com.brandonfl.discordrolepersistence.service.LoggerService;
 import com.brandonfl.discordrolepersistence.service.ServerService;
 import com.brandonfl.discordrolepersistence.service.UserService;
-import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import java.util.Collections;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,13 +74,23 @@ public class DiscordBot {
         .setOwnerId(botProperties.getSetting().getOwnerId())
         .setEmojis(SUCCESS_EMOJI, WARNING_EMOJI, ERROR_EMOJI)
         .useHelpBuilder(false)
+        .setPrefix("@mention")
+        .setAlternativePrefix("/")
+        .addCommands(
+            new com.brandonfl.discordrolepersistence.discordbot.command.old.PingCommand(),
+            new com.brandonfl.discordrolepersistence.discordbot.command.old.GetRolesCommand(repositoryContainer, eventWaiter),
+            new com.brandonfl.discordrolepersistence.discordbot.command.old.LockRoleCommand(repositoryContainer),
+            new com.brandonfl.discordrolepersistence.discordbot.command.old.UnlockRoleCommand(repositoryContainer),
+            new com.brandonfl.discordrolepersistence.discordbot.command.old.ChangeLogChannelCommand(repositoryContainer),
+            new com.brandonfl.discordrolepersistence.discordbot.command.old.ChangeWelcomeBackChannelCommand(repositoryContainer)
+        )
         .addSlashCommands(
-            new PingCommand(),
-            new GetRolesCommand(repositoryContainer, eventWaiter),
-            new LockRoleCommand(repositoryContainer),
-            new UnlockRoleCommand(repositoryContainer),
-            new ChangeLogChannelCommand(repositoryContainer),
-            new ChangeWelcomeBackChannelCommand(repositoryContainer)
+            new com.brandonfl.discordrolepersistence.discordbot.command.slash.PingCommand(),
+            new com.brandonfl.discordrolepersistence.discordbot.command.slash.GetRolesCommand(repositoryContainer, eventWaiter),
+            new com.brandonfl.discordrolepersistence.discordbot.command.slash.LockRoleCommand(repositoryContainer),
+            new com.brandonfl.discordrolepersistence.discordbot.command.slash.UnlockRoleCommand(repositoryContainer),
+            new com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeLogChannelCommand(repositoryContainer),
+            new com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeWelcomeBackChannelCommand(repositoryContainer)
         );
 
     if (botProperties.getSetting().getGuidDevelopmentId() != null) {

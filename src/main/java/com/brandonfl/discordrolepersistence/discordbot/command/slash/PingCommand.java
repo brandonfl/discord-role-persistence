@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.discordbot.command;
+package com.brandonfl.discordrolepersistence.discordbot.command.slash;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;

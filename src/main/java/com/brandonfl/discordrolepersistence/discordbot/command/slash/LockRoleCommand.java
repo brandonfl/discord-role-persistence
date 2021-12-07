@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.discordbot.command;
+package com.brandonfl.discordrolepersistence.discordbot.command.slash;
 
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.ERROR_EMOJI;
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.SUCCESS_EMOJI;
@@ -38,6 +38,7 @@ import java.util.Objects;
 import java.util.Optional;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -46,19 +47,19 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.brandonfl.throwableoptional.ThrowableOptional;
 
-public class UnlockRoleCommand extends SlashCommand {
+public class LockRoleCommand extends SlashCommand {
 
   private static final String ROLE_ARGUMENT_NAME = "role";
   private final RepositoryContainer repositoryContainer;
 
-  public UnlockRoleCommand(
+  public LockRoleCommand(
       RepositoryContainer repositoryContainer) {
     this.repositoryContainer = repositoryContainer;
 
-    this.name = "unlock";
-    this.help = "Allows the role to be rollback. By default, all the roles are unlock except admin roles.";
+    this.name = "lock";
+    this.help = "Prevent the role from being rollback.";
     this.options = List
-        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME, "The role to lock for future rollback - required").setRequired(true));
+        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME,"The role to lock for future rollback - required").setRequired(true));
     this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
   }
 
@@ -78,18 +79,17 @@ public class UnlockRoleCommand extends SlashCommand {
     } else if (roleArgument != null) {
       ServerEntity serverEntity = repositoryContainer.getServerRepository()
           .findByGuid(event.getGuild().getIdLong()).orElse(null);
-
       if (serverEntity != null) {
-        ServerRoleEntity serverRoleEntity = repositoryContainer
+        Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
             .getServerRoleRepository()
-            .findByRoleGuidAndServerGuid(roleArgument.getIdLong(), event.getGuild().getIdLong())
-            .orElse(null);
-
-        if (serverRoleEntity != null) {
-          if (!serverRoleEntity.isBlacklisted()) {
+            .findByRoleGuidAndServerGuid(roleArgument.getIdLong(), event.getGuild().getIdLong());
+        ServerRoleEntity serverRoleEntity;
+        if (possibleServerRoleEntity.isPresent()) {
+          serverRoleEntity = possibleServerRoleEntity.get();
+          if (serverRoleEntity.isBlacklisted()) {
             event
                 .getHook()
-                .editOriginalFormat("%s This role is already unlocked for future rollbacks", WARNING_EMOJI)
+                .editOriginalFormat("%s This role is already locked for future rollbacks", WARNING_EMOJI)
                 .queue();
             return;
           }
@@ -99,21 +99,21 @@ public class UnlockRoleCommand extends SlashCommand {
           serverRoleEntity.setRoleGuid(roleArgument.getIdLong());
         }
 
-        serverRoleEntity.setBlacklisted(false);
+        serverRoleEntity.setBlacklisted(true);
         repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
 
         event
             .getHook()
-            .editOriginalFormat("%s Role %s is now unlocked for future rollbacks", SUCCESS_EMOJI, roleArgument.getName())
+            .editOriginalFormat("%s Role %s is now locked for future rollbacks", SUCCESS_EMOJI, roleArgument.getName())
             .queue();
 
-        Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(),
-            serverEntity);
+        Optional<TextChannel> logChannel = DiscordBotUtils
+            .getLogChannel(event.getGuild(), serverEntity);
         if (logChannel.isPresent()) {
           EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
           embedBuilder
               .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
-              .addField(":unlock: Unlocked rollbacks for role",
+              .addField(":lock: Locked rollbacks for role",
                   roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
 
           logChannel.get().sendMessage(embedBuilder.build()).queue();
