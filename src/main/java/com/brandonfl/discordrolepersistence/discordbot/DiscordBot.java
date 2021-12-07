@@ -73,7 +73,7 @@ public class DiscordBot {
     commandClientBuilder
         .setOwnerId(botProperties.getSetting().getOwnerId())
         .setEmojis(SUCCESS_EMOJI, WARNING_EMOJI, ERROR_EMOJI)
-        .useHelpBuilder(false)
+        .useHelpBuilder(true)
         .setPrefix("@mention")
         .setAlternativePrefix("/")
         .addCommands(
