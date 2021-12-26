@@ -74,8 +74,8 @@ public class DiscordBot {
         .setOwnerId(botProperties.getSetting().getOwnerId())
         .setEmojis(SUCCESS_EMOJI, WARNING_EMOJI, ERROR_EMOJI)
         .useHelpBuilder(true)
-        .setPrefix("@mention")
-        .setAlternativePrefix("/")
+        .setPrefix("/")
+        .setAlternativePrefix("@mention")
         .addCommands(
             new com.brandonfl.discordrolepersistence.discordbot.command.old.PingCommand(),
             new com.brandonfl.discordrolepersistence.discordbot.command.old.GetRolesCommand(repositoryContainer, eventWaiter),
