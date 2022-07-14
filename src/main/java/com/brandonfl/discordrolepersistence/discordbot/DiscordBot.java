@@ -43,6 +43,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,8 +75,8 @@ public class DiscordBot {
         .setOwnerId(botProperties.getSetting().getOwnerId())
         .setEmojis(SUCCESS_EMOJI, WARNING_EMOJI, ERROR_EMOJI)
         .useHelpBuilder(true)
-        .setPrefix("@mention")
-        .setAlternativePrefix("/")
+        .setPrefix("/")
+        .setAlternativePrefix("@mention")
         .addCommands(
             new com.brandonfl.discordrolepersistence.discordbot.command.old.PingCommand(),
             new com.brandonfl.discordrolepersistence.discordbot.command.old.GetRolesCommand(repositoryContainer, eventWaiter),
@@ -95,10 +96,16 @@ public class DiscordBot {
 
     if (botProperties.getSetting().getGuidDevelopmentId() != null) {
       log.warn("Force guild active. This setting is for development only.");
-      commandClientBuilder.forceGuildOnly(botProperties.getSetting().getGuidDevelopmentId());
+      commandClientBuilder.forceGuildOnly(String.valueOf(botProperties.getSetting().getGuidDevelopmentId()));
     }
 
-    JDABuilder.createDefault(botProperties.getSetting().getToken())
+    JDABuilder
+        .create(
+            GatewayIntent.GUILD_MEMBERS, // Used to get members join/leave/roles
+            GatewayIntent.GUILD_MESSAGES, // Used to get messages as @mention
+            GatewayIntent.GUILD_MESSAGE_REACTIONS, // Used for the paginator
+            GatewayIntent.DIRECT_MESSAGES) // Used to allow some commands by direct messages
+        .setToken(botProperties.getSetting().getToken())
         .setAutoReconnect(true)
         .addEventListeners(
             eventWaiter,

@@ -79,21 +79,13 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.3.0_277</version>
+            <version>4.4.0_350</version>
         </dependency>
-
-        <!--<dependency>
-            <groupId>com.jagrosh</groupId>
-            <artifactId>jda-utilities</artifactId>
-            <version>3.0.4</version>
-            <scope>compile</scope>
-            <type>pom</type>
-        </dependency>-->
 
         <dependency>
             <groupId>pw.chew</groupId>
             <artifactId>jda-chewtils</artifactId>
-            <version>1.23.0</version>
+            <version>1.24.1</version>
             <scope>compile</scope>
             <type>pom</type>
         </dependency>
