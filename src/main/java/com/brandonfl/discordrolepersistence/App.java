@@ -36,16 +36,11 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class App extends SpringBootServletInitializer {
+public class App {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     @Value("${bot.setting.version}")
     String version;
-
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(App.class);
-    }
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(App.class);
