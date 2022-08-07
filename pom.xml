@@ -7,7 +7,7 @@
     <groupId>xyz.brandonfl.discordrolepersistence</groupId>
     <artifactId>drp-bot</artifactId>
     <packaging>war</packaging>
-    <version>1.5.7</version>
+    <version>1.5.8</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
