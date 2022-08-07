@@ -9,5 +9,4 @@ COPY --from=build /usr/src/bot/target/bot.war .
 COPY docker/utils/wait-for-it.sh .
 RUN chmod +x /wait-for-it.sh
 
-EXPOSE 8080
 ENTRYPOINT ["java","-jar","bot.war"]
