@@ -1,0 +1,101 @@
+baseurl = "https://discord-role-persistence.com/"
+DefaultContentLanguage = "en"
+title = "Discord role persistence"
+theme = "beautifulhugo"
+metaDataFormat = "yaml"
+pygmentsStyle = "trac"
+pygmentsUseClasses = true
+pygmentsCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+#pygmentsUseClassic = true
+#pygmentOptions = "linenos=inline"
+#disqusShortname = "XXX"
+#googleAnalytics = "XXX"
+
+[Params]
+#  homeTitle = "" # Set a different text for the header on the home page
+  subtitle = "Discord Role Persistence is a verified Discord bot with the objective to save the roles of users even after a leave/join server"
+  mainSections = []
+  logo = "img/discord-role-persistence-1024.png" # Expecting square dimensions
+  favicon = "img/cropped-discord-role-persistence-32x32.png"
+  commit = false
+  rss = true
+  comments = true
+  readingTime = false
+  wordCount = false
+  useHLJS = true
+  socialShare = true
+  delayDisqus = true
+  showRelatedPosts = true
+#  hideAuthor = true
+#  gcse = "012345678901234567890:abcdefghijk" # Get your code from google.com/cse. Make sure to go to "Look and Feel" and change Layout to "Full Width" and Theme to "Classic"
+
+#[[Params.bigimg]]
+#  src = "img/triangle.jpg"
+#  desc = "Triangle"
+#[[Params.bigimg]]
+#  src = "img/sphere.jpg"
+#  desc = "Sphere"
+#  # position: see values of CSS background-position.
+#  position = "center top"
+#[[Params.bigimg]]
+#  src = "img/hexagon.jpg"
+#  desc = "Hexagon"
+
+[Author]
+  name = "BrandonFL"
+  website = "brandonfl.xyz"
+  email = "contact@brandonfl.xyz"
+  github = "brandonfl"
+  discord = "pQCmYNd"
+
+[[menu.main]]
+    name = "Home"
+    url = ""
+    weight = 1
+
+[[menu.main]]
+    name = "Commands"
+    url = "page/commands/"
+    weight = 2
+
+[[menu.main]]
+    identifier = "links"
+    name = "Links"
+    weight = 3
+
+[[menu.main]]
+    parent = "links"
+    name = "Invitation"
+    url = "https://discord.com/invite/pQCmYNd"
+    weight = 3
+
+[[menu.main]]
+    parent = "links"
+    name = "Add to discord"
+    url = "https://discord.com/login?redirect_to=%2Foauth2%2Fauthorize%3Fclient_id%3D751810684521676900%26permissions%3D268438592%26redirect_uri%3Dhttps%253A%252F%252Fdiscord-role-persistence.com%252Fauthorized%252F%26response_type%3Dcode%26scope%3Dbot%2520applications.commands"
+    weight = 3
+
+[[menu.main]]
+    parent = "links"
+    name = "Status"
+    url = "https://status.discord-role-persistence.com/"
+    weight = 3
+
+[[menu.main]]
+    identifier = "on-premise"
+    name = "On premise"
+    weight = 4
+
+[[menu.main]]
+    parent = "on-premise"
+    name = "Docker"
+    url = "post/on-premise-docker"
+    weight = 1
+
+#[[menu.main]]
+#    name = "Tags"
+#    url = "tags"
+#    weight = 3
+
+
