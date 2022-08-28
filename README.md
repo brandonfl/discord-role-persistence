@@ -16,3 +16,11 @@ docker run --rm -it \
 ```shell
 docker-compose up
 ```
+
+- Build
+
+```shell
+docker run --rm -it \
+  -v $(pwd)/src:/src \
+  klakegg/hugo:0.101.0
+```

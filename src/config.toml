@@ -1,4 +1,5 @@
-baseurl = "https://discord-role-persistence.com/"
+baseURL = "/"
+relativeURLs = true
 DefaultContentLanguage = "en"
 title = "Discord role persistence"
 theme = "beautifulhugo"
