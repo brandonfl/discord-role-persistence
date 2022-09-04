@@ -99,6 +99,7 @@ public class LockRoleCommand extends SlashCommand {
           serverRoleEntity.setRoleGuid(roleArgument.getIdLong());
         }
 
+        serverRoleEntity.setForced(false);
         serverRoleEntity.setBlacklisted(true);
         repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
 
