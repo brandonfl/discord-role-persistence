@@ -70,5 +70,6 @@ public class ServerRoleEntity {
       inverseJoinColumns = @JoinColumn(name = "server_user_id", referencedColumnName = "id"))
   private Set<ServerUserEntity> userEntities = new HashSet<>();
 
-
+  @Column(name = "forced", nullable = false)
+  private boolean forced = false;
 }

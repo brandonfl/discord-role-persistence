@@ -28,6 +28,7 @@ import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerUserEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -95,19 +96,25 @@ public class UserService {
 
     if (serverUserEntity != null && serverUserEntity.getRoleEntities() != null && !serverUserEntity.getRoleEntities().isEmpty()) {
       final int botUpperRole = DiscordBotUtils.getUpperRole(joinEvent.getGuild().getSelfMember().getRoles());
-      final Set<Role> rolesToAddToUser = serverUserEntity
+      final Set<Role> rolesAddedToUser = new HashSet<>();
+
+      serverUserEntity
           .getRoleEntities()
-          .stream()
-          .filter(serverRoleEntity -> !serverRoleEntity.isBlacklisted())
-          .map(serverRoleEntity -> joinEvent.getGuild().getRoleById(serverRoleEntity.getRoleGuid()))
-          .filter(role -> role != null && !role.hasPermission(Permission.ADMINISTRATOR) && (botUpperRole > role.getPosition()))
-          .collect(Collectors.toSet());
+          .forEach(serverRoleEntity -> {
+            if (!serverRoleEntity.isBlacklisted()) {
+              final Role role = joinEvent.getGuild().getRoleById(serverRoleEntity.getRoleGuid());
 
-      rolesToAddToUser.forEach(role -> {
-        joinEvent.getGuild().addRoleToMember(joinEvent.getMember(), role).queue();
-      });
+              if (role != null
+                  && (!role.hasPermission(Permission.ADMINISTRATOR) || serverRoleEntity.isForced())
+                  && (botUpperRole > role.getPosition())) {
 
-      loggerService.logRolesGivedBack(joinEvent, serverUserEntity.getServerGuid(), rolesToAddToUser);
+                joinEvent.getGuild().addRoleToMember(joinEvent.getMember(), role).queue();
+                rolesAddedToUser.add(role);
+              }
+            }
+          });
+
+      loggerService.logRolesGivedBack(joinEvent, serverUserEntity.getServerGuid(), rolesAddedToUser);
     }
   }
 }

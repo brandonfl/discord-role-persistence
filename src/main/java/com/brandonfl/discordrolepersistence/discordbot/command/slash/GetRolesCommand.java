@@ -76,12 +76,8 @@ public class GetRolesCommand extends SlashCommand {
       return;
     }
 
-    final Set<Long> serverRoleBlacklistedIds = repositoryContainer.getServerRoleRepository()
-        .findAllByServerGuidId(event.getGuild().getIdLong())
-        .parallelStream()
-        .filter(ServerRoleEntity::isBlacklisted)
-        .map(ServerRoleEntity::getRoleGuid)
-        .collect(Collectors.toSet());
+    final List<ServerRoleEntity> serverRoleEntities = repositoryContainer.getServerRoleRepository()
+        .findAllByServerGuidId(event.getGuild().getIdLong());
 
     final Member currentBotMember = event.getGuild().getSelfMember();
     List<String> rolesString = new ArrayList<>();
@@ -91,10 +87,18 @@ public class GetRolesCommand extends SlashCommand {
       } else if (role.isManaged()) {
         rolesString.add(":robot: " + role.getAsMention() + " (Cannot be assigned manually)");
       } else if (role.hasPermission(Permission.ADMINISTRATOR)) {
-        rolesString.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
-      } else if (!serverRoleBlacklistedIds.isEmpty()
-          && serverRoleBlacklistedIds.stream()
-          .anyMatch(roleId -> roleId.equals(role.getIdLong()))) {
+        if (serverRoleEntities.stream().anyMatch(serverRole ->
+            serverRole.isForced()
+            && !serverRole.isBlacklisted()
+            && role.getIdLong() == serverRole.getRoleGuid())) {
+
+          rolesString.add(":white_check_mark: " + role.getAsMention() + " (:warning: It is not recommended to automatically give the administrator role)");
+
+        } else {
+          rolesString.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
+        }
+      } else if (!serverRoleEntities.isEmpty()
+          && serverRoleEntities.stream().anyMatch(serverRole -> serverRole.isBlacklisted() && role.getIdLong() == serverRole.getRoleGuid())) {
         rolesString.add(":lock: " + role.getAsMention() + " (Locked role)");
       } else if (DiscordBotUtils.getUpperRole(currentBotMember.getRoles()) < role
           .getPosition()) {

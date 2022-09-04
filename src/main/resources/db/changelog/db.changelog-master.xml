@@ -127,5 +127,12 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       referencedColumnNames="id"
       referencedTableName="server_role"/>
   </changeSet>
+  <changeSet id="4" author="BrandonFL">
+    <addColumn tableName="server_role">
+      <column name="forced" type="TINYINT(3) UNSIGNED" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>
 
