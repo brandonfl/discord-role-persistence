@@ -1,6 +1,6 @@
 
 <h1 align="center">
-  <a href="https://discord-role-persistence.com"><img src="https://discord-role-persistence.com/wp-content/uploads/2020/09/cropped-discord-role-persistence-v2-1024.png" width="100"/></a>
+  <a href="https://discord-role-persistence.com"><img src="https://raw.githubusercontent.com/brandonfl/discord-role-persistence/assets/discord-role-persistence-logo.png" width="100"/></a>
   <br>
   <a href="https://discord-role-persistence.com">Discord Role Persistence</a>
   <br>
@@ -9,8 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/brandonfl/discord-role-persistence/releases"><img src="https://img.shields.io/github/v/release/brandonfl/discord-role-persistence" alt="release"></a>
-  <a href="https://github.com/brandonfl/discord-role-persistence/actions?query=workflow%3Abuild-docker-and-publish"><img src="https://github.com/brandonfl/discord-role-persistence/workflows/build-docker-and-publish/badge.svg" alt="github-docker"></a>
-  <a href="https://github.com/brandonfl/discord-role-persistence/actions?query=workflow%3Asonar-gate"><img src="https://github.com/brandonfl/discord-role-persistence/workflows/sonar-gate/badge.svg" alt="github-sonar"></a>
+  <a href="https://hub.docker.com/r/brandonfl/discord-role-persistence"><img src="https://img.shields.io/docker/v/brandonfl/discord-role-persistence/latest?label=Docker%20version" alt="Docker version"></a>
   <a href="https://sonarcloud.io/dashboard?id=brandonfl_discord-role-persistence"><img src="https://sonarcloud.io/api/project_badges/measure?project=brandonfl_discord-role-persistence&metric=alert_status" alt="sonar-gate"></a>
   <a href="https://github.com/brandonfl/discord-role-persistence/blob/master/LICENSE"><img src="https://img.shields.io/github/license/brandonfl/discord-role-persistence" alt="licence"></a>
 </p>
