@@ -49,6 +49,7 @@ import xyz.brandonfl.throwableoptional.ThrowableOptional;
 public class UnlockRoleCommand extends SlashCommand {
 
   private static final String ROLE_ARGUMENT_NAME = "role";
+  private static final String FORCE_ARGUMENT_NAME = "force";
   private final RepositoryContainer repositoryContainer;
 
   public UnlockRoleCommand(
@@ -58,7 +59,8 @@ public class UnlockRoleCommand extends SlashCommand {
     this.name = "unlock";
     this.help = "Allows the role to be rollback. By default, all the roles are unlock except admin roles.";
     this.options = List
-        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME, "The role to lock for future rollback - required").setRequired(true));
+        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME, "The role to lock for future rollback - required").setRequired(true),
+            new OptionData(OptionType.BOOLEAN, FORCE_ARGUMENT_NAME, "Force admin role to be unlocked.").setRequired(false));
     this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
   }
 
@@ -76,6 +78,18 @@ public class UnlockRoleCommand extends SlashCommand {
           .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
           .queue();
     } else if (roleArgument != null) {
+      final boolean forceArgument = ThrowableOptional
+          .of(() -> Objects.requireNonNull(event.getOption(FORCE_ARGUMENT_NAME)).getAsBoolean())
+          .orElse(false);
+
+      if (roleArgument.hasPermission(Permission.ADMINISTRATOR) && !forceArgument) {
+        event
+            .getHook()
+            .editOriginalFormat("%s This role is currently an administrator role. You can force the unlock with force option.", WARNING_EMOJI)
+            .queue();
+        return;
+      }
+
       ServerEntity serverEntity = repositoryContainer.getServerRepository()
           .findByGuid(event.getGuild().getIdLong()).orElse(null);
 
@@ -86,7 +100,7 @@ public class UnlockRoleCommand extends SlashCommand {
             .orElse(null);
 
         if (serverRoleEntity != null) {
-          if (!serverRoleEntity.isBlacklisted()) {
+          if (!serverRoleEntity.isBlacklisted() && !forceArgument) {
             event
                 .getHook()
                 .editOriginalFormat("%s This role is already unlocked for future rollbacks", WARNING_EMOJI)
@@ -99,6 +113,7 @@ public class UnlockRoleCommand extends SlashCommand {
           serverRoleEntity.setRoleGuid(roleArgument.getIdLong());
         }
 
+        serverRoleEntity.setForced(forceArgument);
         serverRoleEntity.setBlacklisted(false);
         repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
 
