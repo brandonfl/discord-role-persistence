@@ -10,6 +10,7 @@
 <p align="center">
   <a href="https://github.com/brandonfl/discord-role-persistence/releases"><img src="https://img.shields.io/github/v/release/brandonfl/discord-role-persistence" alt="release"></a>
   <a href="https://hub.docker.com/r/brandonfl/discord-role-persistence"><img src="https://img.shields.io/docker/v/brandonfl/discord-role-persistence/latest?label=Docker%20version" alt="Docker version"></a>
+  <a href="https://github.com/brandonfl/discord-role-persistence/actions/workflows/codeql.yml"><img src="https://github.com/brandonfl/discord-role-persistence/actions/workflows/codeql.yml/badge.svg?branch=master" alt="CodeQL"></a>
   <a href="https://sonarcloud.io/dashboard?id=brandonfl_discord-role-persistence"><img src="https://sonarcloud.io/api/project_badges/measure?project=brandonfl_discord-role-persistence&metric=alert_status" alt="sonar-gate"></a>
   <a href="https://github.com/brandonfl/discord-role-persistence/blob/master/LICENSE"><img src="https://img.shields.io/github/license/brandonfl/discord-role-persistence" alt="licence"></a>
 </p>
