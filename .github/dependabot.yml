@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 10
+    assignees:
+      - "brandonfl"
+    reviewers:
+      - "brandonfl"
     ignore:
       - dependency-name: org.apache.maven:*
       - dependency-name: org.codehaus.mojo:*
