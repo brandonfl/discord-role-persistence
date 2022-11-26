@@ -51,7 +51,7 @@ public class RoleEvent extends ListenerAdapter {
 
   @Override
   public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
-    loggerService.logUserRoleUpdate(event, event.getMember(), event.getRoles(), ":no_entry: Removed roles");
+    loggerService.logUserRoleUpdate(event, event.getMember(), event.getRoles(), ":x: Removed roles");
 
     if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
       userService.persistUser(event.getGuild(), event.getMember());

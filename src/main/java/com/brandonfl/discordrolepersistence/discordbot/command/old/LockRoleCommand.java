@@ -81,7 +81,7 @@ public class LockRoleCommand extends Command {
             if (possibleServerRoleEntity.isPresent()) {
               serverRoleEntity = possibleServerRoleEntity.get();
               if (serverRoleEntity.isBlacklisted()) {
-                event.replyError("This role is already locked for future rollbacks");
+                event.replyError("This role is already preventing future rollbacks");
                 return;
               }
             } else {
@@ -92,7 +92,7 @@ public class LockRoleCommand extends Command {
 
             serverRoleEntity.setBlacklisted(true);
             repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
-            event.replySuccess("Role " + role.getName() + " is now locked for future rollbacks");
+            event.replySuccess("Preventing the role " + role.getName() + " from being rollback.");
 
             Optional<TextChannel> logChannel = DiscordBotUtils
                 .getLogChannel(event.getGuild(), serverEntity);
@@ -101,8 +101,10 @@ public class LockRoleCommand extends Command {
               embedBuilder
                   .setAuthor(event.getMember().getEffectiveName(), null,
                       event.getAuthor().getEffectiveAvatarUrl())
-                  .addField(":lock: Locked rollbacks for role",
-                      role.getName() + " (" + role.getId() + ")", true);
+                  .addField(
+                      ":x: Preventing the role from being rollback.",
+                      role.getName() + " (" + role.getId() + ")",
+                      true);
 
               logChannel.get().sendMessage(embedBuilder.build()).queue();
             }
