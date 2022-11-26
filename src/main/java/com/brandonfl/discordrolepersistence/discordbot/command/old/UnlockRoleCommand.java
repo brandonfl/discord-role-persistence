@@ -82,7 +82,7 @@ public class UnlockRoleCommand extends Command {
             if (possibleServerRoleEntity.isPresent()) {
               serverRoleEntity = possibleServerRoleEntity.get();
               if (!serverRoleEntity.isBlacklisted()) {
-                event.replyError("This role is already unlocked for future rollbacks");
+                event.replyError("This role is already reapplied at future member join");
                 return;
               }
             } else {
@@ -92,14 +92,14 @@ public class UnlockRoleCommand extends Command {
             }
             serverRoleEntity.setBlacklisted(false);
             repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
-            event.replySuccess("Role " + role.getName() + " is now unlocked for future rollbacks");
+            event.replySuccess("Role " + role.getName() + " is reapplied at future member join");
 
             Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(), serverEntity);
             if (logChannel.isPresent()) {
               EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
               embedBuilder
                   .setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl())
-                  .addField(":unlock: Unlocked rollbacks for role", role.getName() + " (" + role.getId() + ")", true);
+                  .addField(":white_check_mark: Role is now reapplied at future member join", role.getName() + " (" + role.getId() + ")", true);
 
               logChannel.get().sendMessage(embedBuilder.build()).queue();
             }
