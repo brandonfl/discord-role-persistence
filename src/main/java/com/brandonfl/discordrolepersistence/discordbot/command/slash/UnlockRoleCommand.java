@@ -57,10 +57,10 @@ public class UnlockRoleCommand extends SlashCommand {
     this.repositoryContainer = repositoryContainer;
 
     this.name = "unlock";
-    this.help = "Allows the role to be rollback. By default, all the roles are unlock except admin roles.";
+    this.help = "Allows the role to be reapplied at future member join. By default, all the roles are reapplied except admin roles.";
     this.options = List
-        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME, "The role to lock for future rollback - required").setRequired(true),
-            new OptionData(OptionType.BOOLEAN, FORCE_ARGUMENT_NAME, "Force admin role to be unlocked.").setRequired(false));
+        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME, "The role to apply at future member join - required").setRequired(true),
+            new OptionData(OptionType.BOOLEAN, FORCE_ARGUMENT_NAME, "Force admin role to be reapplied at future member join.").setRequired(false));
     this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
   }
 
@@ -85,7 +85,7 @@ public class UnlockRoleCommand extends SlashCommand {
       if (roleArgument.hasPermission(Permission.ADMINISTRATOR) && !forceArgument) {
         event
             .getHook()
-            .editOriginalFormat("%s This role is currently an administrator role. You can force the unlock with force option.", WARNING_EMOJI)
+            .editOriginalFormat("%s This role is currently an administrator role. You can force the reapply with force option.", WARNING_EMOJI)
             .queue();
         return;
       }
@@ -103,7 +103,7 @@ public class UnlockRoleCommand extends SlashCommand {
           if (!serverRoleEntity.isBlacklisted() && !forceArgument) {
             event
                 .getHook()
-                .editOriginalFormat("%s This role is already unlocked for future rollbacks", WARNING_EMOJI)
+                .editOriginalFormat("%s This role is already reapplied at future member join", WARNING_EMOJI)
                 .queue();
             return;
           }
@@ -119,7 +119,7 @@ public class UnlockRoleCommand extends SlashCommand {
 
         event
             .getHook()
-            .editOriginalFormat("%s Role %s is now unlocked for future rollbacks", SUCCESS_EMOJI, roleArgument.getName())
+            .editOriginalFormat("%s Role %s is now reapplied at future member join", SUCCESS_EMOJI, roleArgument.getName())
             .queue();
 
         Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(),
@@ -128,7 +128,7 @@ public class UnlockRoleCommand extends SlashCommand {
           EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
           embedBuilder
               .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
-              .addField(":unlock: Unlocked rollbacks for role",
+              .addField(":unlock: Role reapplied at future member join",
                   roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
 
           logChannel.get().sendMessage(embedBuilder.build()).queue();

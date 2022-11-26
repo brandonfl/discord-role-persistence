@@ -99,13 +99,13 @@ public class GetRolesCommand extends SlashCommand {
         }
       } else if (!serverRoleEntities.isEmpty()
           && serverRoleEntities.stream().anyMatch(serverRole -> serverRole.isBlacklisted() && role.getIdLong() == serverRole.getRoleGuid())) {
-        rolesString.add(":lock: " + role.getAsMention() + " (Locked role)");
+        rolesString.add(":x: " + role.getAsMention() + " (The role will not be reapplied)");
       } else if (DiscordBotUtils.getUpperRole(currentBotMember.getRoles()) < role
           .getPosition()) {
         rolesString.add(":warning: " + role.getAsMention()
             + " (bot too low in the hierarchy to give this role)");
       } else {
-        rolesString.add(":white_check_mark:  " + role.getAsMention());
+        rolesString.add(":white_check_mark:  " + role.getAsMention() + " (The role will be reapplied)");
       }
     }
 
