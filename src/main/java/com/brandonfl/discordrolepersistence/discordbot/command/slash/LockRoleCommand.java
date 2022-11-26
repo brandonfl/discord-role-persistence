@@ -59,7 +59,7 @@ public class LockRoleCommand extends SlashCommand {
     this.name = "lock";
     this.help = "Prevent the role from being rollback.";
     this.options = List
-        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME,"The role to lock for future rollback - required").setRequired(true));
+        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME,"The role to prevent of future rollback - required").setRequired(true));
     this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
   }
 
@@ -89,7 +89,7 @@ public class LockRoleCommand extends SlashCommand {
           if (serverRoleEntity.isBlacklisted()) {
             event
                 .getHook()
-                .editOriginalFormat("%s This role is already locked for future rollbacks", WARNING_EMOJI)
+                .editOriginalFormat("%s This role is already preventing future rollbacks", WARNING_EMOJI)
                 .queue();
             return;
           }
@@ -105,7 +105,7 @@ public class LockRoleCommand extends SlashCommand {
 
         event
             .getHook()
-            .editOriginalFormat("%s Role %s is now locked for future rollbacks", SUCCESS_EMOJI, roleArgument.getName())
+            .editOriginalFormat("%s Preventing the role `%s` from being rollback.", SUCCESS_EMOJI, roleArgument.getName())
             .queue();
 
         Optional<TextChannel> logChannel = DiscordBotUtils
@@ -114,7 +114,7 @@ public class LockRoleCommand extends SlashCommand {
           EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
           embedBuilder
               .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
-              .addField(":lock: Locked rollbacks for role",
+              .addField(":x: Preventing rollbacks for role",
                   roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
 
           logChannel.get().sendMessage(embedBuilder.build()).queue();
