@@ -25,6 +25,7 @@
 package com.brandonfl.discordrolepersistence.discordbot.command.slash;
 
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.ERROR_EMOJI;
+import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.SUCCESS_EMOJI;
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.WARNING_EMOJI;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
@@ -87,15 +88,13 @@ public class CleanSavedRolesCommand extends SlashCommand {
         event
             .getHook()
             .setEphemeral(true)
-            .editOriginalFormat("%s Saved roles for %s as been cleaned", WARNING_EMOJI,
-                userArgument.getAsMention())
+            .editOriginalFormat("%s Saved roles for %s as been cleaned", SUCCESS_EMOJI, userArgument.getAsMention())
             .queue();
       } else {
         event
             .getHook()
             .setEphemeral(true)
-            .editOriginalFormat("%s User %s dont have saved roles into this server", WARNING_EMOJI,
-                userArgument.getAsMention())
+            .editOriginalFormat("%s User %s dont have saved roles into this server", SUCCESS_EMOJI, userArgument.getAsMention())
             .queue();
       }
     } else {
@@ -103,7 +102,7 @@ public class CleanSavedRolesCommand extends SlashCommand {
       event
           .getHook()
           .setEphemeral(true)
-          .editOriginalFormat("%s All saved roles as been cleaned", WARNING_EMOJI)
+          .editOriginalFormat("%s All saved roles as been cleaned", SUCCESS_EMOJI)
           .queue();
     }
   }
