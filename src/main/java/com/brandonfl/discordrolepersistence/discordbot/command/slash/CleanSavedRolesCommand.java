@@ -33,6 +33,7 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import java.util.List;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -41,6 +42,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.brandonfl.throwableoptional.ThrowableOptional;
 
+@Slf4j
 public class CleanSavedRolesCommand extends SlashCommand {
 
   private static final String USER = "user";
@@ -81,24 +83,17 @@ public class CleanSavedRolesCommand extends SlashCommand {
 
 
     if (userArgument != null) {
-      int deletedCounter = repositoryContainer.getServerUserRepository()
+      repositoryContainer.getServerUserRepository()
           .deleteAllByServerGuidAndUserGuid(serverEntity, userArgument.getIdLong());
 
-      if (deletedCounter > 0) {
-        event
-            .getHook()
-            .setEphemeral(true)
-            .editOriginalFormat("%s Saved roles for %s as been cleaned", SUCCESS_EMOJI, userArgument.getAsMention())
-            .queue();
-      } else {
-        event
-            .getHook()
-            .setEphemeral(true)
-            .editOriginalFormat("%s User %s dont have saved roles into this server", SUCCESS_EMOJI, userArgument.getAsMention())
-            .queue();
-      }
+      event
+          .getHook()
+          .setEphemeral(true)
+          .editOriginalFormat("%s Saved roles for %s as been cleaned", SUCCESS_EMOJI, userArgument.getAsMention())
+          .queue();
     } else {
       repositoryContainer.getServerUserRepository().deleteAllByServerGuid(serverEntity);
+
       event
           .getHook()
           .setEphemeral(true)
