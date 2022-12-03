@@ -48,7 +48,7 @@ public class UnlockRoleCommand extends Command {
     this.repositoryContainer = repositoryContainer;
 
     this.name = "unlock";
-    this.help = "Allows the role to be reapplied at future member join. By default, all the roles are reapplied except admin roles.";
+    this.help = "Allows role to be reapplied at future member join. By default, roles reapplied except admin roles.";
     this.arguments = "<@role OR roleId>";
   }
 

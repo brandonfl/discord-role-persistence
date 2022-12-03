@@ -57,7 +57,7 @@ public class UnlockRoleCommand extends SlashCommand {
     this.repositoryContainer = repositoryContainer;
 
     this.name = "unlock";
-    this.help = "Allows the role to be reapplied at future member join. By default, all the roles are reapplied except admin roles.";
+    this.help = "Allows role to be reapplied at future member join. By default, roles reapplied except admin roles.";
     this.options = List
         .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME, "The role to apply at future member join - required").setRequired(true),
             new OptionData(OptionType.BOOLEAN, FORCE_ARGUMENT_NAME, "Force admin role to be reapplied at future member join.").setRequired(false));
