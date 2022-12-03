@@ -54,6 +54,6 @@ public class ServerEntity {
   private Set<ServerRoleEntity> roleEntities = new HashSet<>();
 
   @OneToMany(mappedBy = "serverGuid")
-  private Set<ServerUserEntity> userEntities;
+  private Set<ServerUserEntity> userEntities = new HashSet<>();
 
 }

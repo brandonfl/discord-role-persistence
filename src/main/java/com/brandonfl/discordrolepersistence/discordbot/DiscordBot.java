@@ -91,7 +91,8 @@ public class DiscordBot {
             new com.brandonfl.discordrolepersistence.discordbot.command.slash.LockRoleCommand(repositoryContainer),
             new com.brandonfl.discordrolepersistence.discordbot.command.slash.UnlockRoleCommand(repositoryContainer),
             new com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeLogChannelCommand(repositoryContainer),
-            new com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeWelcomeBackChannelCommand(repositoryContainer)
+            new com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeWelcomeBackChannelCommand(repositoryContainer),
+            new com.brandonfl.discordrolepersistence.discordbot.command.slash.CleanSavedRolesCommand(repositoryContainer)
         );
 
     if (botProperties.getSetting().getGuidDevelopmentId() != null) {
