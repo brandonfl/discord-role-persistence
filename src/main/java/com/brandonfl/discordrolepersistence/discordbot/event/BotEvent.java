@@ -55,7 +55,7 @@ public class BotEvent extends ListenerAdapter {
       botService.persistGuilds(event.getJDA());
 
       stopWatch.stop();
-      logger.info("Reloaded in " + stopWatch.getTotalTimeMillis() + "ms");
+      logger.info("Reloaded in {}ms", stopWatch.getTotalTimeMillis());
     } else {
       logger.warn("Reload is currently disabled. Role changes during bot downtime can be lost.");
       DiscordBotUtils.updateJDAStatus(event.getJDA(), false);
