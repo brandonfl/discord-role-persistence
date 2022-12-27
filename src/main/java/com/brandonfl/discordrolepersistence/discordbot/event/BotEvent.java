@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.events.ReconnectedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StopWatch;
 
 @RequiredArgsConstructor
 public class BotEvent extends ListenerAdapter {
@@ -47,7 +48,14 @@ public class BotEvent extends ListenerAdapter {
     logger.info("Bot ready !");
 
     if (botProperties.getSetting().getPersistence().needToReloadPersistenceAtBotReload()) {
+      logger.info("Reloading...");
+      StopWatch stopWatch = new StopWatch();
+      stopWatch.start();
+
       botService.persistGuilds(event.getJDA());
+
+      stopWatch.stop();
+      logger.info("Reloaded in {}ms", stopWatch.getTotalTimeMillis());
     } else {
       logger.warn("Reload is currently disabled. Role changes during bot downtime can be lost.");
       DiscordBotUtils.updateJDAStatus(event.getJDA(), false);
