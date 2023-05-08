@@ -146,12 +146,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <image>
-                        <name>${project.artifactId}:${project.version}</name>
-                    </image>
-                    <sourceDirectory>${project.build.directory}</sourceDirectory>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
