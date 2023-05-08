@@ -12,6 +12,9 @@ LABEL description="Discord Role Persistence is a verified Discord bot with the o
 LABEL website="https://discord-role-persistence.com"
 LABEL github="https://github.com/brandonfl/discord-role-persistence"
 
+RUN apt update
+RUN apt install dumb-init
+
 COPY --from=build /usr/src/bot/target/bot.war /app
 COPY docker/utils/wait-for-it.sh /app
 COPY docker-custom-entrypoint.sh /app
