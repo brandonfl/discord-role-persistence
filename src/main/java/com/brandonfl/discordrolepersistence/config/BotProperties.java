@@ -26,7 +26,7 @@ package com.brandonfl.discordrolepersistence.config;
 
 import com.brandonfl.discordrolepersistence.config.shared.ThreadConfig;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -64,7 +64,7 @@ public class BotProperties {
       Resource resource = new FileSystemResource(token);
       if (resource.exists()) {
         try {
-          return StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
+          return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
         } catch (IOException ioException) {
           log.error("Failed reading token file : " + ioException.getMessage(), ioException);
           return token;
