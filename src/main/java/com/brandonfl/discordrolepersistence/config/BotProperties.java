@@ -25,14 +25,21 @@
 package com.brandonfl.discordrolepersistence.config;
 
 import com.brandonfl.discordrolepersistence.config.shared.ThreadConfig;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
+@Slf4j
 @Component
 @ConfigurationProperties(prefix = "bot", ignoreInvalidFields = false)
 @PropertySources({
@@ -45,7 +52,28 @@ public class BotProperties {
   @Data
   public static class Setting {
     private String version;
+
     private String token;
+
+    public String getToken() {
+      if (token == null || token.isBlank()) {
+        log.error("No bot token as been provided !");
+        return "";
+      }
+
+      Resource resource = new FileSystemResource(token);
+      if (resource.exists()) {
+        try {
+          return StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
+        } catch (IOException ioException) {
+          log.error("Failed reading token file : " + ioException.getMessage(), ioException);
+          return token;
+        }
+      }
+
+      return token;
+    }
+
     private String heartbeatStatusUrl;
     private String ownerId;
     private Long guidDevelopmentId;
