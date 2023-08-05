@@ -1,10 +1,10 @@
-FROM maven:3.8.6-openjdk-11@sha256:37a94a4fe3b52627748d66c095d013a17d67478bc0594236eca55c8aef33ddaa AS build
-COPY src /usr/src/bot/src
-COPY pom.xml /usr/src/bot
-RUN mvn -f /usr/src/bot/pom.xml clean package -DskipTests
+FROM maven:3.9.3-eclipse-temurin-17-alpine@sha256:1cbc71cb8e2f594338f4b4cbca897b9f9ed6183e361489f1f7db770d57efe839 AS build
+COPY src /tmp/src/bot/src
+COPY pom.xml /tmp/src/bot
+RUN mvn -f /tmp/src/bot/pom.xml clean package -DskipTests
 
-FROM openjdk:11-slim-bullseye@sha256:d2b6af2093e823ba0cdee4bcd45a905afe3fa054d08bde55b1d850515da69a08
-RUN useradd --system -m -d /app -U -s /bin/false javauser
+FROM eclipse-temurin:17.0.8_7-jre-alpine@sha256:221790c3159317e57c4106c25cac581381ad2f2e249fbeabdad663573ab19adc
+RUN addgroup -S javauser && adduser -S javauser -D -G javauser
 WORKDIR /app
 
 LABEL maintainer="Brandon Fontany--Legall <brandon@fontany-legall.xyz>"
@@ -12,10 +12,10 @@ LABEL description="Discord Role Persistence is a verified Discord bot with the o
 LABEL website="https://discord-role-persistence.com"
 LABEL github="https://github.com/brandonfl/discord-role-persistence"
 
-RUN apt update
-RUN apt install dumb-init
+RUN apk update && apk upgrade
+RUN apk add --no-cache dumb-init
 
-COPY --from=build /usr/src/bot/target/bot.war /app
+COPY --from=build /tmp/src/bot/target/bot.war /app
 COPY docker/utils/wait-for-it.sh /app
 COPY docker-custom-entrypoint.sh /app
 
