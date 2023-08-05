@@ -271,3 +271,4 @@ fabric.properties
 data/
 mysql-data/
 log/
+bot-token.txt

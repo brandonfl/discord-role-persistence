@@ -37,7 +37,7 @@ import com.brandonfl.discordrolepersistence.service.ServerService;
 import com.brandonfl.discordrolepersistence.service.UserService;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
