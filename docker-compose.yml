@@ -12,6 +12,7 @@ services:
       - "${HOME}/.m2:/root/.m2"
     environment:
       - DB_HOST=bot-mysql
+      - BOT_TOKEN=/var/opt/bot/bot-token.txt
   mysql:
     container_name: "bot-mysql"
     build: ./docker/mysql
