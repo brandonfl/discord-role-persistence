@@ -13,7 +13,7 @@ LABEL website="https://discord-role-persistence.com"
 LABEL github="https://github.com/brandonfl/discord-role-persistence"
 
 RUN apk update && apk upgrade
-RUN apk add --no-cache dumb-init
+RUN apk add --no-cache dumb-init bash
 
 COPY --from=build /tmp/src/bot/target/bot.war /app
 COPY docker/utils/wait-for-it.sh /app
