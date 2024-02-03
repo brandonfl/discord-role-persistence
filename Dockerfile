@@ -15,7 +15,7 @@ RUN apt install -y dumb-init bash && apt-get clean
 RUN apt auto-remove -y
 
 WORKDIR /app
-COPY --from=build /tmp/src/bot/target/bot.war /app
+COPY --from=build /tmp/bot/target/bot.war /app
 COPY docker/utils/wait-for-it.sh /app
 COPY docker-custom-entrypoint.sh /app
 
