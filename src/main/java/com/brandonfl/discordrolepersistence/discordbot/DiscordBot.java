@@ -26,6 +26,13 @@ package com.brandonfl.discordrolepersistence.discordbot;
 
 import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeLogChannelCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeWelcomeBackChannelCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.CleanSavedRolesCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.GetRolesCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.LockRoleCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.PingCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.UnlockRoleCommand;
 import com.brandonfl.discordrolepersistence.discordbot.event.BotEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.RoleEvent;
@@ -77,22 +84,14 @@ public class DiscordBot {
         .useHelpBuilder(true)
         .setPrefix("/")
         .setAlternativePrefix("@mention")
-        .addCommands(
-            new com.brandonfl.discordrolepersistence.discordbot.command.old.PingCommand(),
-            new com.brandonfl.discordrolepersistence.discordbot.command.old.GetRolesCommand(repositoryContainer, eventWaiter),
-            new com.brandonfl.discordrolepersistence.discordbot.command.old.LockRoleCommand(repositoryContainer),
-            new com.brandonfl.discordrolepersistence.discordbot.command.old.UnlockRoleCommand(repositoryContainer),
-            new com.brandonfl.discordrolepersistence.discordbot.command.old.ChangeLogChannelCommand(repositoryContainer),
-            new com.brandonfl.discordrolepersistence.discordbot.command.old.ChangeWelcomeBackChannelCommand(repositoryContainer)
-        )
         .addSlashCommands(
-            new com.brandonfl.discordrolepersistence.discordbot.command.slash.PingCommand(),
-            new com.brandonfl.discordrolepersistence.discordbot.command.slash.GetRolesCommand(repositoryContainer, eventWaiter),
-            new com.brandonfl.discordrolepersistence.discordbot.command.slash.LockRoleCommand(repositoryContainer),
-            new com.brandonfl.discordrolepersistence.discordbot.command.slash.UnlockRoleCommand(repositoryContainer),
-            new com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeLogChannelCommand(repositoryContainer),
-            new com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeWelcomeBackChannelCommand(repositoryContainer),
-            new com.brandonfl.discordrolepersistence.discordbot.command.slash.CleanSavedRolesCommand(repositoryContainer)
+            new PingCommand(),
+            new GetRolesCommand(repositoryContainer, eventWaiter),
+            new LockRoleCommand(repositoryContainer),
+            new UnlockRoleCommand(repositoryContainer),
+            new ChangeLogChannelCommand(repositoryContainer),
+            new ChangeWelcomeBackChannelCommand(repositoryContainer),
+            new CleanSavedRolesCommand(repositoryContainer)
         );
 
     if (botProperties.getSetting().getGuidDevelopmentId() != null) {
