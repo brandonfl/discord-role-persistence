@@ -30,9 +30,9 @@ import com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeLogCh
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeWelcomeBackChannelCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.CleanSavedRolesCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.GetRolesCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.slash.LockRoleCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.DisableRollbackRoleCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.PingCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.slash.UnlockRoleCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.EnableRollbackRoleCommand;
 import com.brandonfl.discordrolepersistence.discordbot.event.BotEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.RoleEvent;
@@ -87,8 +87,8 @@ public class DiscordBot {
         .addSlashCommands(
             new PingCommand(),
             new GetRolesCommand(repositoryContainer, eventWaiter),
-            new LockRoleCommand(repositoryContainer),
-            new UnlockRoleCommand(repositoryContainer),
+            new DisableRollbackRoleCommand(repositoryContainer),
+            new EnableRollbackRoleCommand(repositoryContainer),
             new ChangeLogChannelCommand(repositoryContainer),
             new ChangeWelcomeBackChannelCommand(repositoryContainer),
             new CleanSavedRolesCommand(repositoryContainer)
