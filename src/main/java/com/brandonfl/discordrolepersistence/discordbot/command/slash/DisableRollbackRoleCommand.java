@@ -46,21 +46,19 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.brandonfl.throwableoptional.ThrowableOptional;
 
-public class UnlockRoleCommand extends SlashCommand {
+public class DisableRollbackRoleCommand extends SlashCommand {
 
   private static final String ROLE_ARGUMENT_NAME = "role";
-  private static final String FORCE_ARGUMENT_NAME = "force";
   private final RepositoryContainer repositoryContainer;
 
-  public UnlockRoleCommand(
+  public DisableRollbackRoleCommand(
       RepositoryContainer repositoryContainer) {
     this.repositoryContainer = repositoryContainer;
 
-    this.name = "unlock";
-    this.help = "Allows role to be reapplied at future member join. By default, roles reapplied except admin roles.";
+    this.name = "rollback-disable";
+    this.help = "Prevent the role from being rollback.";
     this.options = List
-        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME, "The role to apply at future member join - required").setRequired(true),
-            new OptionData(OptionType.BOOLEAN, FORCE_ARGUMENT_NAME, "Force admin role to be reapplied at future member join.").setRequired(false));
+        .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME,"The role to prevent of future rollback - required").setRequired(true));
     this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
   }
 
@@ -78,32 +76,19 @@ public class UnlockRoleCommand extends SlashCommand {
           .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
           .queue();
     } else if (roleArgument != null) {
-      final boolean forceArgument = ThrowableOptional
-          .of(() -> Objects.requireNonNull(event.getOption(FORCE_ARGUMENT_NAME)).getAsBoolean())
-          .orElse(false);
-
-      if (roleArgument.hasPermission(Permission.ADMINISTRATOR) && !forceArgument) {
-        event
-            .getHook()
-            .editOriginalFormat("%s This role is currently an administrator role. You can force the reapply with force option.", WARNING_EMOJI)
-            .queue();
-        return;
-      }
-
       ServerEntity serverEntity = repositoryContainer.getServerRepository()
           .findByGuid(event.getGuild().getIdLong()).orElse(null);
-
       if (serverEntity != null) {
-        ServerRoleEntity serverRoleEntity = repositoryContainer
+        Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
             .getServerRoleRepository()
-            .findByRoleGuidAndServerGuid(roleArgument.getIdLong(), event.getGuild().getIdLong())
-            .orElse(null);
-
-        if (serverRoleEntity != null) {
-          if (!serverRoleEntity.isBlacklisted() && !forceArgument) {
+            .findByRoleGuidAndServerGuid(roleArgument.getIdLong(), event.getGuild().getIdLong());
+        ServerRoleEntity serverRoleEntity;
+        if (possibleServerRoleEntity.isPresent()) {
+          serverRoleEntity = possibleServerRoleEntity.get();
+          if (serverRoleEntity.isBlacklisted()) {
             event
                 .getHook()
-                .editOriginalFormat("%s This role is already reapplied at future member join", WARNING_EMOJI)
+                .editOriginalFormat("%s This role is already preventing future rollbacks", WARNING_EMOJI)
                 .queue();
             return;
           }
@@ -113,22 +98,22 @@ public class UnlockRoleCommand extends SlashCommand {
           serverRoleEntity.setRoleGuid(roleArgument.getIdLong());
         }
 
-        serverRoleEntity.setForced(forceArgument);
-        serverRoleEntity.setBlacklisted(false);
+        serverRoleEntity.setForced(false);
+        serverRoleEntity.setBlacklisted(true);
         repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
 
         event
             .getHook()
-            .editOriginalFormat("%s Role %s is now reapplied at future member join", SUCCESS_EMOJI, roleArgument.getName())
+            .editOriginalFormat("%s Preventing the role `%s` from being rollback.", SUCCESS_EMOJI, roleArgument.getName())
             .queue();
 
-        Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(),
-            serverEntity);
+        Optional<TextChannel> logChannel = DiscordBotUtils
+            .getLogChannel(event.getGuild(), serverEntity);
         if (logChannel.isPresent()) {
           EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
           embedBuilder
               .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
-              .addField(":unlock: Role reapplied at future member join",
+              .addField(":x: Preventing rollbacks for role",
                   roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
 
           logChannel.get().sendMessage(embedBuilder.build()).queue();
