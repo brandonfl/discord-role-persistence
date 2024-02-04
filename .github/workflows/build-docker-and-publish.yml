@@ -23,7 +23,7 @@ jobs:
           brandonfl/discord-role-persistence
           ghcr.io/brandonfl/discord-role-persistence/discord-role-persistence
         tags: |
-          type=semver,pattern={{version}}
+          type=semver,pattern={{version}},prefix=v
           type=raw,value=latest,enable=true
 
     - name: Set up QEMU
