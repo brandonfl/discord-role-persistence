@@ -3,7 +3,7 @@ COPY src /tmp/bot/src
 COPY pom.xml /tmp/bot
 RUN mvn -f /tmp/bot/pom.xml clean package -DskipTests
 
-FROM ibm-semeru-runtimes:open-17.0.9_9-jre-jammy@sha256:27ccdc3811a07497e52cbd46929dd2d1301a8b6481ab76884625716a55b18263
+FROM ibm-semeru-runtimes:open-17-jre-jammy
 
 LABEL maintainer="Brandon Fontany--Legall <brandon@fontany-legall.xyz>"
 LABEL description="Discord Role Persistence is a verified Discord bot with the objective to save the roles of users even after a leave/join server"
