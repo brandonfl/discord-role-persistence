@@ -63,6 +63,7 @@ public class ChangeLogChannelCommand extends SlashCommand {
     this.options = List
         .of(new OptionData(OptionType.CHANNEL, CHANNEL_ARGUMENT_NAME, "The channel to use to send logs"));
     this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
+    this.guildOnly = true;
   }
 
   @Override
@@ -76,47 +77,47 @@ public class ChangeLogChannelCommand extends SlashCommand {
     if (event.getGuild() == null) {
       event
           .getHook()
-          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
+          .editOriginalFormat("%s Please run this command into a server", ERROR_EMOJI)
           .queue();
-    } else {
-      ServerEntity serverEntity = repositoryContainer.getServerRepository()
-          .findByGuid(event.getGuild().getIdLong()).orElse(null);
-      if (serverEntity != null) {
-        if (channelArgument != null) {
-          if (!ChannelType.TEXT.equals(channelArgument.getType())) {
-            event
-                .getHook()
-                .editOriginalFormat("%s Log channel need to be a text channel", ERROR_EMOJI)
-                .queue();
-          } else if (!event.getGuild().getSelfMember().hasPermission(channelArgument, Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE)) {
-            event
-                .getHook()
-                .editOriginalFormat("%s It seems that the bot dont have talk access to this channel", ERROR_EMOJI)
-                .queue();
-          } else {
-            serverEntity.setLogChannel(channelArgument.getIdLong());
-            repositoryContainer.getServerRepository().save(serverEntity);
+      return;
+    }
 
-            event
-                .getHook()
-                .editOriginalFormat("%s Log channel has been changed", SUCCESS_EMOJI)
-                .queue();
-          }
-        } else {
-          serverEntity.setLogChannel(null);
-          repositoryContainer.getServerRepository().save(serverEntity);
-
-          event
-              .getHook()
-              .editOriginalFormat("%s Log channel has been disabled", SUCCESS_EMOJI)
-              .queue();
-        }
-      } else {
+    if (channelArgument != null) {
+      if (!ChannelType.TEXT.equals(channelArgument.getType())) {
         event
             .getHook()
-            .editOriginalFormat("%s Current server not found", ERROR_EMOJI)
+            .editOriginalFormat("%s Log channel need to be a text channel", ERROR_EMOJI)
             .queue();
+        return;
       }
+
+      if (!event.getGuild().getSelfMember().hasPermission(channelArgument, Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE)) {
+        event
+            .getHook()
+            .editOriginalFormat("%s It seems that the bot dont have talk access to this channel", ERROR_EMOJI)
+            .queue();
+        return;
+      }
+    }
+
+    ServerEntity serverEntity = repositoryContainer.getServerRepository()
+        .findByGuid(event.getGuild().getIdLong())
+        .orElse(new ServerEntity());
+
+    serverEntity.setGuid(event.getGuild().getIdLong());
+    serverEntity.setLogChannel(channelArgument == null ? null : channelArgument.getIdLong());
+    repositoryContainer.getServerRepository().save(serverEntity);
+
+    if (channelArgument == null) {
+      event
+          .getHook()
+          .editOriginalFormat("%s Log channel has been disabled", SUCCESS_EMOJI)
+          .queue();
+    } else {
+      event
+          .getHook()
+          .editOriginalFormat("%s Log channel has been changed", SUCCESS_EMOJI)
+          .queue();
     }
   }
 }
