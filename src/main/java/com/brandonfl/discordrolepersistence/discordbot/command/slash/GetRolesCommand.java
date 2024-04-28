@@ -30,19 +30,13 @@ import static com.brandonfl.discordrolepersistence.utils.DiscordBotUtils.getGene
 import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jdautilities.menu.EmbedPaginator;
 import com.jagrosh.jdautilities.menu.Paginator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +65,7 @@ public class GetRolesCommand extends SlashCommand {
     if (event.getGuild() == null) {
       event
           .getHook()
-          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
+          .editOriginalFormat("%s Please run this command into a server", ERROR_EMOJI)
           .queue();
       return;
     }
@@ -80,38 +74,37 @@ public class GetRolesCommand extends SlashCommand {
         .findAllByServerGuidId(event.getGuild().getIdLong());
 
     final Member currentBotMember = event.getGuild().getSelfMember();
-    List<String> rolesString = new ArrayList<>();
+    List<String> listedRoles = new ArrayList<>();
     for (Role role : event.getGuild().getRoles()) {
       if (role.isPublicRole()) {
         continue;
       } else if (role.isManaged()) {
-        rolesString.add(":robot: " + role.getAsMention() + " (Cannot be assigned manually)");
+        listedRoles.add(":robot: " + role.getAsMention() + " (Cannot be assigned manually)");
       } else if (role.hasPermission(Permission.ADMINISTRATOR)) {
         if (serverRoleEntities.stream().anyMatch(serverRole ->
             serverRole.isForced()
             && !serverRole.isBlacklisted()
             && role.getIdLong() == serverRole.getRoleGuid())) {
 
-          rolesString.add(":white_check_mark: " + role.getAsMention() + " (:warning: It is not recommended to automatically give the administrator role)");
+          listedRoles.add(":white_check_mark: " + role.getAsMention() + " (:warning: It is not recommended to automatically give the administrator role)");
 
         } else {
-          rolesString.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
+          listedRoles.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
         }
       } else if (!serverRoleEntities.isEmpty()
           && serverRoleEntities.stream().anyMatch(serverRole -> serverRole.isBlacklisted() && role.getIdLong() == serverRole.getRoleGuid())) {
-        rolesString.add(":x: " + role.getAsMention() + " (The role will not be reapplied)");
-      } else if (DiscordBotUtils.getUpperRole(currentBotMember.getRoles()) < role
-          .getPosition()) {
-        rolesString.add(":warning: " + role.getAsMention()
+        listedRoles.add(":x: " + role.getAsMention() + " (The role will not be reapplied)");
+      } else if (DiscordBotUtils.getUpperRole(currentBotMember.getRoles()) < role.getPosition()) {
+        listedRoles.add(":warning: " + role.getAsMention()
             + " (bot too low in the hierarchy to give this role)");
       } else {
-        rolesString.add(":white_check_mark:  " + role.getAsMention() + " (The role will be reapplied)");
+        listedRoles.add(":white_check_mark:  " + role.getAsMention() + " (The role will be reapplied)");
       }
     }
 
     Paginator.Builder paginatorBuilder = getGenericPaginatorBuilder(eventWaiter);
     paginatorBuilder.clearItems();
-    rolesString.forEach(paginatorBuilder::addItems);
+    listedRoles.forEach(paginatorBuilder::addItems);
     paginatorBuilder
         .setText("Server roles")
         .build()
