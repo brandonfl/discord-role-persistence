@@ -70,9 +70,6 @@ public class ChangeLogChannelCommand extends SlashCommand {
   @Transactional
   public void execute(SlashCommandEvent event) {
     event.deferReply().queue();
-    GuildChannel channelArgument = ThrowableOptional
-        .of(() -> Objects.requireNonNull(event.getOption(CHANNEL_ARGUMENT_NAME)).getAsGuildChannel())
-        .orElse(null);
 
     if (event.getGuild() == null) {
       event
@@ -81,6 +78,10 @@ public class ChangeLogChannelCommand extends SlashCommand {
           .queue();
       return;
     }
+
+    GuildChannel channelArgument = ThrowableOptional
+        .of(() -> Objects.requireNonNull(event.getOption(CHANNEL_ARGUMENT_NAME)).getAsGuildChannel())
+        .orElse(null);
 
     if (channelArgument != null) {
       if (!ChannelType.TEXT.equals(channelArgument.getType())) {

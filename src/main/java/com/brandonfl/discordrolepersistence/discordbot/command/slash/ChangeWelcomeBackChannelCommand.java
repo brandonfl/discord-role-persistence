@@ -62,55 +62,56 @@ public class ChangeWelcomeBackChannelCommand extends SlashCommand {
   @Transactional
   public void execute(SlashCommandEvent event) {
     event.deferReply().queue();
+
+    if (event.getGuild() == null) {
+      event
+          .getHook()
+          .editOriginalFormat("%s Please run this command into a server", ERROR_EMOJI)
+          .queue();
+      return;
+    }
+
     GuildChannel channelArgument = ThrowableOptional
         .of(() -> Objects.requireNonNull(event.getOption(CHANNEL_ARGUMENT_NAME))
             .getAsGuildChannel())
         .orElse(null);
 
-    if (event.getGuild() == null) {
-      event
-          .getHook()
-          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
-          .queue();
-    } else {
-      ServerEntity serverEntity = repositoryContainer.getServerRepository()
-          .findByGuid(event.getGuild().getIdLong()).orElse(null);
-      if (serverEntity != null) {
-        if (channelArgument != null) {
-          if (!ChannelType.TEXT.equals(channelArgument.getType())) {
-            event
-                .getHook()
-                .editOriginalFormat("%s Welcome-back channel need to be a text channel", ERROR_EMOJI)
-                .queue();
-          } else if (!event.getGuild().getSelfMember().hasPermission(channelArgument, Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE)) {
-            event
-                .getHook()
-                .editOriginalFormat("%s It seems that the bot dont have talk access to this channel", ERROR_EMOJI)
-                .queue();
-          } else {
-            serverEntity.setWelcomeBackChannel(channelArgument.getIdLong());
-            repositoryContainer.getServerRepository().save(serverEntity);
-
-            event
-                .getHook()
-                .editOriginalFormat("%s Welcome back channel has been changed", SUCCESS_EMOJI)
-                .queue();
-          }
-        } else {
-          serverEntity.setWelcomeBackChannel(null);
-          repositoryContainer.getServerRepository().save(serverEntity);
-
-          event
-              .getHook()
-              .editOriginalFormat("%s Welcome back channel has been disabled", SUCCESS_EMOJI)
-              .queue();
-        }
-      } else {
+    if (channelArgument != null) {
+      if (!ChannelType.TEXT.equals(channelArgument.getType())) {
         event
             .getHook()
-            .editOriginalFormat("%s Current server not found", ERROR_EMOJI)
+            .editOriginalFormat("%s Welcome-back channel need to be a text channel", ERROR_EMOJI)
             .queue();
+        return;
       }
+
+      if (!event.getGuild().getSelfMember().hasPermission(channelArgument, Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE)) {
+        event
+            .getHook()
+            .editOriginalFormat("%s It seems that the bot dont have talk access to this channel", ERROR_EMOJI)
+            .queue();
+        return;
+      }
+    }
+
+    ServerEntity serverEntity = repositoryContainer.getServerRepository()
+        .findByGuid(event.getGuild().getIdLong())
+        .orElse(new ServerEntity());
+
+    serverEntity.setGuid(event.getGuild().getIdLong());
+    serverEntity.setWelcomeBackChannel(channelArgument == null ? null : channelArgument.getIdLong());
+    repositoryContainer.getServerRepository().save(serverEntity);
+
+    if (channelArgument != null) {
+      event
+          .getHook()
+          .editOriginalFormat("%s Welcome-back channel has been changed", SUCCESS_EMOJI)
+          .queue();
+    } else {
+      event
+          .getHook()
+          .editOriginalFormat("%s Welcome-back channel has been disabled", SUCCESS_EMOJI)
+          .queue();
     }
   }
 }
