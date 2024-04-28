@@ -40,9 +40,9 @@ public interface ServerUserRepository extends JpaRepository<ServerUserEntity, Lo
 
   @Modifying
   @Transactional
-  int deleteAllByServerGuidAndUserGuid(ServerEntity serverGuid, Long userGuid);
+  int deleteAllByServerGuidIdAndUserGuid(Long serverGuidId, Long userGuid);
 
   @Modifying
   @Transactional
-  int deleteAllByServerGuid(ServerEntity serverGuid);
+  int deleteAllByServerGuidId(Long serverGuidId);
 }

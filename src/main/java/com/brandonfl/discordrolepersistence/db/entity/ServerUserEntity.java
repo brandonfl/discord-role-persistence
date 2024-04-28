@@ -38,6 +38,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -54,6 +55,10 @@ public class ServerUserEntity {
 
   @Column(name = "user_guid", nullable = false, updatable = false)
   private Long userGuid;
+
+  @Setter(AccessLevel.NONE)
+  @Column(name = "server_guid", insertable = false, updatable = false)
+  private Long serverGuidId;
 
   @ManyToOne
   @JoinColumn(name = "server_guid", nullable = false, updatable = false)
