@@ -42,7 +42,7 @@ public abstract class AbstractServerRoleEntity implements Serializable {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Column(name = "server_guid", nullable = false, insertable = false, updatable = false)
+  @Column(name = "server_guid", nullable = false, updatable = false)
   private Long serverGuid;
 
   @Column(name = "role_guid", nullable = false, updatable = false)

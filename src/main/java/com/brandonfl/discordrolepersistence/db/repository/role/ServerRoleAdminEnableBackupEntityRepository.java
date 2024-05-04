@@ -24,8 +24,10 @@
 
 package com.brandonfl.discordrolepersistence.db.repository.role;
 
-import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleBlacklistEntity;
+import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleAdminEnableBackupEntity;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ServerRoleAdminEnableRepository extends AbstractServerRoleRepository<ServerRoleBlacklistEntity> {
-  
+public interface ServerRoleAdminEnableBackupEntityRepository extends JpaRepository<ServerRoleAdminEnableBackupEntity, Long> {
+  Optional<ServerRoleAdminEnableBackupEntity> findByServerGuidAndRoleGuid (Long serverGuid, Long roleGuid);
 }

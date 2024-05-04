@@ -25,7 +25,9 @@
 package com.brandonfl.discordrolepersistence.db.repository.role;
 
 import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleBlacklistEntity;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ServerRoleBlacklistRepository extends AbstractServerRoleRepository<ServerRoleBlacklistEntity> {
-
+public interface ServerRoleBlacklistRepository extends JpaRepository<ServerRoleBlacklistEntity, Long> {
+  Optional<ServerRoleBlacklistEntity> findByServerGuidAndRoleGuid (Long serverGuid, Long roleGuid);
 }

@@ -25,6 +25,7 @@
 package com.brandonfl.discordrolepersistence.utils;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
+import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.discordbot.DiscordBot;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -35,6 +36,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -44,16 +46,23 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.Presence;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public final class DiscordBotUtils {
+@Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class DiscordBotUtils {
 
-  private DiscordBotUtils() {
-  }
+  private final RepositoryContainer repositoryContainer;
 
   public static final Color COLOR = new Color(108, 135, 202);
 
+  public Optional<TextChannel> getLogChannel(Guild guild) {
+    return getLogChannel(guild, repositoryContainer.getServerRepository().findByGuid(guild.getIdLong()).orElse(null));
+  }
+
   public static Optional<TextChannel> getLogChannel(Guild guild, ServerEntity serverEntity) {
-    if (serverEntity.getLogChannel() != null) {
+    if (serverEntity != null && serverEntity.getLogChannel() != null) {
       return Optional.ofNullable(guild.getTextChannelById(serverEntity.getLogChannel()));
     } else {
       return Optional.empty();

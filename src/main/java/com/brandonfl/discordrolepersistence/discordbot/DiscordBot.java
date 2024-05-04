@@ -42,6 +42,7 @@ import com.brandonfl.discordrolepersistence.service.BotService;
 import com.brandonfl.discordrolepersistence.service.LoggerService;
 import com.brandonfl.discordrolepersistence.service.ServerService;
 import com.brandonfl.discordrolepersistence.service.UserService;
+import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import jakarta.annotation.PostConstruct;
@@ -65,6 +66,7 @@ public class DiscordBot {
   private final BotService botService;
   private final ServerService serverService;
   private final LoggerService loggerService;
+  private final DiscordBotUtils discordBotUtils;
 
   public static final String SUCCESS_EMOJI = "\u2705";
   public static final String WARNING_EMOJI = "\u26A0\uFE0F";
@@ -87,7 +89,7 @@ public class DiscordBot {
         .addSlashCommands(
             new PingCommand(),
             new GetRolesCommand(repositoryContainer, eventWaiter),
-            new DisableRollbackRoleCommand(repositoryContainer),
+            new DisableRollbackRoleCommand(repositoryContainer, discordBotUtils),
             new EnableRollbackRoleCommand(repositoryContainer),
             new ChangeLogChannelCommand(repositoryContainer),
             new ChangeWelcomeBackChannelCommand(repositoryContainer),
