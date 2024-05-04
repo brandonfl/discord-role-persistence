@@ -46,6 +46,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "server_user")
+@Deprecated(since = "1.11.0", forRemoval = true)
 public class ServerUserEntity {
 
   @Id

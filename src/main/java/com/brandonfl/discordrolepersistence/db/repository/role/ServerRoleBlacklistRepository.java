@@ -22,24 +22,10 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.db.repository;
+package com.brandonfl.discordrolepersistence.db.repository.role;
 
-import com.brandonfl.discordrolepersistence.db.repository.role.ServerRoleAdminEnableRepository;
-import com.brandonfl.discordrolepersistence.db.repository.role.ServerRoleBlacklistRepository;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleBlacklistEntity;
 
-@Service
-@Getter
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RepositoryContainer {
-
-  private final ServerRepository serverRepository;
-  private final ServerUserRepository serverUserRepository;
-  private final ServerRoleRepository serverRoleRepository;
-  private final ServerRoleBlacklistRepository serverRoleBlacklistRepository;
-  private final ServerRoleAdminEnableRepository serverRoleAdminEnableRepository;
+public interface ServerRoleBlacklistRepository extends AbstractServerRoleRepository<ServerRoleBlacklistEntity> {
 
 }

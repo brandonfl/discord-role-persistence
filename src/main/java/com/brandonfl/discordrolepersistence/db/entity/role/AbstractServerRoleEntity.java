@@ -22,55 +22,29 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.db.entity;
+package com.brandonfl.discordrolepersistence.db.entity.role;
 
-import java.util.HashSet;
-import java.util.Set;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.MappedSuperclass;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
-@Entity
-@Table(name = "server_role")
-@Deprecated(since = "1.11.0", forRemoval = true)
-public class ServerRoleEntity {
-
+@Getter
+@MappedSuperclass
+public abstract class AbstractServerRoleEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
   @Column(name = "server_guid", nullable = false, insertable = false, updatable = false)
-  private Long serverGuidId;
-
-  @ManyToOne
-  @JoinColumn(name = "server_guid", nullable = false, updatable = false)
-  private ServerEntity serverGuid;
+  private Long serverGuid;
 
   @Column(name = "role_guid", nullable = false, updatable = false)
   private Long roleGuid;
-
-  @Column(name = "blacklisted", nullable = false)
-  private boolean blacklisted = false;
-
-  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-  @JoinTable(name = "server_user_has_server_role",
-      joinColumns = @JoinColumn(name = "server_role_id", referencedColumnName = "id"),
-      inverseJoinColumns = @JoinColumn(name = "server_user_id", referencedColumnName = "id"))
-  private Set<ServerUserEntity> userEntities = new HashSet<>();
-
-  @Column(name = "forced", nullable = false)
-  private boolean forced = false;
 }
