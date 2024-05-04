@@ -30,6 +30,8 @@ import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.WARNING
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
+import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleAdminEnableBackupEntity;
+import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleBlacklistEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.SlashCommand;
@@ -51,10 +53,14 @@ public class EnableRollbackRoleCommand extends SlashCommand {
   private static final String ROLE_ARGUMENT_NAME = "role";
   private static final String FORCE_ARGUMENT_NAME = "force";
   private final RepositoryContainer repositoryContainer;
+  private final DiscordBotUtils discordBotUtils;
 
   public EnableRollbackRoleCommand(
-      RepositoryContainer repositoryContainer) {
+      RepositoryContainer repositoryContainer,
+      DiscordBotUtils discordBotUtils
+  ) {
     this.repositoryContainer = repositoryContainer;
+    this.discordBotUtils = discordBotUtils;
 
     this.name = "rollback-enable";
     this.help = "Allows role to be reapplied at future member join. By default, roles reapplied except admin roles.";
@@ -68,82 +74,68 @@ public class EnableRollbackRoleCommand extends SlashCommand {
   @Transactional
   public void execute(SlashCommandEvent event) {
     event.deferReply().queue();
-    Role roleArgument = ThrowableOptional
-        .of(() -> Objects.requireNonNull(event.getOption(ROLE_ARGUMENT_NAME)).getAsRole())
-        .orElse(null);
 
     if (event.getGuild() == null) {
       event
           .getHook()
-          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
+          .editOriginalFormat("%s Please run this command into a server", ERROR_EMOJI)
           .queue();
-    } else if (roleArgument != null) {
-      final boolean forceArgument = ThrowableOptional
-          .of(() -> Objects.requireNonNull(event.getOption(FORCE_ARGUMENT_NAME)).getAsBoolean())
-          .orElse(false);
+      return;
+    }
 
-      if (roleArgument.hasPermission(Permission.ADMINISTRATOR) && !forceArgument) {
-        event
-            .getHook()
-            .editOriginalFormat("%s This role is currently an administrator role. You can force the reapply with force option.", WARNING_EMOJI)
-            .queue();
-        return;
-      }
+    Role roleArgument = ThrowableOptional
+        .of(() -> Objects.requireNonNull(event.getOption(ROLE_ARGUMENT_NAME)).getAsRole())
+        .orElse(null);
 
-      ServerEntity serverEntity = repositoryContainer.getServerRepository()
-          .findByGuid(event.getGuild().getIdLong()).orElse(null);
-
-      if (serverEntity != null) {
-        ServerRoleEntity serverRoleEntity = repositoryContainer
-            .getServerRoleRepository()
-            .findByRoleGuidAndServerGuid(roleArgument.getIdLong(), event.getGuild().getIdLong())
-            .orElse(null);
-
-        if (serverRoleEntity != null) {
-          if (!serverRoleEntity.isBlacklisted() && !forceArgument) {
-            event
-                .getHook()
-                .editOriginalFormat("%s This role is already reapplied at future member join", WARNING_EMOJI)
-                .queue();
-            return;
-          }
-        } else {
-          serverRoleEntity = new ServerRoleEntity();
-          serverRoleEntity.setServerGuid(serverEntity);
-          serverRoleEntity.setRoleGuid(roleArgument.getIdLong());
-        }
-
-        serverRoleEntity.setForced(forceArgument);
-        serverRoleEntity.setBlacklisted(false);
-        repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
-
-        event
-            .getHook()
-            .editOriginalFormat("%s Role %s is now reapplied at future member join", SUCCESS_EMOJI, roleArgument.getName())
-            .queue();
-
-        Optional<TextChannel> logChannel = DiscordBotUtils.getLogChannel(event.getGuild(),
-            serverEntity);
-        if (logChannel.isPresent()) {
-          EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
-          embedBuilder
-              .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
-              .addField(":unlock: Role reapplied at future member join",
-                  roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
-
-          logChannel.get().sendMessage(embedBuilder.build()).queue();
-        }
-      } else {
-        event
-            .getHook()
-            .editOriginalFormat("%s Current server not found", ERROR_EMOJI)
-            .queue();
-      }
-    } else {
+    if (roleArgument == null) {
       event
           .getHook()
           .editOriginalFormat("%s Please provide one and exactly only one role", ERROR_EMOJI)
           .queue();
+      return;
+    }
+
+    final boolean forceArgument = ThrowableOptional
+        .of(() -> Objects.requireNonNull(event.getOption(FORCE_ARGUMENT_NAME)).getAsBoolean())
+        .orElse(false);
+
+    if (roleArgument.hasPermission(Permission.ADMINISTRATOR) && !forceArgument) {
+      event
+          .getHook()
+          .editOriginalFormat("%s This role is currently an administrator role. You can force the reapply with force option.", WARNING_EMOJI)
+          .queue();
+      return;
+    }
+
+    repositoryContainer
+        .getServerRoleBlacklistRepository()
+        .deleteByServerGuidAndRoleGuid(event.getGuild().getIdLong(), roleArgument.getIdLong());
+
+    if (forceArgument) {
+      ServerRoleAdminEnableBackupEntity serverRoleAdminEnableBackupEntity = repositoryContainer
+          .getServerRoleAdminEnableBackupRepository()
+          .findByServerGuidAndRoleGuid(event.getGuild().getIdLong(), roleArgument.getIdLong())
+          .orElse(new ServerRoleAdminEnableBackupEntity());
+
+      serverRoleAdminEnableBackupEntity.setServerGuid(event.getGuild().getIdLong());
+      serverRoleAdminEnableBackupEntity.setRoleGuid(roleArgument.getIdLong());
+      repositoryContainer.getServerRoleAdminEnableBackupRepository().save(serverRoleAdminEnableBackupEntity);
+    }
+
+    event
+        .getHook()
+        .editOriginalFormat("%s Role %s is now reapplied at future member join", SUCCESS_EMOJI, roleArgument.getName())
+        .queue();
+
+    Optional<TextChannel> logChannel = discordBotUtils.getLogChannel(event.getGuild());
+    if (logChannel.isPresent()) {
+      EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
+      embedBuilder
+          .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
+          .addField(":unlock: Role reapplied at future member join",
+              roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
+
+      logChannel.get().sendMessage(embedBuilder.build()).queue();
     }
   }
 }

@@ -24,7 +24,7 @@
 
 package com.brandonfl.discordrolepersistence.db.repository;
 
-import com.brandonfl.discordrolepersistence.db.repository.role.ServerRoleAdminEnableBackupEntityRepository;
+import com.brandonfl.discordrolepersistence.db.repository.role.ServerRoleAdminEnableBackupRepository;
 import com.brandonfl.discordrolepersistence.db.repository.role.ServerRoleBlacklistRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +40,6 @@ public class RepositoryContainer {
   private final ServerUserRepository serverUserRepository;
   private final ServerRoleRepository serverRoleRepository;
   private final ServerRoleBlacklistRepository serverRoleBlacklistRepository;
-  private final ServerRoleAdminEnableBackupEntityRepository serverRoleAdminEnableBackupEntityRepository;
+  private final ServerRoleAdminEnableBackupRepository serverRoleAdminEnableBackupRepository;
 
 }

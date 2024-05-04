@@ -28,6 +28,6 @@ import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleAdminEnable
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ServerRoleAdminEnableBackupEntityRepository extends JpaRepository<ServerRoleAdminEnableBackupEntity, Long> {
+public interface ServerRoleAdminEnableBackupRepository extends JpaRepository<ServerRoleAdminEnableBackupEntity, Long> {
   Optional<ServerRoleAdminEnableBackupEntity> findByServerGuidAndRoleGuid (Long serverGuid, Long roleGuid);
 }

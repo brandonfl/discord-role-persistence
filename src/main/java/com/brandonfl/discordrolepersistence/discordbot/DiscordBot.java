@@ -90,7 +90,7 @@ public class DiscordBot {
             new PingCommand(),
             new GetRolesCommand(repositoryContainer, eventWaiter),
             new DisableRollbackRoleCommand(repositoryContainer, discordBotUtils),
-            new EnableRollbackRoleCommand(repositoryContainer),
+            new EnableRollbackRoleCommand(repositoryContainer, discordBotUtils),
             new ChangeLogChannelCommand(repositoryContainer),
             new ChangeWelcomeBackChannelCommand(repositoryContainer),
             new CleanSavedRolesCommand(repositoryContainer)
