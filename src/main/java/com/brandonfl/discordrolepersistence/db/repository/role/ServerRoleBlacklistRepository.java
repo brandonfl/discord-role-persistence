@@ -38,7 +38,7 @@ public interface ServerRoleBlacklistRepository extends JpaRepository<ServerRoleB
 
   @Modifying
   @Transactional
-  void deleteByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
+  void deleteAllByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
 
   @Query("""
     SELECT serverRoleBlacklistEntity.roleGuid

@@ -38,7 +38,7 @@ public interface ServerRoleAdminEnableBackupRepository extends JpaRepository<Ser
 
   @Modifying
   @Transactional
-  int deleteByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
+  int deleteAllByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
 
   @Query("""
     SELECT serverRoleAdminEnableBackupEntity.roleGuid

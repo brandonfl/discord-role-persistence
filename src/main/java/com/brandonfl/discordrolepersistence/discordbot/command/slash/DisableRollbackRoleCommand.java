@@ -98,7 +98,7 @@ public class DisableRollbackRoleCommand extends SlashCommand {
 
     int deletedAdminRoleBackupCounter = repositoryContainer
         .getServerRoleAdminEnableBackupRepository()
-        .deleteByServerGuidAndRoleGuid(event.getGuild().getIdLong(), roleArgument.getIdLong());
+        .deleteAllByServerGuidAndRoleGuid(event.getGuild().getIdLong(), roleArgument.getIdLong());
 
     if (serverRoleBlacklistEntity.getId() != null && deletedAdminRoleBackupCounter == 0) {
       event

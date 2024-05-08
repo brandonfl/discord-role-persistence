@@ -39,7 +39,6 @@ import com.brandonfl.discordrolepersistence.discordbot.event.RoleEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
 import com.brandonfl.discordrolepersistence.service.LoggerService;
-import com.brandonfl.discordrolepersistence.service.ServerService;
 import com.brandonfl.discordrolepersistence.service.UserService;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
@@ -62,7 +61,6 @@ public class DiscordBot {
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
   private final UserService userService;
-  private final ServerService serverService;
   private final LoggerService loggerService;
   private final DiscordBotUtils discordBotUtils;
 
@@ -110,9 +108,9 @@ public class DiscordBot {
         .addEventListeners(
             eventWaiter,
             commandClientBuilder.build(),
-            new ServerEvent(repositoryContainer, serverService),
+            new ServerEvent(repositoryContainer),
             new RoleEvent(botProperties, userService, loggerService),
-            new ServerRoleEvent(serverService),
+            new ServerRoleEvent(repositoryContainer, loggerService),
             new BotEvent(botProperties, repositoryContainer),
             new MemberEvent(userService))
         .setActivity(DEFAULT_ACTIVITY)
