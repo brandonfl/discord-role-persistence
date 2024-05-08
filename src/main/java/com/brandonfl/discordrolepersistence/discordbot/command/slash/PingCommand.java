@@ -24,8 +24,6 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.command.slash;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 

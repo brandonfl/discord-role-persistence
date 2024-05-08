@@ -26,7 +26,6 @@ package com.brandonfl.discordrolepersistence.db.repository;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerUserSavedRolesEntity;
 import jakarta.transaction.Transactional;
-import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
