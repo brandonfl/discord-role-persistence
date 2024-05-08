@@ -50,7 +50,12 @@ public class LoggerService {
 
   private final RepositoryContainer repositoryContainer;
 
-  public void logRolesGivedBack(GuildMemberJoinEvent joinEvent, ServerEntity serverEntity, Set<Role> roles) {
+  public void logRolesGivedBack(GuildMemberJoinEvent joinEvent, Long serverGuid, Set<Role> roles) {
+    ServerEntity serverEntity = repositoryContainer.getServerRepository().findByGuid(serverGuid).orElse(null);
+    if (serverEntity == null) {
+      return;
+    }
+
     if (!roles.isEmpty() && (serverEntity.getLogChannel() != null || serverEntity.getWelcomeBackChannel() != null)) {
       final StringBuilder rolesGivedBackStringBuilder = new StringBuilder();
       roles.forEach(role -> rolesGivedBackStringBuilder.append("- ").append(role.getAsMention()).append("\n"));

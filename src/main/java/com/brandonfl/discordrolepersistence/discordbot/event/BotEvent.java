@@ -90,6 +90,9 @@ public class BotEvent extends ListenerAdapter {
             continue;
           }
 
+          repositoryContainer.getServerUserSavedRolesRepository()
+              .deleteAllByServerGuidAndAndUserGuid(guild.getIdLong(), member.getIdLong());
+
           for (Role role : member.getRoles()) {
             ServerUserSavedRolesEntity serverUserSavedRolesEntity = new ServerUserSavedRolesEntity();
             serverUserSavedRolesEntity.setServerGuid(guild.getIdLong());

@@ -24,15 +24,12 @@
 
 package com.brandonfl.discordrolepersistence.service;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
-import com.brandonfl.discordrolepersistence.db.entity.ServerUserEntity;
+import com.brandonfl.discordrolepersistence.db.entity.ServerUserSavedRolesEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.Permission;
@@ -51,70 +48,51 @@ public class UserService {
 
   private final RepositoryContainer repositoryContainer;
   private final LoggerService loggerService;
-  private final ServerService serverService;
 
   @Async("userPersistenceExecutor")
   @Transactional
   public void persistUser(@Nonnull Guild guild, @Nonnull Member member) {
-    Optional<ServerUserEntity> serverUserEntity = repositoryContainer
-        .getServerUserRepository()
-        .findByUserGuidAndServerGuid(member.getIdLong(), guild.getIdLong());
+    repositoryContainer.getServerUserSavedRolesRepository()
+        .deleteAllByServerGuidAndAndUserGuid(guild.getIdLong(), member.getIdLong());
 
-    if (!serverUserEntity.isPresent()) {
-      Optional<ServerEntity> serverEntity = repositoryContainer.getServerRepository().findByGuid(guild.getIdLong());
-      if (!serverEntity.isPresent()) {
-        serverService.persistNewServer(guild);
-        return;
-      } else {
-        ServerUserEntity serverUserEntityToCreate = new ServerUserEntity();
-        serverUserEntityToCreate.setServerGuid(serverEntity.get());
-        serverUserEntityToCreate.setUserGuid(member.getIdLong());
-
-        serverUserEntity = Optional.of(repositoryContainer.getServerUserRepository().save(serverUserEntityToCreate));
-      }
+    for (Role role : member.getRoles()) {
+      ServerUserSavedRolesEntity serverUserSavedRolesEntity = new ServerUserSavedRolesEntity();
+      serverUserSavedRolesEntity.setRoleGuid(role.getIdLong());
+      serverUserSavedRolesEntity.setUserGuid(member.getIdLong());
+      serverUserSavedRolesEntity.setServerGuid(guild.getIdLong());
+      repositoryContainer.getServerUserSavedRolesRepository().save(serverUserSavedRolesEntity);
     }
-
-    List<Long> memberRoleIds = member.getRoles().stream().map(Role::getIdLong).collect(Collectors.toList());
-
-    ServerUserEntity userEntity = serverUserEntity.get();
-    userEntity.setRoleEntities(userEntity
-        .getServerGuid()
-        .getRoleEntities()
-        .stream()
-        .filter(serverRoleEntity -> memberRoleIds.contains(serverRoleEntity.getRoleGuid()))
-        .collect(Collectors.toSet()));
-
-    repositoryContainer.getServerUserRepository().save(userEntity);
   }
 
   @Async("userPersistenceExecutor")
   public void backupRoles(@Nonnull GuildMemberJoinEvent joinEvent) {
-    ServerUserEntity serverUserEntity = repositoryContainer
-        .getServerUserRepository()
-        .findByUserGuidAndServerGuid(joinEvent.getMember().getIdLong(), joinEvent.getGuild().getIdLong())
-        .orElse(null);
+    final List<Long> userPreviousRoles = repositoryContainer
+        .getServerUserSavedRolesRepository()
+        .findAllNonBaccklistedRolesByServerGuidAndUserGuid(joinEvent.getGuild().getIdLong(), joinEvent.getUser().getIdLong());
 
-    if (serverUserEntity != null && serverUserEntity.getRoleEntities() != null && !serverUserEntity.getRoleEntities().isEmpty()) {
-      final int botUpperRole = DiscordBotUtils.getUpperRole(joinEvent.getGuild().getSelfMember().getRoles());
-      final Set<Role> rolesAddedToUser = new HashSet<>();
+    final List<Long> adminRollbackRoles = repositoryContainer
+        .getServerRoleAdminEnableBackupRepository()
+        .getRoleAdminEnableBackupByServerGuid(joinEvent.getGuild().getIdLong());
 
-      serverUserEntity
-          .getRoleEntities()
-          .forEach(serverRoleEntity -> {
-            if (!serverRoleEntity.isBlacklisted()) {
-              final Role role = joinEvent.getGuild().getRoleById(serverRoleEntity.getRoleGuid());
+    final Set<Role> rolesAddedToUser = new HashSet<>();
+    final int botUpperRole = DiscordBotUtils.getUpperRole(joinEvent.getGuild().getSelfMember().getRoles());
 
-              if (role != null
-                  && (!role.hasPermission(Permission.ADMINISTRATOR) || serverRoleEntity.isForced())
-                  && (botUpperRole > role.getPosition())) {
+    userPreviousRoles.parallelStream().forEach(
+        roleGuid -> {
+          final Role role = joinEvent.getGuild().getRoleById(roleGuid);
 
-                joinEvent.getGuild().addRoleToMember(joinEvent.getMember(), role).queue();
-                rolesAddedToUser.add(role);
-              }
-            }
-          });
+          if (role != null
+              && (!role.hasPermission(Permission.ADMINISTRATOR) || adminRollbackRoles.contains(roleGuid))
+              && (botUpperRole > role.getPosition())) {
 
-      loggerService.logRolesGivedBack(joinEvent, serverUserEntity.getServerGuid(), rolesAddedToUser);
+            joinEvent.getGuild().addRoleToMember(joinEvent.getMember(), role).queue();
+            rolesAddedToUser.add(role);
+          }
+        }
+    );
+
+    if (!rolesAddedToUser.isEmpty()) {
+      loggerService.logRolesGivedBack(joinEvent, joinEvent.getGuild().getIdLong(), rolesAddedToUser);
     }
   }
 }
