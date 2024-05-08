@@ -26,9 +26,12 @@ package com.brandonfl.discordrolepersistence.db.repository.role;
 
 import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleBlacklistEntity;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ServerRoleBlacklistRepository extends JpaRepository<ServerRoleBlacklistEntity, Long> {
   Optional<ServerRoleBlacklistEntity> findByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
@@ -36,4 +39,11 @@ public interface ServerRoleBlacklistRepository extends JpaRepository<ServerRoleB
   @Modifying
   @Transactional
   void deleteByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
+
+  @Query("""
+    SELECT serverRoleBlacklistEntity.roleGuid
+    FROM ServerRoleBlacklistEntity serverRoleBlacklistEntity
+    WHERE serverRoleBlacklistEntity.serverGuid = :serverGuid
+  """)
+  List<Long> getBlacklistedRolesByServerGuid(@Param("serverGuid") Long serverGuid);
 }

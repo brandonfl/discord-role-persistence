@@ -27,7 +27,6 @@ package com.brandonfl.discordrolepersistence.discordbot.command.slash;
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.ERROR_EMOJI;
 import static com.brandonfl.discordrolepersistence.utils.DiscordBotUtils.getGenericPaginatorBuilder;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.SlashCommand;
@@ -70,8 +69,11 @@ public class GetRolesCommand extends SlashCommand {
       return;
     }
 
-    final List<ServerRoleEntity> serverRoleEntities = repositoryContainer.getServerRoleRepository()
-        .findAllByServerGuidId(event.getGuild().getIdLong());
+    final List<Long> blacklistedRolesByServerGuid = repositoryContainer.getServerRoleBlacklistRepository()
+        .getBlacklistedRolesByServerGuid(event.getGuild().getIdLong());
+
+    final List<Long> serverRoleAdminEnableBackupByServerGuid = repositoryContainer.getServerRoleAdminEnableBackupRepository()
+        .getRoleAdminEnableBackupByServerGuid(event.getGuild().getIdLong());
 
     final Member currentBotMember = event.getGuild().getSelfMember();
     List<String> listedRoles = new ArrayList<>();
@@ -81,18 +83,12 @@ public class GetRolesCommand extends SlashCommand {
       } else if (role.isManaged()) {
         listedRoles.add(":robot: " + role.getAsMention() + " (Cannot be assigned manually)");
       } else if (role.hasPermission(Permission.ADMINISTRATOR)) {
-        if (serverRoleEntities.stream().anyMatch(serverRole ->
-            serverRole.isForced()
-            && !serverRole.isBlacklisted()
-            && role.getIdLong() == serverRole.getRoleGuid())) {
-
+        if (!blacklistedRolesByServerGuid.contains(role.getIdLong()) && serverRoleAdminEnableBackupByServerGuid.contains(role.getIdLong())) {
           listedRoles.add(":white_check_mark: " + role.getAsMention() + " (:warning: It is not recommended to automatically give the administrator role)");
-
         } else {
           listedRoles.add(":no_entry: " + role.getAsMention() + " (Administrator role)");
         }
-      } else if (!serverRoleEntities.isEmpty()
-          && serverRoleEntities.stream().anyMatch(serverRole -> serverRole.isBlacklisted() && role.getIdLong() == serverRole.getRoleGuid())) {
+      } else if (blacklistedRolesByServerGuid.contains(role.getIdLong())) {
         listedRoles.add(":x: " + role.getAsMention() + " (The role will not be reapplied)");
       } else if (DiscordBotUtils.getUpperRole(currentBotMember.getRoles()) < role.getPosition()) {
         listedRoles.add(":warning: " + role.getAsMention()

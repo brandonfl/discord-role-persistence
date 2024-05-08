@@ -96,7 +96,11 @@ public class DisableRollbackRoleCommand extends SlashCommand {
         .findByServerGuidAndRoleGuid(event.getGuild().getIdLong(), roleArgument.getIdLong())
         .orElse(new ServerRoleBlacklistEntity());
 
-    if (serverRoleBlacklistEntity.getId() != null) {
+    int deletedAdminRoleBackupCounter = repositoryContainer
+        .getServerRoleAdminEnableBackupRepository()
+        .deleteByServerGuidAndRoleGuid(event.getGuild().getIdLong(), roleArgument.getIdLong());
+
+    if (serverRoleBlacklistEntity.getId() != null && deletedAdminRoleBackupCounter == 0) {
       event
           .getHook()
           .editOriginalFormat("%s This role is already preventing future rollbacks", WARNING_EMOJI)

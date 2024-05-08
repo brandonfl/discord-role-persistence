@@ -25,9 +25,25 @@
 package com.brandonfl.discordrolepersistence.db.repository.role;
 
 import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleAdminEnableBackupEntity;
+import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ServerRoleAdminEnableBackupRepository extends JpaRepository<ServerRoleAdminEnableBackupEntity, Long> {
   Optional<ServerRoleAdminEnableBackupEntity> findByServerGuidAndRoleGuid (Long serverGuid, Long roleGuid);
+
+  @Modifying
+  @Transactional
+  int deleteByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
+
+  @Query("""
+    SELECT serverRoleAdminEnableBackupEntity.roleGuid
+    FROM ServerRoleAdminEnableBackupEntity serverRoleAdminEnableBackupEntity
+    WHERE serverRoleAdminEnableBackupEntity.serverGuid = :serverGuid
+  """)
+  List<Long> getRoleAdminEnableBackupByServerGuid(@Param("serverGuid") Long serverGuid);
 }
