@@ -46,4 +46,8 @@ public interface ServerRoleBlacklistRepository extends JpaRepository<ServerRoleB
     WHERE serverRoleBlacklistEntity.serverGuid = :serverGuid
   """)
   List<Long> getBlacklistedRolesByServerGuid(@Param("serverGuid") Long serverGuid);
+
+  @Modifying
+  @Transactional
+  void deleteAllByServerGuid(Long serverGuid);
 }

@@ -76,8 +76,8 @@ public class CleanSavedRolesCommand extends SlashCommand {
         .orElse(null);
 
     if (userArgument != null) {
-      repositoryContainer.getServerUserRepository()
-          .deleteAllByServerGuidIdAndUserGuid(event.getGuild().getIdLong(), userArgument.getIdLong());
+      repositoryContainer.getServerUserSavedRolesRepository()
+          .deleteAllByServerGuidAndUserGuid(event.getGuild().getIdLong(), userArgument.getIdLong());
 
       event
           .getHook()
@@ -85,7 +85,7 @@ public class CleanSavedRolesCommand extends SlashCommand {
           .editOriginalFormat("%s Saved roles for %s as been cleaned", SUCCESS_EMOJI, userArgument.getAsMention())
           .queue();
     } else {
-      repositoryContainer.getServerUserRepository().deleteAllByServerGuidId(event.getGuild().getIdLong());
+      repositoryContainer.getServerUserSavedRolesRepository().deleteAllByServerGuid(event.getGuild().getIdLong());
 
       event
           .getHook()

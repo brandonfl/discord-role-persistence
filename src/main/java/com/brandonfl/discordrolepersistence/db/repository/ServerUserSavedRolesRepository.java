@@ -36,7 +36,7 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
 
   @Modifying
   @Transactional
-  void deleteAllByServerGuidAndAndUserGuid(Long serverGuid, Long userGuid);
+  void deleteAllByServerGuidAndUserGuid(Long serverGuid, Long userGuid);
 
   @Query(value = """
   SELECT server_user_saved_roles.server_user_saved_roles
@@ -53,5 +53,9 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
 
   @Modifying
   @Transactional
-  void deleteAllByServerGuidAndAndRoleGuid(Long serverGuid, Long roleGuid);
+  void deleteAllByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
+
+  @Modifying
+  @Transactional
+  void deleteAllByServerGuid(Long serverGuid);
 }

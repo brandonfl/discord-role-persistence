@@ -53,7 +53,7 @@ public class UserService {
   @Transactional
   public void persistUser(@Nonnull Guild guild, @Nonnull Member member) {
     repositoryContainer.getServerUserSavedRolesRepository()
-        .deleteAllByServerGuidAndAndUserGuid(guild.getIdLong(), member.getIdLong());
+        .deleteAllByServerGuidAndUserGuid(guild.getIdLong(), member.getIdLong());
 
     for (Role role : member.getRoles()) {
       ServerUserSavedRolesEntity serverUserSavedRolesEntity = new ServerUserSavedRolesEntity();

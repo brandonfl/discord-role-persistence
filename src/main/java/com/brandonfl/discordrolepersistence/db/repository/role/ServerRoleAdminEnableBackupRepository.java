@@ -46,4 +46,8 @@ public interface ServerRoleAdminEnableBackupRepository extends JpaRepository<Ser
     WHERE serverRoleAdminEnableBackupEntity.serverGuid = :serverGuid
   """)
   List<Long> getRoleAdminEnableBackupByServerGuid(@Param("serverGuid") Long serverGuid);
+
+  @Modifying
+  @Transactional
+  int deleteAllByServerGuid(Long serverGuid);
 }

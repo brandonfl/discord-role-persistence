@@ -63,7 +63,15 @@ public class ServerEvent extends ListenerAdapter {
   @Override
   public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
     repositoryContainer.getServerRepository()
-        .findById(event.getGuild().getIdLong())
-        .ifPresent(entity -> repositoryContainer.getServerRepository().delete(entity));
+        .deleteAllByGuid(event.getGuild().getIdLong());
+
+    repositoryContainer.getServerUserSavedRolesRepository()
+        .deleteAllByServerGuid(event.getGuild().getIdLong());
+
+    repositoryContainer.getServerRoleBlacklistRepository()
+        .deleteAllByServerGuid(event.getGuild().getIdLong());
+
+    repositoryContainer.getServerRoleAdminEnableBackupRepository()
+        .deleteAllByServerGuid(event.getGuild().getIdLong());
   }
 }

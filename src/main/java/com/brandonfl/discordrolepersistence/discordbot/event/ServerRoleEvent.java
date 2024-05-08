@@ -49,7 +49,7 @@ public class ServerRoleEvent extends ListenerAdapter {
   @Transactional
   public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
     repositoryContainer.getServerUserSavedRolesRepository()
-        .deleteAllByServerGuidAndAndRoleGuid(event.getGuild().getIdLong(), event.getRole().getIdLong());
+        .deleteAllByServerGuidAndRoleGuid(event.getGuild().getIdLong(), event.getRole().getIdLong());
 
     repositoryContainer.getServerRoleBlacklistRepository()
         .deleteAllByServerGuidAndRoleGuid(event.getGuild().getIdLong(), event.getRole().getIdLong());
