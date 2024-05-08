@@ -68,7 +68,7 @@ public class UserService {
   public void backupRoles(@Nonnull GuildMemberJoinEvent joinEvent) {
     final List<Long> userPreviousRoles = repositoryContainer
         .getServerUserSavedRolesRepository()
-        .findAllNonBaccklistedRolesByServerGuidAndUserGuid(joinEvent.getGuild().getIdLong(), joinEvent.getUser().getIdLong());
+        .findAllNonBacklistedRolesByServerGuidAndUserGuid(joinEvent.getGuild().getIdLong(), joinEvent.getUser().getIdLong());
 
     final List<Long> adminRollbackRoles = repositoryContainer
         .getServerRoleAdminEnableBackupRepository()

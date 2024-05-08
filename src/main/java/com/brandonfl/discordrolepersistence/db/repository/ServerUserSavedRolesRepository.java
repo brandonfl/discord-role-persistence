@@ -49,5 +49,5 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
       WHERE server_role_blacklist.server_guid = :serverGuid
     )
   """, nativeQuery = true)
-  List<Long> findAllNonBaccklistedRolesByServerGuidAndUserGuid(@Param("serverGuid") Long serverGuid, @Param("userGuid") Long userGuid);
+  List<Long> findAllNonBacklistedRolesByServerGuidAndUserGuid(@Param("serverGuid") Long serverGuid, @Param("userGuid") Long userGuid);
 }
