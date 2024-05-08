@@ -29,16 +29,15 @@ import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeLogChannelCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.ChangeWelcomeBackChannelCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.CleanSavedRolesCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.slash.GetRolesCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.DisableRollbackRoleCommand;
-import com.brandonfl.discordrolepersistence.discordbot.command.slash.PingCommand;
 import com.brandonfl.discordrolepersistence.discordbot.command.slash.EnableRollbackRoleCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.GetRolesCommand;
+import com.brandonfl.discordrolepersistence.discordbot.command.slash.PingCommand;
 import com.brandonfl.discordrolepersistence.discordbot.event.BotEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.MemberEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.RoleEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerEvent;
 import com.brandonfl.discordrolepersistence.discordbot.event.ServerRoleEvent;
-import com.brandonfl.discordrolepersistence.service.BotService;
 import com.brandonfl.discordrolepersistence.service.LoggerService;
 import com.brandonfl.discordrolepersistence.service.ServerService;
 import com.brandonfl.discordrolepersistence.service.UserService;
@@ -63,7 +62,6 @@ public class DiscordBot {
   public final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
   private final UserService userService;
-  private final BotService botService;
   private final ServerService serverService;
   private final LoggerService loggerService;
   private final DiscordBotUtils discordBotUtils;
@@ -115,7 +113,7 @@ public class DiscordBot {
             new ServerEvent(repositoryContainer, serverService),
             new RoleEvent(botProperties, userService, loggerService),
             new ServerRoleEvent(serverService),
-            new BotEvent(botProperties, botService),
+            new BotEvent(botProperties, repositoryContainer),
             new MemberEvent(userService))
         .setActivity(DEFAULT_ACTIVITY)
         .build();

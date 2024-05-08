@@ -28,10 +28,7 @@ import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.ERROR_E
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.SUCCESS_EMOJI;
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.WARNING_EMOJI;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
-import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
 import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleAdminEnableBackupEntity;
-import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleBlacklistEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.SlashCommand;

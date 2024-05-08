@@ -41,5 +41,6 @@ public class RepositoryContainer {
   private final ServerRoleRepository serverRoleRepository;
   private final ServerRoleBlacklistRepository serverRoleBlacklistRepository;
   private final ServerRoleAdminEnableBackupRepository serverRoleAdminEnableBackupRepository;
+  private final ServerUserSavedRolesRepository serverUserSavedRolesRepository;
 
 }
