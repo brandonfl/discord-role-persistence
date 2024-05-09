@@ -25,7 +25,6 @@
 package com.brandonfl.discordrolepersistence.service;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
-import com.brandonfl.discordrolepersistence.db.entity.ServerUserEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import java.util.List;
@@ -50,7 +49,12 @@ public class LoggerService {
 
   private final RepositoryContainer repositoryContainer;
 
-  public void logRolesGivedBack(GuildMemberJoinEvent joinEvent, ServerEntity serverEntity, Set<Role> roles) {
+  public void logRolesGivedBack(GuildMemberJoinEvent joinEvent, Long serverGuid, Set<Role> roles) {
+    ServerEntity serverEntity = repositoryContainer.getServerRepository().findByGuid(serverGuid).orElse(null);
+    if (serverEntity == null) {
+      return;
+    }
+
     if (!roles.isEmpty() && (serverEntity.getLogChannel() != null || serverEntity.getWelcomeBackChannel() != null)) {
       final StringBuilder rolesGivedBackStringBuilder = new StringBuilder();
       roles.forEach(role -> rolesGivedBackStringBuilder.append("- ").append(role.getAsMention()).append("\n"));
@@ -86,23 +90,26 @@ public class LoggerService {
       @Nonnull Member member,
       @Nonnull List<Role> roles,
       @Nonnull final String fieldName) {
-    Optional<ServerUserEntity> serverUserEntity = repositoryContainer
-        .getServerUserRepository()
-        .findByUserGuidAndServerGuid(member.getIdLong(), event.getGuild().getIdLong());
 
-    if (serverUserEntity.isPresent()) {
-      Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(event.getGuild(), serverUserEntity.get().getServerGuid());
-      if (textChannel.isPresent()) {
-        EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
+    ServerEntity serverEntity = repositoryContainer.getServerRepository()
+        .findByGuid(event.getGuild().getIdLong())
+        .orElse(null);
 
-        embedBuilder
-            .setDescription("user id : " + member.getUser().getId())
-            .setAuthor(member.getEffectiveName(), null, member.getUser().getEffectiveAvatarUrl())
-            .addField(fieldName, roles.stream().map(
-                Role::getName).collect(Collectors.joining("\n")), true);
+    if (serverEntity == null) {
+      return;
+    }
 
-        textChannel.get().sendMessage(embedBuilder.build()).queue();
-      }
+    Optional<TextChannel> textChannel = DiscordBotUtils.getLogChannel(event.getGuild(), serverEntity);
+    if (textChannel.isPresent()) {
+      EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
+
+      embedBuilder
+          .setDescription("user id : " + member.getUser().getId())
+          .setAuthor(member.getEffectiveName(), null, member.getUser().getEffectiveAvatarUrl())
+          .addField(fieldName, roles.stream().map(
+              Role::getName).collect(Collectors.joining("\n")), true);
+
+      textChannel.get().sendMessage(embedBuilder.build()).queue();
     }
   }
 

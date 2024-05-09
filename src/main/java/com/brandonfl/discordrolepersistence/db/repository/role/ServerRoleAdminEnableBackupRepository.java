@@ -22,20 +22,32 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.db.repository;
+package com.brandonfl.discordrolepersistence.db.repository.role;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
+import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleAdminEnableBackupEntity;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ServerRoleRepository extends JpaRepository<ServerRoleEntity, Long> {
+public interface ServerRoleAdminEnableBackupRepository extends JpaRepository<ServerRoleAdminEnableBackupEntity, Long> {
+  Optional<ServerRoleAdminEnableBackupEntity> findByServerGuidAndRoleGuid (Long serverGuid, Long roleGuid);
 
-  @Query("SELECT serverRoleEntity FROM ServerRoleEntity serverRoleEntity WHERE serverRoleEntity.roleGuid = :roleGuid AND serverRoleEntity.serverGuidId = :serverGuid")
-  Optional<ServerRoleEntity> findByRoleGuidAndServerGuid(@Param("roleGuid") Long roleGuid, @Param("serverGuid") Long serverGuid);
+  @Modifying
+  @Transactional
+  int deleteAllByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
 
-  List<ServerRoleEntity> findAllByServerGuidId(Long serverGuidId);
+  @Query("""
+    SELECT serverRoleAdminEnableBackupEntity.roleGuid
+    FROM ServerRoleAdminEnableBackupEntity serverRoleAdminEnableBackupEntity
+    WHERE serverRoleAdminEnableBackupEntity.serverGuid = :serverGuid
+  """)
+  List<Long> getRoleAdminEnableBackupByServerGuid(@Param("serverGuid") Long serverGuid);
 
+  @Modifying
+  @Transactional
+  int deleteAllByServerGuid(Long serverGuid);
 }

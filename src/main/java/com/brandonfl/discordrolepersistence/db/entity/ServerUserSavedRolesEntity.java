@@ -24,18 +24,11 @@
 
 package com.brandonfl.discordrolepersistence.db.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,33 +36,20 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "server_role")
-public class ServerRoleEntity {
+@Table(name = "server_user_saved_roles")
+public class ServerUserSavedRolesEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Column(name = "server_guid", nullable = false, insertable = false, updatable = false)
-  private Long serverGuidId;
+  @Column(name = "server_guid")
+  private Long serverGuid;
 
-  @ManyToOne
-  @JoinColumn(name = "server_guid", nullable = false, updatable = false)
-  private ServerEntity serverGuid;
-
-  @Column(name = "role_guid", nullable = false, updatable = false)
+  @Column(name = "role_guid")
   private Long roleGuid;
 
-  @Column(name = "blacklisted", nullable = false)
-  private boolean blacklisted = false;
-
-  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-  @JoinTable(name = "server_user_has_server_role",
-      joinColumns = @JoinColumn(name = "server_role_id", referencedColumnName = "id"),
-      inverseJoinColumns = @JoinColumn(name = "server_user_id", referencedColumnName = "id"))
-  private Set<ServerUserEntity> userEntities = new HashSet<>();
-
-  @Column(name = "forced", nullable = false)
-  private boolean forced = false;
+  @Column(name = "user_guid")
+  private Long userGuid;
 }

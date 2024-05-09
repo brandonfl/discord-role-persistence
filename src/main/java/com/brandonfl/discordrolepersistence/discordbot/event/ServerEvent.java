@@ -24,10 +24,12 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
+import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
-import com.brandonfl.discordrolepersistence.service.ServerService;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -36,20 +38,39 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class ServerEvent extends ListenerAdapter {
 
   private final RepositoryContainer repositoryContainer;
-  private final ServerService serverService;
 
   @Override
   public void onGuildJoin(@Nonnull GuildJoinEvent event) {
-    if (!repositoryContainer.getServerRepository()
-        .findById(event.getGuild().getIdLong()).isPresent()) {
-      serverService.persistNewServer(event.getGuild());
+    ServerEntity serverEntity = repositoryContainer.getServerRepository()
+        .findById(event.getGuild().getIdLong())
+        .orElse(new ServerEntity());
+
+    serverEntity.setGuid(event.getGuild().getIdLong());
+    repositoryContainer.getServerRepository().save(serverEntity);
+
+    for (Member member : event.getGuild().getMembers()) {
+      for (Role role : member.getRoles()) {
+        repositoryContainer.getServerUserSavedRolesRepository().insertIgnore(
+            event.getGuild().getIdLong(),
+            role.getIdLong(),
+            member.getIdLong()
+        );
+      }
     }
   }
 
   @Override
   public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
     repositoryContainer.getServerRepository()
-        .findById(event.getGuild().getIdLong())
-        .ifPresent(entity -> repositoryContainer.getServerRepository().delete(entity));
+        .deleteAllByGuid(event.getGuild().getIdLong());
+
+    repositoryContainer.getServerUserSavedRolesRepository()
+        .deleteAllByServerGuid(event.getGuild().getIdLong());
+
+    repositoryContainer.getServerRoleBlacklistRepository()
+        .deleteAllByServerGuid(event.getGuild().getIdLong());
+
+    repositoryContainer.getServerRoleAdminEnableBackupRepository()
+        .deleteAllByServerGuid(event.getGuild().getIdLong());
   }
 }

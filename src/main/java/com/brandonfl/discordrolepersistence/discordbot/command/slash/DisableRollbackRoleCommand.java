@@ -28,8 +28,7 @@ import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.ERROR_E
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.SUCCESS_EMOJI;
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.WARNING_EMOJI;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
-import com.brandonfl.discordrolepersistence.db.entity.ServerRoleEntity;
+import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleBlacklistEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import com.jagrosh.jdautilities.command.SlashCommand;
@@ -50,85 +49,83 @@ public class DisableRollbackRoleCommand extends SlashCommand {
 
   private static final String ROLE_ARGUMENT_NAME = "role";
   private final RepositoryContainer repositoryContainer;
+  private final DiscordBotUtils discordBotUtils;
 
   public DisableRollbackRoleCommand(
-      RepositoryContainer repositoryContainer) {
+      RepositoryContainer repositoryContainer,
+      DiscordBotUtils discordBotUtils
+  ) {
     this.repositoryContainer = repositoryContainer;
+    this.discordBotUtils = discordBotUtils;
 
     this.name = "rollback-disable";
     this.help = "Prevent the role from being rollback.";
     this.options = List
         .of(new OptionData(OptionType.ROLE, ROLE_ARGUMENT_NAME,"The role to prevent of future rollback - required").setRequired(true));
     this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
+    this.guildOnly = true;
   }
 
   @Override
   @Transactional
   public void execute(SlashCommandEvent event) {
     event.deferReply().queue();
-    Role roleArgument = ThrowableOptional
-        .of(() -> Objects.requireNonNull(event.getOption(ROLE_ARGUMENT_NAME)).getAsRole())
-        .orElse(null);
 
     if (event.getGuild() == null) {
       event
           .getHook()
-          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
+          .editOriginalFormat("%s Please run this command into a server", ERROR_EMOJI)
           .queue();
-    } else if (roleArgument != null) {
-      ServerEntity serverEntity = repositoryContainer.getServerRepository()
-          .findByGuid(event.getGuild().getIdLong()).orElse(null);
-      if (serverEntity != null) {
-        Optional<ServerRoleEntity> possibleServerRoleEntity = repositoryContainer
-            .getServerRoleRepository()
-            .findByRoleGuidAndServerGuid(roleArgument.getIdLong(), event.getGuild().getIdLong());
-        ServerRoleEntity serverRoleEntity;
-        if (possibleServerRoleEntity.isPresent()) {
-          serverRoleEntity = possibleServerRoleEntity.get();
-          if (serverRoleEntity.isBlacklisted()) {
-            event
-                .getHook()
-                .editOriginalFormat("%s This role is already preventing future rollbacks", WARNING_EMOJI)
-                .queue();
-            return;
-          }
-        } else {
-          serverRoleEntity = new ServerRoleEntity();
-          serverRoleEntity.setServerGuid(serverEntity);
-          serverRoleEntity.setRoleGuid(roleArgument.getIdLong());
-        }
+      return;
+    }
 
-        serverRoleEntity.setForced(false);
-        serverRoleEntity.setBlacklisted(true);
-        repositoryContainer.getServerRoleRepository().save(serverRoleEntity);
+    Role roleArgument = ThrowableOptional
+        .of(() -> Objects.requireNonNull(event.getOption(ROLE_ARGUMENT_NAME)).getAsRole())
+        .orElse(null);
 
-        event
-            .getHook()
-            .editOriginalFormat("%s Preventing the role `%s` from being rollback.", SUCCESS_EMOJI, roleArgument.getName())
-            .queue();
-
-        Optional<TextChannel> logChannel = DiscordBotUtils
-            .getLogChannel(event.getGuild(), serverEntity);
-        if (logChannel.isPresent()) {
-          EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
-          embedBuilder
-              .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
-              .addField(":x: Preventing rollbacks for role",
-                  roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
-
-          logChannel.get().sendMessage(embedBuilder.build()).queue();
-        }
-      } else {
-        event
-            .getHook()
-            .editOriginalFormat("%s Current server not found", ERROR_EMOJI)
-            .queue();
-      }
-    } else {
+    if (roleArgument == null) {
       event
           .getHook()
           .editOriginalFormat("%s Please provide one and exactly only one role", ERROR_EMOJI)
           .queue();
+      return;
+    }
+
+    ServerRoleBlacklistEntity serverRoleBlacklistEntity = repositoryContainer
+        .getServerRoleBlacklistRepository()
+        .findByServerGuidAndRoleGuid(event.getGuild().getIdLong(), roleArgument.getIdLong())
+        .orElse(new ServerRoleBlacklistEntity());
+
+    int deletedAdminRoleBackupCounter = repositoryContainer
+        .getServerRoleAdminEnableBackupRepository()
+        .deleteAllByServerGuidAndRoleGuid(event.getGuild().getIdLong(), roleArgument.getIdLong());
+
+    if (serverRoleBlacklistEntity.getId() != null && deletedAdminRoleBackupCounter == 0) {
+      event
+          .getHook()
+          .editOriginalFormat("%s This role is already preventing future rollbacks", WARNING_EMOJI)
+          .queue();
+      return;
+    }
+
+    serverRoleBlacklistEntity.setServerGuid(event.getGuild().getIdLong());
+    serverRoleBlacklistEntity.setRoleGuid(roleArgument.getIdLong());
+    repositoryContainer.getServerRoleBlacklistRepository().save(serverRoleBlacklistEntity);
+
+    event
+        .getHook()
+        .editOriginalFormat("%s Preventing the role `%s` from being rollback.", SUCCESS_EMOJI, roleArgument.getName())
+        .queue();
+
+    Optional<TextChannel> logChannel = discordBotUtils.getLogChannel(event.getGuild());
+    if (logChannel.isPresent()) {
+      EmbedBuilder embedBuilder = DiscordBotUtils.getGenericEmbed(event.getJDA());
+      embedBuilder
+          .setAuthor(event.getUser().getName(), null, event.getUser().getEffectiveAvatarUrl())
+          .addField(":x: Preventing rollbacks for role",
+              roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
+
+      logChannel.get().sendMessage(embedBuilder.build()).queue();
     }
   }
 }

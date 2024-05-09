@@ -24,6 +24,8 @@
 
 package com.brandonfl.discordrolepersistence.db.repository;
 
+import com.brandonfl.discordrolepersistence.db.repository.role.ServerRoleAdminEnableBackupRepository;
+import com.brandonfl.discordrolepersistence.db.repository.role.ServerRoleBlacklistRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,8 @@ import org.springframework.stereotype.Service;
 public class RepositoryContainer {
 
   private final ServerRepository serverRepository;
-  private final ServerUserRepository serverUserRepository;
-  private final ServerRoleRepository serverRoleRepository;
+  private final ServerRoleBlacklistRepository serverRoleBlacklistRepository;
+  private final ServerRoleAdminEnableBackupRepository serverRoleAdminEnableBackupRepository;
+  private final ServerUserSavedRolesRepository serverUserSavedRolesRepository;
 
 }

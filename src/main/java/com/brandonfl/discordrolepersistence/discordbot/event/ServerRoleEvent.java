@@ -24,9 +24,12 @@
 
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
-import com.brandonfl.discordrolepersistence.service.ServerService;
+import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
+import com.brandonfl.discordrolepersistence.service.LoggerService;
+import jakarta.transaction.Transactional;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.events.role.GenericRoleEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -34,15 +37,33 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 @RequiredArgsConstructor
 public class ServerRoleEvent extends ListenerAdapter {
 
-  private final ServerService serverService;
+  private final RepositoryContainer repositoryContainer;
+  private final LoggerService loggerService;
 
   @Override
   public void onRoleCreate(@Nonnull RoleCreateEvent event) {
-    serverService.createNewRoles(event);
+    logRoleEvent(event, ":white_check_mark: Created new role");
   }
 
   @Override
+  @Transactional
   public void onRoleDelete(@Nonnull RoleDeleteEvent event) {
-    serverService.deleteOldRoles(event);
+    repositoryContainer.getServerUserSavedRolesRepository()
+        .deleteAllByServerGuidAndRoleGuid(event.getGuild().getIdLong(), event.getRole().getIdLong());
+
+    repositoryContainer.getServerRoleBlacklistRepository()
+        .deleteAllByServerGuidAndRoleGuid(event.getGuild().getIdLong(), event.getRole().getIdLong());
+
+    repositoryContainer.getServerRoleAdminEnableBackupRepository()
+        .deleteAllByServerGuidAndRoleGuid(event.getGuild().getIdLong(), event.getRole().getIdLong());
+
+    logRoleEvent(event, ":no_entry: Deleted role");
+  }
+
+  private void logRoleEvent(GenericRoleEvent event, String message) {
+    repositoryContainer.getServerRepository()
+        .findByGuid(event.getGuild().getIdLong())
+        .ifPresent(serverEntity -> loggerService
+            .logServerRole(serverEntity, event, message));
   }
 }

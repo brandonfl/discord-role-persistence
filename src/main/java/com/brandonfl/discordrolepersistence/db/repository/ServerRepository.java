@@ -27,9 +27,12 @@ package com.brandonfl.discordrolepersistence.db.repository;
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 
 public interface ServerRepository extends JpaRepository<ServerEntity, Long> {
 
   Optional<ServerEntity> findByGuid(Long guid);
 
+  @Modifying
+  void deleteAllByGuid(Long guid);
 }

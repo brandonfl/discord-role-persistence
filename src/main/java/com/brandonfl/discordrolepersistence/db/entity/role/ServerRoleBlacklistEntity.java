@@ -22,27 +22,16 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.discordbot.command.slash;
+package com.brandonfl.discordrolepersistence.db.entity.role;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
-public class PingCommand extends SlashCommand {
-
-  public PingCommand() {
-    this.name = "ping";
-    this.help = "Get bot ping.";
-    this.guildOnly = false;
-    this.cooldown = 60;
-  }
-
-  @Override
-  protected void execute(SlashCommandEvent event) {
-    long time = System.currentTimeMillis();
-
-    event.deferReply().setContent("Pong!")
-        .queue(response -> {
-          response.editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
-        });
-  }
+@Getter
+@Setter
+@Entity
+@Table(name = "server_role_blacklist")
+public class ServerRoleBlacklistEntity extends AbstractServerRoleEntity {
 }

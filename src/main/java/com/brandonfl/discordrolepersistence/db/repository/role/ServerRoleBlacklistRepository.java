@@ -22,27 +22,32 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.db.repository;
+package com.brandonfl.discordrolepersistence.db.repository.role;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
-import com.brandonfl.discordrolepersistence.db.entity.ServerUserEntity;
+import com.brandonfl.discordrolepersistence.db.entity.role.ServerRoleBlacklistEntity;
+import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
-public interface ServerUserRepository extends JpaRepository<ServerUserEntity, Long> {
-
-  @Query("SELECT serverUserEntity FROM ServerUserEntity serverUserEntity WHERE serverUserEntity.userGuid = :userGuid AND serverUserEntity.serverGuid.guid = :serverGuid")
-  Optional<ServerUserEntity> findByUserGuidAndServerGuid(@Param("userGuid") Long userGuid, @Param("serverGuid") Long serverGuid);
+public interface ServerRoleBlacklistRepository extends JpaRepository<ServerRoleBlacklistEntity, Long> {
+  Optional<ServerRoleBlacklistEntity> findByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
 
   @Modifying
   @Transactional
-  int deleteAllByServerGuidAndUserGuid(ServerEntity serverGuid, Long userGuid);
+  void deleteAllByServerGuidAndRoleGuid(Long serverGuid, Long roleGuid);
+
+  @Query("""
+    SELECT serverRoleBlacklistEntity.roleGuid
+    FROM ServerRoleBlacklistEntity serverRoleBlacklistEntity
+    WHERE serverRoleBlacklistEntity.serverGuid = :serverGuid
+  """)
+  List<Long> getBlacklistedRolesByServerGuid(@Param("serverGuid") Long serverGuid);
 
   @Modifying
   @Transactional
-  int deleteAllByServerGuid(ServerEntity serverGuid);
+  void deleteAllByServerGuid(Long serverGuid);
 }

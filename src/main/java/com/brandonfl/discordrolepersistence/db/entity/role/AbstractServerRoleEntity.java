@@ -22,48 +22,29 @@
  * SOFTWARE.
  */
 
-package com.brandonfl.discordrolepersistence.db.entity;
+package com.brandonfl.discordrolepersistence.db.entity.role;
 
-import java.util.HashSet;
-import java.util.Set;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.MappedSuperclass;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
-@Entity
-@Table(name = "server_user")
-public class ServerUserEntity {
-
+@Getter
+@MappedSuperclass
+public abstract class AbstractServerRoleEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Column(name = "user_guid", nullable = false, updatable = false)
-  private Long userGuid;
+  @Column(name = "server_guid", nullable = false, updatable = false)
+  private Long serverGuid;
 
-  @ManyToOne
-  @JoinColumn(name = "server_guid", nullable = false, updatable = false)
-  private ServerEntity serverGuid;
-
-  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
-  @JoinTable(name = "server_user_has_server_role",
-      joinColumns = @JoinColumn(name = "server_user_id", referencedColumnName = "id"),
-      inverseJoinColumns = @JoinColumn(name = "server_role_id", referencedColumnName = "id"))
-  private Set<ServerRoleEntity> roleEntities = new HashSet<>();
-
-
+  @Column(name = "role_guid", nullable = false, updatable = false)
+  private Long roleGuid;
 }

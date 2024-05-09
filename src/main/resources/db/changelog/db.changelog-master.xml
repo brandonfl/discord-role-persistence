@@ -134,5 +134,82 @@ logicalFilePath="src/main/resources/db/changelog/db.changelog-master.xml">
       </column>
     </addColumn>
   </changeSet>
+  <changeSet id="5" author="BrandonFL">
+    <createTable tableName="server_role_blacklist">
+      <column autoIncrement="true" name="id" type="BIGINT(20) UNSIGNED">
+        <constraints primaryKey="true"/>
+      </column>
+      <column name="server_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint
+      tableName="server_role_blacklist"
+      columnNames="server_guid, role_guid"/>
+
+    <sql>
+        INSERT INTO server_role_blacklist (server_guid,role_guid)
+        SELECT DISTINCT sr.server_guid, sr.role_guid FROM server_role as sr WHERE sr.blacklisted = 1;
+    </sql>
+  </changeSet>
+  <changeSet id="6" author="BrandonFL">
+    <createTable tableName="server_role_admin_enable_backup">
+      <column autoIncrement="true" name="id" type="BIGINT(20) UNSIGNED">
+        <constraints primaryKey="true"/>
+      </column>
+      <column name="server_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint
+      tableName="server_role_admin_enable_backup"
+      columnNames="server_guid, role_guid"/>
+
+    <sql>
+      INSERT INTO server_role_admin_enable_backup (server_guid,role_guid)
+      SELECT DISTINCT sr.server_guid, sr.role_guid FROM server_role as sr WHERE sr.forced = 1;
+    </sql>
+  </changeSet>
+  <changeSet id="7" author="BrandonFL">
+    <createTable tableName="server_user_saved_roles">
+      <column autoIncrement="true" name="id" type="BIGINT(20) UNSIGNED">
+        <constraints primaryKey="true"/>
+      </column>
+      <column name="server_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_guid" type="BIGINT(20) UNSIGNED">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint
+      tableName="server_user_saved_roles"
+      columnNames="server_guid, role_guid, user_guid"/>
+
+    <sql>
+      INSERT INTO server_user_saved_roles (server_guid, role_guid, user_guid)
+      SELECT DISTINCT sr.server_guid, sr.role_guid, su.user_guid
+        FROM server_user_has_server_role as sur
+            LEFT JOIN server_user as su ON su.id = sur.server_user_id
+            LEFT JOIN server_role as sr ON sr.id = sur.server_role_id;
+    </sql>
+  </changeSet>
+  <changeSet id="8" author="BrandonFL">
+    <dropTable tableName="server_user_has_server_role"/>
+    <dropTable tableName="server_role"/>
+    <dropTable tableName="server_user"/>
+  </changeSet>
 </databaseChangeLog>
 

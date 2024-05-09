@@ -26,9 +26,7 @@ package com.brandonfl.discordrolepersistence.discordbot.command.slash;
 
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.ERROR_EMOJI;
 import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.SUCCESS_EMOJI;
-import static com.brandonfl.discordrolepersistence.discordbot.DiscordBot.WARNING_EMOJI;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import java.util.List;
@@ -64,27 +62,22 @@ public class CleanSavedRolesCommand extends SlashCommand {
   @Transactional
   public void execute(SlashCommandEvent event) {
     event.deferReply(true).queue();
-    User userArgument = ThrowableOptional
-        .of(() -> Objects.requireNonNull(event.getOption(USER)).getAsUser())
-        .orElse(null);
 
-    ServerEntity serverEntity = event.getGuild() != null
-        ? repositoryContainer.getServerRepository().findByGuid(event.getGuild().getIdLong()).orElse(null)
-        : null;
-
-    if (serverEntity == null) {
+    if (event.getGuild() == null) {
       event
           .getHook()
-          .setEphemeral(true)
-          .editOriginalFormat("%s Current server not existing", ERROR_EMOJI)
+          .editOriginalFormat("%s Please run this command into a server", ERROR_EMOJI)
           .queue();
       return;
     }
 
+    User userArgument = ThrowableOptional
+        .of(() -> Objects.requireNonNull(event.getOption(USER)).getAsUser())
+        .orElse(null);
 
     if (userArgument != null) {
-      repositoryContainer.getServerUserRepository()
-          .deleteAllByServerGuidAndUserGuid(serverEntity, userArgument.getIdLong());
+      repositoryContainer.getServerUserSavedRolesRepository()
+          .deleteAllByServerGuidAndUserGuid(event.getGuild().getIdLong(), userArgument.getIdLong());
 
       event
           .getHook()
@@ -92,7 +85,7 @@ public class CleanSavedRolesCommand extends SlashCommand {
           .editOriginalFormat("%s Saved roles for %s as been cleaned", SUCCESS_EMOJI, userArgument.getAsMention())
           .queue();
     } else {
-      repositoryContainer.getServerUserRepository().deleteAllByServerGuid(serverEntity);
+      repositoryContainer.getServerUserSavedRolesRepository().deleteAllByServerGuid(event.getGuild().getIdLong());
 
       event
           .getHook()

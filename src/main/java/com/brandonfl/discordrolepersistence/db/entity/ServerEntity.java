@@ -24,12 +24,9 @@
 
 package com.brandonfl.discordrolepersistence.db.entity;
 
-import java.util.HashSet;
-import java.util.Set;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,11 +46,4 @@ public class ServerEntity {
 
   @Column(name = "welcome_back_channel")
   private Long welcomeBackChannel;
-
-  @OneToMany(mappedBy = "serverGuid")
-  private Set<ServerRoleEntity> roleEntities = new HashSet<>();
-
-  @OneToMany(mappedBy = "serverGuid")
-  private Set<ServerUserEntity> userEntities = new HashSet<>();
-
 }
