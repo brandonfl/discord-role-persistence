@@ -2,7 +2,7 @@ name: Check and fix licence
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "feature-ci-licence" ]
   workflow_dispatch: # Manually run with button
     mode:
       type: choice
@@ -27,10 +27,11 @@ jobs:
         name: Check out code
 
       - name: License Eye Header
-        uses: apache/skywalking-eyes@v0.6.0
+        uses: apache/skywalking-eyes/header@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           mode: ${{ env.LICENCE_CHECK_ACTION }}
+        # Test manually with : docker run -it --rm -v $(pwd):/github/workspace apache/skywalking-eyes header <check|fix>
 
       - name: Apply Changes
         if: env.LICENCE_MODE == 'fix'
@@ -41,3 +42,10 @@ jobs:
           author_name: License Bot
           author_email: license_bot@github.com
           message: 'Automatic application of license header'
+
+      - name: License Eye Dependencies
+        if: always()
+        uses: apache/skywalking-eyes/header@v0.6.0
+        with:
+          mode: check
+        # Test manually with : docker run -it --rm -v $(pwd):/github/workspace apache/skywalking-eyes header check
