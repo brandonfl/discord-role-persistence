@@ -77,6 +77,7 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
    */
   @Override
   @Deprecated(since = "1.11.0")
+  @SuppressWarnings("java:S1133")
   default <S extends ServerUserSavedRolesEntity> S save(S entity) {
     throw new UnsupportedOperationException("Use insertIgnore instead");
   }
@@ -86,6 +87,7 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
    */
   @Override
   @Deprecated(since = "1.11.0")
+  @SuppressWarnings("java:S1133")
   default <S extends ServerUserSavedRolesEntity> List<S> saveAll(Iterable<S> entities) {
     throw new UnsupportedOperationException("Use insertIgnore instead");
   }
@@ -95,6 +97,7 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
    */
   @Override
   @Deprecated(since = "1.11.0")
+  @SuppressWarnings("java:S1133")
   default <S extends ServerUserSavedRolesEntity> S saveAndFlush(S entity) {
     throw new UnsupportedOperationException("Use insertIgnore instead");
   }
