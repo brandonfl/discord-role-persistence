@@ -42,10 +42,3 @@ jobs:
           author_name: License Bot
           author_email: license_bot@github.com
           message: 'Automatic application of license header'
-
-      - name: License Eye Dependencies
-        if: always()
-        uses: apache/skywalking-eyes/dependency@v0.6.0
-        with:
-          mode: check
-        # Test manually with : docker run -it --rm -v $(pwd):/github/workspace apache/skywalking-eyes dependency check

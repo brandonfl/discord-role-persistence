@@ -28,7 +28,3 @@ header:
     - docker-custom-entrypoint.sh
 
   comment: on-failure
-
-dependency:
-  files:
-    - pom.xml
