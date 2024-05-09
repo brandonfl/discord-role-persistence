@@ -45,7 +45,7 @@ jobs:
 
       - name: License Eye Dependencies
         if: always()
-        uses: apache/skywalking-eyes/header@v0.6.0
+        uses: apache/skywalking-eyes/dependency@v0.6.0
         with:
           mode: check
-        # Test manually with : docker run -it --rm -v $(pwd):/github/workspace apache/skywalking-eyes header check
+        # Test manually with : docker run -it --rm -v $(pwd):/github/workspace apache/skywalking-eyes dependency check
