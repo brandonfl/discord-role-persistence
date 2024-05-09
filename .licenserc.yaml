@@ -1,0 +1,11 @@
+header:
+  license:
+    spdx-id: MIT
+    copyright-owner: Fontany--Legall Brandon
+    copyright-year: 2021
+    software-name: Discord Role Persistence
+  comment: on-failure
+
+dependency:
+  files:
+    - pom.xml
