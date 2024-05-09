@@ -32,16 +32,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLInsert;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "server_user_saved_roles")
-@SQLInsert(sql = """
-    REPLACE INTO server_user_saved_roles(server_guid, role_guid, user_guid)
-    VALUES (?, ?, ?)
-    """)
 public class ServerUserSavedRolesEntity {
 
   @Id
