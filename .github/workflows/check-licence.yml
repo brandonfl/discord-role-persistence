@@ -30,7 +30,7 @@ jobs:
         uses: apache/skywalking-eyes/header@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          mode: ${{ env.LICENCE_CHECK_ACTION }}
+          mode: ${{ env.LICENCE_MODE }}
         # Test manually with : docker run -it --rm -v $(pwd):/github/workspace apache/skywalking-eyes header <check|fix>
 
       - name: Apply Changes
