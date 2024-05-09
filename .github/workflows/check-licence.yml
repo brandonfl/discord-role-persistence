@@ -33,6 +33,7 @@ jobs:
           mode: ${{ env.LICENCE_CHECK_ACTION }}
 
       - name: Apply Changes
+        if: env.LICENCE_MODE == 'fix'
         uses: EndBug/add-and-commit@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
