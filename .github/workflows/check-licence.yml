@@ -1,0 +1,51 @@
+name: Check and fix licence
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch: # Manually run with button
+    mode:
+      type: choice
+      description: 'Licence mode'
+      required: true
+      default: 'fix'
+      options:
+        - 'check'
+        - 'fix'
+
+jobs:
+  licence:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      LICENCE_MODE: ${{ github.event.inputs.mode || 'fix' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Check out code
+
+      - name: License Eye Header
+        uses: apache/skywalking-eyes/header@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          mode: ${{ env.LICENCE_MODE }}
+        # Test manually with : docker run -it --rm -v $(pwd):/github/workspace apache/skywalking-eyes header <check|fix>
+
+      - name: Apply Changes
+        if: env.LICENCE_MODE == 'fix'
+        uses: EndBug/add-and-commit@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          author_name: License Bot
+          author_email: license_bot@github.com
+          message: 'Automatic application of license header'
+
+      - name: License Eye Dependencies
+        if: always()
+        uses: apache/skywalking-eyes/dependency@v0.6.0
+        with:
+          mode: check
+        # Test manually with : docker run -it --rm -v $(pwd):/github/workspace apache/skywalking-eyes dependency check
