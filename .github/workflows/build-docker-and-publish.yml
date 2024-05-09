@@ -52,3 +52,5 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        provenance: ${{ vars.DOCKER_BUILD_PROVENANCE }}
+        sbom: ${{ vars.DOCKER_BUILD_SBOM }}
