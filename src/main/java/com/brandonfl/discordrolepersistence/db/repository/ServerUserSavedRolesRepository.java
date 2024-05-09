@@ -38,6 +38,15 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
   @Transactional
   void deleteAllByServerGuidAndUserGuid(Long serverGuid, Long userGuid);
 
+  @Modifying
+  @Transactional
+  @Query(value = """
+      INSERT IGNORE 
+      INTO server_user_saved_roles (server_guid, role_guid, user_guid) 
+      VALUES (:serverGuid, :roleGuid, :userGuid)
+      """, nativeQuery = true)
+  void insertIgnore(@Param("serverGuid") Long serverGuid, @Param("roleGuid") Long roleGuid, @Param("userGuid") Long userGuid);
+
   @Query(value = """
   SELECT server_user_saved_roles.role_guid
   FROM server_user_saved_roles
@@ -57,5 +66,36 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
 
   @Modifying
   @Transactional
+  void deleteAllByServerGuidAndRoleGuidAndUserGuid(Long serverGuid, Long roleGuid, Long userGuid);
+
+  @Modifying
+  @Transactional
   void deleteAllByServerGuid(Long serverGuid);
+
+  /**
+   * @deprecated Use insertIgnore instead
+   */
+  @Override
+  @Deprecated(since = "1.11.0")
+  default <S extends ServerUserSavedRolesEntity> S save(S entity) {
+    throw new UnsupportedOperationException("Use insertIgnore instead");
+  }
+
+  /**
+   * @deprecated Use insertIgnore instead
+   */
+  @Override
+  @Deprecated(since = "1.11.0")
+  default <S extends ServerUserSavedRolesEntity> List<S> saveAll(Iterable<S> entities) {
+    throw new UnsupportedOperationException("Use insertIgnore instead");
+  }
+
+  /**
+   * @deprecated Use insertIgnore instead
+   */
+  @Override
+  @Deprecated(since = "1.11.0")
+  default <S extends ServerUserSavedRolesEntity> S saveAndFlush(S entity) {
+    throw new UnsupportedOperationException("Use insertIgnore instead");
+  }
 }

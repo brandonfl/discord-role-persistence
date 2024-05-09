@@ -45,7 +45,7 @@ public class RoleEvent extends ListenerAdapter {
     loggerService.logUserRoleUpdate(event, event.getMember(), event.getRoles(), ":white_check_mark: Added roles");
 
     if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
-      userService.persistUser(event.getGuild(), event.getMember());
+      userService.addRoles(event);
     }
   }
 
@@ -54,7 +54,7 @@ public class RoleEvent extends ListenerAdapter {
     loggerService.logUserRoleUpdate(event, event.getMember(), event.getRoles(), ":x: Removed roles");
 
     if (botProperties.getSetting().getPersistence().needToPersistAtRoleChange()) {
-      userService.persistUser(event.getGuild(), event.getMember());
+      userService.removeRoles(event);
     }
   }
 }

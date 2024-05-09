@@ -25,7 +25,6 @@
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
 import com.brandonfl.discordrolepersistence.db.entity.ServerEntity;
-import com.brandonfl.discordrolepersistence.db.entity.ServerUserSavedRolesEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import javax.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
@@ -51,11 +50,11 @@ public class ServerEvent extends ListenerAdapter {
 
     for (Member member : event.getGuild().getMembers()) {
       for (Role role : member.getRoles()) {
-        ServerUserSavedRolesEntity serverUserSavedRolesEntity = new ServerUserSavedRolesEntity();
-        serverUserSavedRolesEntity.setServerGuid(event.getGuild().getIdLong());
-        serverUserSavedRolesEntity.setUserGuid(member.getIdLong());
-        serverUserSavedRolesEntity.setRoleGuid(role.getIdLong());
-        repositoryContainer.getServerUserSavedRolesRepository().save(serverUserSavedRolesEntity);
+        repositoryContainer.getServerUserSavedRolesRepository().insertIgnore(
+            event.getGuild().getIdLong(),
+            role.getIdLong(),
+            member.getIdLong()
+        );
       }
     }
   }

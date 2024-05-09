@@ -42,6 +42,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -124,5 +125,18 @@ public class DiscordBotUtils {
 
   public static boolean isArgAnId(CommandEvent commandEvent) {
     return commandEvent.getArgs().matches("^[0-9]+$");
+  }
+
+  public static void saveMemberRoles(RepositoryContainer repositoryContainer, Guild guild, Member member) {
+    repositoryContainer.getServerUserSavedRolesRepository()
+        .deleteAllByServerGuidAndUserGuid(guild.getIdLong(), member.getIdLong());
+
+    for (Role role : member.getRoles()) {
+      repositoryContainer.getServerUserSavedRolesRepository().insertIgnore(
+          guild.getIdLong(),
+          role.getIdLong(),
+          member.getIdLong()
+      );
+    }
   }
 }

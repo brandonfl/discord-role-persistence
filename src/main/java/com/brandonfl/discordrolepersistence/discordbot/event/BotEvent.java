@@ -25,7 +25,6 @@
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
 import com.brandonfl.discordrolepersistence.config.BotProperties;
-import com.brandonfl.discordrolepersistence.db.entity.ServerUserSavedRolesEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import javax.annotation.Nonnull;
@@ -34,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ReconnectedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -90,16 +88,7 @@ public class BotEvent extends ListenerAdapter {
             continue;
           }
 
-          repositoryContainer.getServerUserSavedRolesRepository()
-              .deleteAllByServerGuidAndUserGuid(guild.getIdLong(), member.getIdLong());
-
-          for (Role role : member.getRoles()) {
-            ServerUserSavedRolesEntity serverUserSavedRolesEntity = new ServerUserSavedRolesEntity();
-            serverUserSavedRolesEntity.setServerGuid(guild.getIdLong());
-            serverUserSavedRolesEntity.setUserGuid(member.getIdLong());
-            serverUserSavedRolesEntity.setRoleGuid(role.getIdLong());
-            repositoryContainer.getServerUserSavedRolesRepository().save(serverUserSavedRolesEntity);
-          }
+          DiscordBotUtils.saveMemberRoles(repositoryContainer, guild, member);
         }
       }
     } catch (Exception e) {

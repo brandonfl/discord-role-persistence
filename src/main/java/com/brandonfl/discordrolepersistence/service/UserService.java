@@ -24,7 +24,6 @@
 
 package com.brandonfl.discordrolepersistence.service;
 
-import com.brandonfl.discordrolepersistence.db.entity.ServerUserSavedRolesEntity;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
 import java.util.HashSet;
@@ -37,6 +36,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -52,16 +53,7 @@ public class UserService {
   @Async("userPersistenceExecutor")
   @Transactional
   public void persistUser(@Nonnull Guild guild, @Nonnull Member member) {
-    repositoryContainer.getServerUserSavedRolesRepository()
-        .deleteAllByServerGuidAndUserGuid(guild.getIdLong(), member.getIdLong());
-
-    for (Role role : member.getRoles()) {
-      ServerUserSavedRolesEntity serverUserSavedRolesEntity = new ServerUserSavedRolesEntity();
-      serverUserSavedRolesEntity.setRoleGuid(role.getIdLong());
-      serverUserSavedRolesEntity.setUserGuid(member.getIdLong());
-      serverUserSavedRolesEntity.setServerGuid(guild.getIdLong());
-      repositoryContainer.getServerUserSavedRolesRepository().save(serverUserSavedRolesEntity);
-    }
+    DiscordBotUtils.saveMemberRoles(repositoryContainer, guild, member);
   }
 
   @Async("userPersistenceExecutor")
@@ -93,6 +85,29 @@ public class UserService {
 
     if (!rolesAddedToUser.isEmpty()) {
       loggerService.logRolesGivedBack(joinEvent, joinEvent.getGuild().getIdLong(), rolesAddedToUser);
+    }
+  }
+
+  @Async("userPersistenceExecutor")
+  public void addRoles(GuildMemberRoleAddEvent event) {
+    for (Role addedRole : event.getRoles()) {
+      repositoryContainer.getServerUserSavedRolesRepository().insertIgnore(
+          event.getGuild().getIdLong(),
+          addedRole.getIdLong(),
+          event.getMember().getIdLong()
+      );
+    }
+  }
+
+
+  @Async("userPersistenceExecutor")
+  public void removeRoles(GuildMemberRoleRemoveEvent event) {
+    for (Role removedRole : event.getRoles()) {
+      repositoryContainer.getServerUserSavedRolesRepository().deleteAllByServerGuidAndRoleGuidAndUserGuid(
+          event.getGuild().getIdLong(),
+          removedRole.getIdLong(),
+          event.getMember().getIdLong()
+      );
     }
   }
 }
