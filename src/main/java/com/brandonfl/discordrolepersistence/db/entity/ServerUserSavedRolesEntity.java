@@ -39,8 +39,7 @@ import org.hibernate.annotations.SQLInsert;
 @Entity
 @Table(name = "server_user_saved_roles")
 @SQLInsert(sql = """
-    INSERT IGNORE 
-    INTO server_user_saved_roles(server_guid, role_guid, user_guid)
+    REPLACE INTO server_user_saved_roles(server_guid, role_guid, user_guid)
     VALUES (?, ?, ?)
     """)
 public class ServerUserSavedRolesEntity {

@@ -39,7 +39,7 @@ public interface ServerUserSavedRolesRepository extends JpaRepository<ServerUser
   void deleteAllByServerGuidAndUserGuid(Long serverGuid, Long userGuid);
 
   @Query(value = """
-  SELECT server_user_saved_roles.server_user_saved_roles
+  SELECT server_user_saved_roles.role_guid
   FROM server_user_saved_roles
   WHERE server_user_saved_roles.server_guid = :serverGuid 
     AND server_user_saved_roles.user_guid = :userGuid
