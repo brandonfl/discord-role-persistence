@@ -1,7 +1,6 @@
 FROM maven:3.9.3-eclipse-temurin-17-alpine@sha256:1cbc71cb8e2f594338f4b4cbca897b9f9ed6183e361489f1f7db770d57efe839 AS build
-COPY src /tmp/bot/src
-COPY pom.xml /tmp/bot
-RUN mvn -f /tmp/bot/pom.xml clean package -DskipTests
+COPY . /tmp/project
+RUN mvn -f /tmp/project/pom.xml clean package -DskipTests
 
 FROM ibm-semeru-runtimes:open-17-jre-jammy
 
@@ -15,7 +14,7 @@ RUN apt install -y dumb-init bash && apt-get clean
 RUN apt auto-remove -y
 
 WORKDIR /app
-COPY --from=build /tmp/bot/target/bot.war /app
+COPY --from=build /tmp/project/target/bot.war /app
 COPY docker/utils/wait-for-it.sh /app
 COPY docker-custom-entrypoint.sh /app
 
