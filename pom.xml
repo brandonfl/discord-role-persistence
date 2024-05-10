@@ -122,11 +122,21 @@
             <artifactId>throwable-optional</artifactId>
             <version>1.0.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-spring-boot-starter-jakarta</artifactId>
+            <version>7.9.0</version>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>bot</finalName>
         <plugins>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
