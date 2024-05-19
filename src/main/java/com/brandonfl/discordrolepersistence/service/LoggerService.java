@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
@@ -66,7 +66,7 @@ public class LoggerService {
               .setAuthor("Role backup for " + joinEvent.getMember().getEffectiveName(), null, joinEvent.getMember().getUser().getEffectiveAvatarUrl())
               .appendDescription("User id : " + joinEvent.getMember().getUser().getId() + "\n\n" + rolesGivedBackStringBuilder.toString());
 
-          logChannel.get().sendMessage(logEmbedBuilder.build()).queue();
+          logChannel.get().sendMessageEmbeds(logEmbedBuilder.build()).queue();
         }
       }
 
@@ -79,7 +79,7 @@ public class LoggerService {
               .addField("Here are your old roles that have been given back to you", rolesGivedBackStringBuilder.toString(), true);
 
           welcomeBackChannel.get().sendMessage(joinEvent.getMember().getAsMention()).queue();
-          welcomeBackChannel.get().sendMessage(welcomeBackEmbedBuilder.build()).queue();
+          welcomeBackChannel.get().sendMessageEmbeds(welcomeBackEmbedBuilder.build()).queue();
         }
       }
     }
@@ -109,7 +109,7 @@ public class LoggerService {
           .addField(fieldName, roles.stream().map(
               Role::getName).collect(Collectors.joining("\n")), true);
 
-      textChannel.get().sendMessage(embedBuilder.build()).queue();
+      textChannel.get().sendMessageEmbeds(embedBuilder.build()).queue();
     }
   }
 
@@ -125,7 +125,7 @@ public class LoggerService {
               roleEvent.getRole().getName() + " (" + roleEvent.getRole().getId() + ")",
               true);
 
-      textChannel.get().sendMessage(embedBuilder.build()).queue();
+      textChannel.get().sendMessageEmbeds(embedBuilder.build()).queue();
     }
   }
 }

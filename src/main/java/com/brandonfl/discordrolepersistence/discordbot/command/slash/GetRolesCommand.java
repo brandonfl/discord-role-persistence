@@ -37,7 +37,7 @@ import java.util.List;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import org.springframework.transaction.annotation.Transactional;
 
 public class GetRolesCommand extends SlashCommand {

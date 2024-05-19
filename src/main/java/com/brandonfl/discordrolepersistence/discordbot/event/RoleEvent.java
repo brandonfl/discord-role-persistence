@@ -27,7 +27,7 @@ package com.brandonfl.discordrolepersistence.discordbot.event;
 import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.service.LoggerService;
 import com.brandonfl.discordrolepersistence.service.UserService;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;

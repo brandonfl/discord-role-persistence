@@ -38,8 +38,8 @@ import java.util.Optional;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,7 +125,7 @@ public class DisableRollbackRoleCommand extends SlashCommand {
           .addField(":x: Preventing rollbacks for role",
               roleArgument.getName() + " (" + roleArgument.getId() + ")", true);
 
-      logChannel.get().sendMessage(embedBuilder.build()).queue();
+      logChannel.get().sendMessageEmbeds(embedBuilder.build()).queue();
     }
   }
 }

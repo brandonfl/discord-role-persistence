@@ -25,7 +25,7 @@
 package com.brandonfl.discordrolepersistence.discordbot.command.slash;
 
 import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommandEvent;
 
 public class PingCommand extends SlashCommand {
 
