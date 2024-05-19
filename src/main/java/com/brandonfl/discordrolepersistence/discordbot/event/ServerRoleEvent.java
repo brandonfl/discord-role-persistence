@@ -27,7 +27,7 @@ package com.brandonfl.discordrolepersistence.discordbot.event;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.service.LoggerService;
 import jakarta.transaction.Transactional;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;

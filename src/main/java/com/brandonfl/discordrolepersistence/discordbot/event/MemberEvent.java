@@ -25,7 +25,7 @@
 package com.brandonfl.discordrolepersistence.discordbot.event;
 
 import com.brandonfl.discordrolepersistence.service.UserService;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;

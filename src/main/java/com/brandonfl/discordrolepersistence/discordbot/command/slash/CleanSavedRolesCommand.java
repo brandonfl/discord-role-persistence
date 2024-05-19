@@ -34,7 +34,7 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.transaction.annotation.Transactional;

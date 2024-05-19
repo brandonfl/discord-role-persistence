@@ -27,15 +27,16 @@ package com.brandonfl.discordrolepersistence.discordbot.event;
 import com.brandonfl.discordrolepersistence.config.BotProperties;
 import com.brandonfl.discordrolepersistence.db.repository.RepositoryContainer;
 import com.brandonfl.discordrolepersistence.utils.DiscordBotUtils;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.ReconnectedEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.events.session.SessionRecreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
@@ -45,6 +46,8 @@ public class BotEvent extends ListenerAdapter {
 
   private final BotProperties botProperties;
   private final RepositoryContainer repositoryContainer;
+
+
 
   @Override
   @Transactional
@@ -68,7 +71,7 @@ public class BotEvent extends ListenerAdapter {
 
   @Override
   @Transactional
-  public void onReconnect(@Nonnull ReconnectedEvent event) {
+  public void onSessionRecreate(@NotNull SessionRecreateEvent event) {
     log.warn("Bot reconnected !");
 
     if (botProperties.getSetting().getPersistence().needToReloadPersistenceAtBotReload()) {
