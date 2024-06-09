@@ -8,8 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: read
       packages: write
+      attestations: write
 
     steps:
     - uses: actions/checkout@v4
@@ -51,6 +53,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push
+      id: push
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -60,3 +63,17 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         provenance: ${{ vars.DOCKER_BUILD_PROVENANCE }}
         sbom: ${{ vars.DOCKER_BUILD_SBOM }}
+
+    - name: Attest Docker image on Docker Hub
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-name: brandonfl/discord-role-persistence
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
+
+    - name: Attest Docker image on GitHub Container Registry
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-name: ghcr.io/brandonfl/discord-role-persistence/discord-role-persistence
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
