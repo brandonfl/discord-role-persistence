@@ -22,7 +22,7 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: |
-          index.docker.io/brandonfl/discord-role-persistence
+          docker.io/brandonfl/discord-role-persistence
           ghcr.io/brandonfl/discord-role-persistence/discord-role-persistence
         tags: |
           type=semver,pattern={{version}},prefix=v
@@ -49,7 +49,7 @@ jobs:
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
-        registry: index.docker.io
+        registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
@@ -68,7 +68,7 @@ jobs:
     - name: Attest Docker image on Docker Hub
       uses: actions/attest-build-provenance@v1
       with:
-        subject-name: index.docker.io/brandonfl/discord-role-persistence
+        subject-name: docker.io/brandonfl/discord-role-persistence
         subject-digest: ${{ steps.push.outputs.digest }}
         push-to-registry: true
 
