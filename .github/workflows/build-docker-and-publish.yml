@@ -66,14 +66,14 @@ jobs:
         sbom: ${{ vars.DOCKER_BUILD_SBOM }}
 
     - name: Attest Docker image on Docker Hub
-      uses: actions/attest-build-provenance@v1
+      uses: actions/attest-build-provenance@v1.2.0
       with:
         subject-name: docker.io/brandonfl/discord-role-persistence
         subject-digest: ${{ steps.push.outputs.digest }}
         push-to-registry: true
 
     - name: Attest Docker image on GitHub Container Registry
-      uses: actions/attest-build-provenance@v1
+      uses: actions/attest-build-provenance@v1.2.0
       with:
         subject-name: ghcr.io/brandonfl/discord-role-persistence/discord-role-persistence
         subject-digest: ${{ steps.push.outputs.digest }}
