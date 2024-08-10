@@ -33,9 +33,9 @@ import com.jagrosh.jdautilities.command.SlashCommand;
 import java.util.List;
 import java.util.Objects;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +72,7 @@ public class ChangeLogChannelCommand extends SlashCommand {
     }
 
     GuildChannel channelArgument = ThrowableOptional
-        .of(() -> Objects.requireNonNull(event.getOption(CHANNEL_ARGUMENT_NAME)).getAsGuildChannel())
+        .of(() -> Objects.requireNonNull(event.getOption(CHANNEL_ARGUMENT_NAME)).getAsChannel())
         .orElse(null);
 
     if (channelArgument != null) {
@@ -84,7 +84,7 @@ public class ChangeLogChannelCommand extends SlashCommand {
         return;
       }
 
-      if (!event.getGuild().getSelfMember().hasPermission(channelArgument, Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE)) {
+      if (!event.getGuild().getSelfMember().hasPermission(channelArgument, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND)) {
         event
             .getHook()
             .editOriginalFormat("%s It seems that the bot dont have talk access to this channel", ERROR_EMOJI)
