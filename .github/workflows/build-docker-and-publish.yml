@@ -8,8 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: read
       packages: write
+      attestations: write
 
     steps:
     - uses: actions/checkout@v4
@@ -20,7 +22,7 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: |
-          brandonfl/discord-role-persistence
+          docker.io/brandonfl/discord-role-persistence
           ghcr.io/brandonfl/discord-role-persistence/discord-role-persistence
         tags: |
           type=semver,pattern={{version}},prefix=v
@@ -47,10 +49,12 @@ jobs:
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
+        registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push
+      id: push
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -60,3 +64,25 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         provenance: ${{ vars.DOCKER_BUILD_PROVENANCE }}
         sbom: ${{ vars.DOCKER_BUILD_SBOM }}
+
+    - name: Attest Docker image on Docker Hub
+      uses: actions/attest-build-provenance@v1.2.0
+      with:
+        subject-name: docker.io/brandonfl/discord-role-persistence
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
+
+    - name: Attest Docker image on GitHub Container Registry
+      uses: actions/attest-build-provenance@v1.2.0
+      with:
+        subject-name: ghcr.io/brandonfl/discord-role-persistence/discord-role-persistence
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
+
+    - name: Discord message notification
+      uses: appleboy/discord-action@v1.0.0
+      continue-on-error: true
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        message: 'New <@&760194811356643348> of Discord Role Persistence has been released with version ${{ github.ref_name }} :partying_face:'
