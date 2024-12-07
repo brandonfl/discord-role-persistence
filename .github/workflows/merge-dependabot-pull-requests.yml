@@ -1,0 +1,90 @@
+name: Merge Dependabot Pull Requests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  merge-dependabot-prs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Merge Dependabot PRs
+      run: |
+        node <<EOF
+        const { Octokit } = require("@octokit/rest");
+        const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+        async function mergeDependabotPRs() {
+          const { data: pullRequests } = await octokit.pulls.list({
+            owner: 'brandonfl',
+            repo: 'discord-role-persistence',
+            state: 'open',
+          });
+
+          const dependabotPRs = pullRequests.filter(pr => pr.user.login === 'dependabot[bot]');
+
+          if (dependabotPRs.length === 0) {
+            console.log('No open Dependabot pull requests found.');
+            return;
+          }
+
+          const baseBranch = dependabotPRs[0].base.ref;
+          const newBranchName = `dependabot-merge-${Date.now()}`;
+
+          await octokit.git.createRef({
+            owner: 'brandonfl',
+            repo: 'discord-role-persistence',
+            ref: `refs/heads/${newBranchName}`,
+            sha: dependabotPRs[0].base.sha,
+          });
+
+          for (const pr of dependabotPRs) {
+            await octokit.pulls.updateBranch({
+              owner: 'brandonfl',
+              repo: 'discord-role-persistence',
+              pull_number: pr.number,
+            });
+
+            await octokit.git.createCommit({
+              owner: 'brandonfl',
+              repo: 'discord-role-persistence',
+              message: `Merge ${pr.title}`,
+              tree: pr.head.sha,
+              parents: [pr.base.sha],
+            });
+
+            await octokit.git.updateRef({
+              owner: 'brandonfl',
+              repo: 'discord-role-persistence',
+              ref: `heads/${newBranchName}`,
+              sha: pr.head.sha,
+            });
+          }
+
+          await octokit.pulls.create({
+            owner: 'brandonfl',
+            repo: 'discord-role-persistence',
+            title: 'Merged Dependabot PRs',
+            head: newBranchName,
+            base: baseBranch,
+          });
+        }
+
+        mergeDependabotPRs().catch(error => {
+          console.error(error);
+          process.exit(1);
+        });
+        EOF
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
