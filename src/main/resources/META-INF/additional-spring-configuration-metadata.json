@@ -54,6 +54,12 @@
       "type": "java.lang.Boolean",
       "description": "Set if we need to re-persist / reload all servers at bot reload. Useful to get data missed during downtime.",
       "defaultValue": true
+    },
+    {
+      "name": "bot.setting.shards-total",
+      "type": "java.lang.Integer",
+      "description": "Set the number of shards to use. If you are using a bot with multiple servers, you can set this to the number of shards you want to use.",
+      "defaultValue": -1
     }
   ]
 }

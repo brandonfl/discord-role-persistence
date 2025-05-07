@@ -52,9 +52,12 @@ public class BotEvent extends ListenerAdapter {
   @Override
   @Transactional
   public void onReady(@Nonnull ReadyEvent event) {
-    log.info("Bot ready !");
 
-    if (botProperties.getSetting().getPersistence().needToReloadPersistenceAtBotReload()) {
+    log.info("Bot ready on shard %s !".formatted(event.getJDA().getShardInfo().getShardString()));
+
+    // TODO : add support for multiple shards reloading in the future (issue #218)
+    if (botProperties.getSetting().getPersistence().needToReloadPersistenceAtBotReload()
+        && event.getJDA().getShardInfo().getShardTotal() <= 1) {
       log.info("Reloading...");
       StopWatch stopWatch = new StopWatch();
       stopWatch.start();
