@@ -77,6 +77,7 @@ public class BotProperties {
     private String heartbeatStatusUrl;
     private String ownerId;
     private Long guidDevelopmentId;
+    private int shardsTotal;
     private Persistence persistence = new Persistence();
 
     @Data

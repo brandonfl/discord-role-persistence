@@ -47,9 +47,9 @@ import jakarta.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -97,13 +97,14 @@ public class DiscordBot {
       commandClientBuilder.forceGuildOnly(String.valueOf(botProperties.getSetting().getGuidDevelopmentId()));
     }
 
-    JDABuilder
+    DefaultShardManagerBuilder
         .create(
             GatewayIntent.GUILD_MEMBERS, // Used to get members join/leave/roles
             GatewayIntent.GUILD_MESSAGES, // Used to get messages as @mention
             GatewayIntent.GUILD_MESSAGE_REACTIONS, // Used for the paginator
             GatewayIntent.DIRECT_MESSAGES) // Used to allow some commands by direct messages
         .setToken(botProperties.getSetting().getToken())
+        .setShardsTotal(botProperties.getSetting().getShardsTotal())
         .setAutoReconnect(true)
         .addEventListeners(
             eventWaiter,
