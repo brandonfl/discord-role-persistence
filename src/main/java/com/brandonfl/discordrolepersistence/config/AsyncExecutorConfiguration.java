@@ -25,7 +25,6 @@
 package com.brandonfl.discordrolepersistence.config;
 
 import java.util.concurrent.Executor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -34,7 +33,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class AsyncExecutorConfiguration {
 
   @Bean(name = "userPersistenceExecutor")
-  @Autowired
   public Executor userPersistenceExecutor(BotProperties botProperties) {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(botProperties.getSetting().getPersistence().getUser().getThreadNumber());
@@ -44,7 +42,6 @@ public class AsyncExecutorConfiguration {
   }
 
   @Bean(name = "rolePersistenceExecutor")
-  @Autowired
   public Executor rolePersistenceExecutor(BotProperties botProperties) {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(botProperties.getSetting().getPersistence().getRole().getThreadNumber());
@@ -54,7 +51,6 @@ public class AsyncExecutorConfiguration {
   }
 
   @Bean(name = "serverPersistenceExecutor")
-  @Autowired
   public Executor serverPersistenceExecutor(BotProperties botProperties) {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(botProperties.getSetting().getPersistence().getServer().getThreadNumber());
