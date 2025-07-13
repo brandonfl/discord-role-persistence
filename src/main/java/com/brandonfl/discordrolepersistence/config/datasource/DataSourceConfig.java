@@ -27,7 +27,6 @@ package com.brandonfl.discordrolepersistence.config.datasource;
 import java.text.MessageFormat;
 import java.util.Objects;
 import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -39,7 +38,6 @@ public class DataSourceConfig {
 
   @ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${bot-datasource.host:}')")
   @Bean("mysqlDataSource")
-  @Autowired
   public DataSource mysqlDataSource(DataSourceProperties dataSourceProperties) {
     DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
     dataSourceBuilder.driverClassName("com.mysql.cj.jdbc.Driver");
@@ -55,7 +53,6 @@ public class DataSourceConfig {
 
   @ConditionalOnMissingBean(name = "mysqlDataSource")
   @Bean("h2DataSource")
-  @Autowired
   public DataSource h2DataSource(DataSourceProperties dataSourceProperties) {
     DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
     dataSourceBuilder.driverClassName("org.h2.Driver");
