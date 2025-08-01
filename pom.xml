@@ -63,7 +63,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.2.3</version>
+            <version>6.0.0-preview_DEV</version>
         </dependency>
 
         <dependency>
